@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PT DJS (Deploy Jumat Sore) — Booket.id Technical Assessment & Client Demo</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .live-pulse {
+      animation: pulse-subtle 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans select-none overflow-x-hidden">
+
+  <!-- Top Header / Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center font-bold text-white shadow-lg shadow-red-500/30">
+        DJS
+      </div>
+      <div>
+        <div class="font-bold text-sm tracking-wide flex items-center gap-2">
+          <span>PT Deploy Jumat Sore</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">Technical Assessment Telkomsel</span>
+        </div>
+        <div class="text-xs text-slate-400">Booket.id — High-Concurrency Concert Ticketing & Architecture Defense</div>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-4 text-xs">
+      <button id="toggleNotes" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+        📝 Speaker Notes (<span id="notesState">ON</span>)
+      </button>
+      <div class="px-3 py-1.5 rounded-md bg-slate-800/80 text-slate-300 font-mono">
+        Slide <span id="currentSlideNum" class="text-red-400 font-bold">1</span> / <span id="totalSlidesNum">14</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Slide Area -->
+  <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 max-w-6xl w-full mx-auto">
+    <div id="slideContainer" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-10 shadow-2xl relative min-h-[540px] flex flex-col justify-between">
+      <!-- Dynamic slide content injected by JS -->
+      <div id="slideBody" class="flex-1"></div>
+
+      <!-- Speaker Notes Box (Collapsible) -->
+      <div id="speakerNotesContainer" class="mt-6 pt-4 border-t border-slate-800/80 bg-slate-950/60 rounded-xl p-4 text-xs text-slate-300">
+        <div class="font-semibold text-red-400 mb-1 flex items-center gap-1.5 uppercase tracking-wider">
+          <span>🎙️ Speaker Notes (Naskah Pembicara):</span>
+        </div>
+        <p id="speakerNotesText" class="leading-relaxed text-slate-300 italic"></p>
+      </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="w-full mt-6 flex items-center justify-between px-2 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <span>Gunakan tombol</span>
+        <kbd class="px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">←</kbd>
+        <kbd class="px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">→</kbd>
+        <span>atau klik Next / Prev</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="prevBtn" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition disabled:opacity-40">
+          ← Sebelumnya
+        </button>
+        <button id="nextBtn" class="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-medium shadow-lg shadow-red-600/30 transition disabled:opacity-40">
+          Selanjutnya →
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const slides = [
+      {
+        tag: "SLIDE 1 • COVER & OVERVIEW",
+        title: "Booket.id — Solusi War Tiket Konser Skala Masif",
+        subtitle: "Proposal Teknis & Live Demo — Tender Rusuh Booking Ticket Telkomsel",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full my-auto">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold mb-4">
+                <span class="w-2 h-2 rounded-full bg-red-500 live-pulse"></span>
+                PT Deploy Jumat Sore (PT DJS)
+              </div>
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight mb-4">
+                Resilien, Adil, & <br/><span class="text-red-500">Zero-Overselling</span>
+              </h1>
+              <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                Platform penjualan tiket konser online berdaya tampung tinggi dengan arsitektur terdistribusi, isolasi antrean in-memory O(log n), dan transaksi atomik ACID.
+              </p>
+              <div class="flex flex-wrap gap-2 text-xs">
+                <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300">✓ Virtual Waiting Room</span>
+                <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300">✓ Guard 3 Tiket / NIK</span>
+                <span class="px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300">✓ 666 Automated Tests</span>
+              </div>
+            </div>
+            <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col justify-center gap-4">
+              <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Profil Solusi & Assessment</div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-800/80">
+                <span class="text-sm text-slate-300">Penyedia Solusi</span>
+                <span class="text-sm font-bold text-white">PT DJS (Deploy Jumat Sore)</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-800/80">
+                <span class="text-sm text-slate-300">Klien / Assessor</span>
+                <span class="text-sm font-bold text-red-400">Telkomsel (Tender Assessment)</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-800/80">
+                <span class="text-sm text-slate-300">Karakter Presentasi</span>
+                <span class="text-sm font-medium text-slate-200">Client Demo + Technical Defense</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-300">Status Rekayasa</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Production Ready (666 Tests Passed)</span>
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Selamat pagi/siang bapak dan ibu tim penilai teknis Telkomsel. Kami dari PT DJS (Deploy Jumat Sore) merasa terhormat mempresentasikan Booket.id. Nama kami jenaka, tetapi komitmen engineering kami sangat serius. Hari ini kami akan membedah tidak hanya demo antarmuka pengguna, tetapi seluruh fondasi teknis arsitektur yang menjamin sistem tidak akan crash di puncak flash war."
+      },
+      {
+        tag: "SLIDE 2 • PROBLEM STATEMENT",
+        title: "Tantangan Kritis: Mengapa War Tiket Konvensional Selalu Rusuh?",
+        subtitle: "Analisis 4 titik kegagalan utama yang merusak reputasi brand dan merugikan fans",
+        content: `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
+            <div class="p-5 rounded-xl bg-slate-950 border border-red-900/30 hover:border-red-500/50 transition">
+              <div class="text-2xl mb-2">💥</div>
+              <h3 class="font-bold text-white text-base mb-1">Traffic Spike & Database Overload</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">
+                20.000+ request per detik di detik ke-0 langsung menghantam database transaksional, memicu deadlock, CPU 100%, dan error HTTP 500 / 504.
+              </p>
+            </div>
+            <div class="p-5 rounded-xl bg-slate-950 border border-amber-900/30 hover:border-amber-500/50 transition">
+              <div class="text-2xl mb-2">🤖</div>
+              <h3 class="font-bold text-white text-base mb-1">Bot Scalpers & Pembobolan Kuota</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">
+                Calo menggunakan ribuan tab browser dan bot otomasi untuk memborong tiket, memanipulasi kuota NIK, dan merampas hak konsumen sah.
+              </p>
+            </div>
+            <div class="p-5 rounded-xl bg-slate-950 border border-blue-900/30 hover:border-blue-500/50 transition">
+              <div class="text-2xl mb-2">📉</div>
+              <h3 class="font-bold text-white text-base mb-1">Overselling (Stok Negatif)</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">
+                Race condition pada sistem stok menyebabkan 1 tiket terjual ke 2 orang berbeda. Akibatnya timbul rusuh di gate venue dan tuntutan hukum.
+              </p>
+            </div>
+            <div class="p-5 rounded-xl bg-slate-950 border border-purple-900/30 hover:border-purple-500/50 transition">
+              <div class="text-2xl mb-2">💔</div>
+              <h3 class="font-bold text-white text-base mb-1">Sindrom 'PHP' (Sesi Mental)</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">
+                Pengguna sudah menunggu berjam-jam, namun mental saat klik checkout atau saat melakukan transfer bank akibat session timeout sepihak.
+              </p>
+            </div>
+          </div>
+        `,
+        notes: "Ketika konser besar dibuka, masalahnya bukan sekadar bandwidth. Ketika puluhan ribu transaksi langsung memukul database, sistem akan freeze. Dampaknya: fans marah di media sosial dan nama baik brand penyelenggara tercoreng. PT DJS memegang teguh filosofi: Konsumen Telkomsel tidak boleh di-PHP."
+      },
+      {
+        tag: "SLIDE 3 • CORE SOLUTION",
+        title: "Tiga Pilar Solusi PT DJS: Cepat, Adil, dan Anti-Rusuh",
+        subtitle: "Menahan beban di gerbang luar dan melindungi transaksi inti di hilir",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+            <div class="p-6 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center font-bold mb-4 text-lg">01</div>
+                <h4 class="font-bold text-white text-base mb-2">Virtual Waiting Room</h4>
+                <p class="text-slate-400 text-xs leading-relaxed">
+                  Menahan jutaan pengunjung di antrean in-memory (Redis FCFS). Hanya sejumlah N pengguna aktif yang diloloskan ke ruang booking.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs text-red-400 font-semibold">
+                🛡️ Melindungi DB dari Spike
+              </div>
+            </div>
+
+            <div class="p-6 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold mb-4 text-lg">02</div>
+                <h4 class="font-bold text-white text-base mb-2">Two-Tier Server TTL</h4>
+                <p class="text-slate-400 text-xs leading-relaxed">
+                  Batas waktu isi formulir (5 Menit) + Batas waktu pembayaran (10 Menit). Dihitung mutlak dari waktu server, kebal manipulasi jam lokal.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs text-blue-400 font-semibold">
+                ⏱️ Kepastian & Keadilan Sesi
+              </div>
+            </div>
+
+            <div class="p-6 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold mb-4 text-lg">03</div>
+                <h4 class="font-bold text-white text-base mb-2">Atomic Reservation & NIK Guard</h4>
+                <p class="text-slate-400 text-xs leading-relaxed">
+                  Pengurangan stok dan penguncian kuota maks 3 tiket/NIK dalam satu transaksi database PostgreSQL atomik. Bebas race condition.
+                </p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs text-emerald-400 font-semibold">
+                🔒 Jaminan Zero-Overselling
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Kami membangun arsitektur pertahanan berlapis. Virtual Waiting Room menahan volume traffic di luar, Two-Tier Server TTL memberikan batas waktu yang adil bagi pemegang tiket sementara, dan Transaksi Database Atomik mengunci kuota 3 tiket/NIK tanpa celah race condition."
+      },
+      {
+        tag: "SLIDE 4 • SYSTEM ARCHITECTURE",
+        title: "Arsitektur Sistem Skala Enterprise",
+        subtitle: "Pemisahan tegas antara Read-Heavy Queue dan Write-Critical Database",
+        content: `
+          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-4">
+            <div class="grid grid-cols-4 gap-3 text-center">
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-slate-200">Client Tier</div>
+                <div class="text-[11px] text-slate-400 mt-1">React 18 SPA & MyTelkomsel WebView (?embed=1)</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-slate-200">Edge & Ingress</div>
+                <div class="text-[11px] text-slate-400 mt-1">CDN Static Cache, Nginx Reverse Proxy, Token Bucket WAF</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-slate-200">Stateless Services</div>
+                <div class="text-[11px] text-slate-400 mt-1">Queue Engine, Booking Service, Payment API, Sweeper</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="font-bold text-slate-200">Storage Tier</div>
+                <div class="text-[11px] text-slate-400 mt-1">Redis Cluster ZSET & PostgreSQL ACID Store</div>
+              </div>
+            </div>
+            
+            <div class="bg-slate-900/70 p-4 rounded-lg border border-slate-800/80">
+              <div class="font-semibold text-slate-300 mb-2 flex items-center justify-between">
+                <span>Aliran Proteksi Trafik (Protected Pipeline Flow):</span>
+                <span class="text-red-400 font-mono text-[10px]">O(log n) Queue Latency</span>
+              </div>
+              <div class="flex items-center justify-between text-center gap-2">
+                <div class="p-2 rounded bg-slate-950 border border-slate-800 flex-1">1. User Masuk</div>
+                <div class="text-slate-600">→</div>
+                <div class="p-2 rounded bg-red-950/40 border border-red-800/60 flex-1 text-red-300">2. Redis Waiting Room</div>
+                <div class="text-slate-600">→</div>
+                <div class="p-2 rounded bg-blue-950/40 border border-blue-800/60 flex-1 text-blue-300">3. Admission Slot (N Aktif)</div>
+                <div class="text-slate-600">→</div>
+                <div class="p-2 rounded bg-emerald-950/40 border border-emerald-800/60 flex-1 text-emerald-300">4. PostgreSQL Atomic Hold</div>
+              </div>
+            </div>
+            
+            <div class="flex justify-between items-center text-[11px] text-slate-400 px-1">
+              <span>⚡ <strong>Stateless Micro-Services:</strong> Auto-scale instan di Kubernetes saat traffic war tiket.</span>
+              <span>🔄 <strong>Transactional Outbox:</strong> Event-driven asynchronous publishing ke broker pesan (RabbitMQ/Kafka).</span>
+            </div>
+          </div>
+        `,
+        notes: "Perhatikan arsitektur kami. Kami memisahkan beban antrean berkecepatan tinggi ke Redis Cluster dengan latensi mikrodetik. Database relasional PostgreSQL hanya memproses ratusan user aktif yang sudah memegang tiket antrean resmi. Database tidak akan pernah tumbang karena dibentengi oleh admission control."
+      },
+      {
+        tag: "SLIDE 5 • TECHNICAL DEEP-DIVE",
+        title: "Deep-Dive: Algoritma Antrean & Redis Lua Scripting",
+        subtitle: "Evaluasi atomik O(log N) & Mengapa Polling Adaptif Lebih Unggul dari WebSocket",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[11px]">
+                <div class="text-slate-400 mb-1 font-sans font-bold text-white flex items-center justify-between">
+                  <span>Atomic Admission Control (Lua Script)</span>
+                  <span class="text-emerald-400 text-[10px]">Redis Engine</span>
+                </div>
+                <div class="text-slate-500">-- 1. Bersihkan slot kedaluwarsa</div>
+                redis.call('ZREMRANGEBYSCORE', 'q:active', '-inf', now)<br/>
+                <div class="text-slate-500 mt-1">-- 2. Cek slot tersisa</div>
+                local free = maxSlots - redis.call('ZCARD', 'q:active')<br/>
+                <div class="text-slate-500 mt-1">-- 3. Pop K user terdepan (FCFS)</div>
+                local admitted = redis.call('ZPOPMIN', 'q:waiting', free)<br/>
+                redis.call('ZADD', 'q:active', now + ttl, admitted)
+              </div>
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-[11px] text-slate-400">
+                🔒 <strong>Distributed Lock:</strong> Menjamin beberapa worker instance tidak pernah mempromosikan user melebihi kuota $N$.
+              </div>
+            </div>
+
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-xs mb-1">Polling Adaptif + Jitter vs WebSocket</div>
+                <p class="text-slate-400 text-[11px] leading-relaxed">
+                  50.000 koneksi WebSocket persisten di mobile network 4G/5G rentan socket exhaustion & reconnection storm saat handoff BTS. Polling adaptif (2–5s + random jitter) bersifat stateless, ramah CDN cache, dan andal di jaringan seluler.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-xs mb-1">Moving Average ETA Formula</div>
+                <p class="text-slate-400 text-[11px] leading-relaxed">
+                  $$\\text{ETA} = \\frac{\\text{ZRANK(waiting, queueId)}}{\\text{AdmissionRate}_{5\\text{min}}}$$
+                  Menghasilkan estimasi waktu tunggu yang akurat dan transparan bagi pengguna.
+                </p>
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Bagi para technical assessor, ini adalah fondasi antrean kami. Seluruh evaluasi admission berjalan dalam Lua Script atomik di Redis. Mengapa kami memilih polling adaptif dibanding WebSocket? Karena pada skala 50.000 pengguna seluler, WebSocket menghabiskan file descriptor dan rentan reconnection storm saat pengguna berpindah sinyal. Polling adaptif dengan jitter terbukti paling tangguh di industri telekomunikasi."
+      },
+      {
+        tag: "SLIDE 6 • TECHNICAL DEEP-DIVE",
+        title: "Deep-Dive: Concurrency, Transaksi Atomik & Kepatuhan UU PDP",
+        subtitle: "Meniadakan race condition di database dan menjaga kerahasiaan identitas kependudukan",
+        content: `
+          <div class="space-y-3 text-xs">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 font-mono text-[11px] text-slate-300 overflow-x-auto">
+              <div class="text-slate-500 mb-2">-- Transaksi Database Tunggal (PostgreSQL Single Transaction):</div>
+              <span class="text-purple-400">BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;</span><br/>
+              &nbsp;&nbsp;<span class="text-slate-400">-- 1. Kunci Kuota NIK (Maks 3 Tiket per NIK)</span><br/>
+              &nbsp;&nbsp;<span class="text-blue-400">INSERT INTO</span> nik_quotas (event_id, nik_hash, reserved_qty)<br/>
+              &nbsp;&nbsp;<span class="text-blue-400">VALUES</span> (:event_id, :nik_hash, :qty)<br/>
+              &nbsp;&nbsp;<span class="text-blue-400">ON CONFLICT</span> (event_id, nik_hash)<br/>
+              &nbsp;&nbsp;<span class="text-blue-400">DO UPDATE SET</span> reserved_qty = nik_quotas.reserved_qty + EXCLUDED.reserved_qty<br/>
+              &nbsp;&nbsp;<span class="text-red-400">WHERE</span> nik_quotas.reserved_qty + EXCLUDED.reserved_qty &lt;= 3;<br/>
+              <br/>
+              &nbsp;&nbsp;<span class="text-slate-400">-- 2. Pengurangan Stok Kategori (Conditional Decrement)</span><br/>
+              &nbsp;&nbsp;<span class="text-blue-400">UPDATE</span> ticket_categories <span class="text-blue-400">SET</span> available = available - :qty<br/>
+              &nbsp;&nbsp;<span class="text-red-400">WHERE</span> id = :category_id <span class="text-red-400">AND</span> available &gt;= :qty;<br/>
+              <span class="text-purple-400">COMMIT;</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <div class="font-bold text-slate-200 mb-1">Anti-Deadlock Sorting</div>
+                <div class="text-slate-400 text-[11px]">Item multi-tier selalu diurutkan ascending berdasarkan category_id sebelum query dieksekusi.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <div class="font-bold text-slate-200 mb-1">UU PDP Compliance</div>
+                <div class="text-slate-400 text-[11px]">NIK di-hash dengan HMAC-SHA256 untuk kuota dan dimasking (3171********1234) di layar.</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <div class="font-bold text-slate-200 mb-1">SKIP LOCKED Sweeper</div>
+                <div class="text-slate-400 text-[11px]">Background worker melepas hold kedaluwarsa secara non-blocking tanpa mengunci tabel.</div>
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Di layer database, kami tidak pernah memakai read-then-update di kode aplikasi. Kami mengeksekusi conditional update langsung di PostgreSQL. Jika kuota NIK sudah 3 atau stok tersisa 0, update mengembalikan 0 row dan transaksi langsung di-rollback. Seluruh multi-tier pesanan juga diurutkan berdasarkan category_id untuk mengeliminasi potensi deadlock secara matematis."
+      },
+      {
+        tag: "SLIDE 7 • TECHNICAL DEEP-DIVE",
+        title: "Deep-Dive: Two-Tier Server-Authoritative State Machine",
+        subtitle: "Sinkronisasi waktu absolut UTC & Kebijakan Anti-PHP Rekonsiliasi Pembayaran",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+            <div class="space-y-3">
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">1. Booking Hold TTL (5 Menit)</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Dihitung sejak tiket direservasi di keranjang. Countdown di browser disinkronkan via HTTP <code>Date</code> header. Manipulasi jam lokal di laptop pembeli tidak berguna karena server memvalidasi <code>now() <= expires_at</code>.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">2. Payment Gate TTL (10 Menit)</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Batas waktu transfer Virtual Account / QRIS. Kunci idempotensi <code>Idempotency-Key: UUID</code> mencegah double charge saat koneksi seluler tidak stabil.
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="font-bold text-emerald-400 text-sm mb-2">Kebijakan Rekonsiliasi 'Anti-PHP'</div>
+                <p class="text-slate-400 text-[11px] leading-relaxed mb-3">
+                  Sering terjadi user sudah bayar di menit ke-9.58, namun webhook bank baru sampai di menit ke-10.02 saat status di DB berubah menjadi EXPIRED.
+                </p>
+                <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-300 space-y-1">
+                  <div>✓ Sweeper memanggil inquiry status gateway sebelum expire.</div>
+                  <div>✓ Jika dana settled di bank, status dipaksa promosi ke PAID.</div>
+                  <div>✓ Jika stok terlanjur lepas, outbox trigger otomatis auto-refund.</div>
+                </div>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-800 text-[10px] text-slate-500">
+                Menjamin hak konsumen sah terlindungi 100% tanpa manual refund friction.
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Dua tingkat TTL kami diatur otoritatif oleh server. Untuk mengatasi masalah klasik di mana pembeli sudah transfer namun callback bank terlambat, Expiry Sweeper kami memiliki grace period inquiry. Sistem kami tidak akan membatalkan pesanan yang dananya sudah masuk di bank. Inilah komitmen Anti-PHP kami."
+      },
+      {
+        tag: "SLIDE 8 • TECHNICAL DEEP-DIVE",
+        title: "Deep-Dive: Clean Architecture Frontend & Self-Healing Fallback",
+        subtitle: "Isolasi domain rules murni dan kemampuan pemulihan diri terhadap anomali API",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+            <div class="space-y-3">
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Domain-Driven Design (DDD)</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Modul <code>src/domain/rules.ts</code> adalah pure function tanpa React dan tanpa browser I/O: <code>isValidNik()</code>, <code>maxSelectableQty()</code>, <code>hasDuplicateParticipantNiks()</code>. Sangat cepat dan deterministik di-unit test.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Facade Pattern & Reactive Store</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Komunikasi dengan <code>@booketid/core</code> dibungkus dalam <code>WaitingRoomFacade</code> dan <code>CheckoutFacade</code>, dengan state reaktif tersinkronisasi via custom <code>useFacadeStore</code>.
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div class="font-bold text-red-400 text-sm mb-2">Self-Healing Fallback Engine</div>
+              <p class="text-slate-400 text-[11px] leading-relaxed mb-3">
+                Jika server API pihak ketiga mengembalikan payload dengan anomali DTO (misal: <code>INVALID_RESPONSE</code> pada respons 200), UI tidak crash menjadi blank screen:
+              </p>
+              <div class="p-2.5 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] text-slate-300">
+                if (coreState.errorCode === "INVALID_RESPONSE") {<br/>
+                &nbsp;&nbsp;activateFallbackSession();<br/>
+                &nbsp;&nbsp;parseLegacyPayload(etaSeconds);<br/>
+                }
+              </div>
+              <div class="mt-2 text-[10px] text-emerald-400">
+                ✓ UI tetap mulus menyajikan nomor antrean dan ETA tanpa interupsi.
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Di sisi frontend, kami menerapkan Clean Architecture. Seluruh aturan bisnis kuota NIK dan batas pembelian berada di modul domain rules yang murni, terpisah dari UI. Kami juga menanamkan Self-Healing Fallback: jika DTO core mengalami parsing error, fallback engine otomatis mengambil alih tanpa menampilkan layar putih ke pengguna."
+      },
+      {
+        tag: "SLIDE 9 • REUSABLE WEBVIEW & PAYMENT",
+        title: "Deep Dive: Reusable WebView & Multi-Payment",
+        subtitle: "Satu codebase pembayaran untuk Web Browser dan Aplikasi Mobile MyTelkomsel",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+            <div class="space-y-3">
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Satu Halaman untuk Dua Platform</div>
+                <p class="text-slate-400 leading-relaxed">
+                  Route <code>/pay/:bookingId</code> otomatis menyembunyikan header dan navigasi saat parameter <code>?embed=1</code> diaktifkan. Siap disematkan ke dalam WebView MyTelkomsel.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Proteksi Idempotensi Transaksi</div>
+                <p class="text-slate-400 leading-relaxed">
+                  Setiap pemanggilan pembayaran membawa <code>Idempotency-Key (UUID)</code> unik. Mengklik tombol bayar berkali-kali tidak akan menimbulkan nomor tagihan ganda di bank.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Webhook Signature Verification</div>
+                <p class="text-slate-400 leading-relaxed">
+                  Setiap callback dari gateway diverifikasi menggunakan signature HMAC-SHA512 untuk mencegah tampering status pembayaran dari pihak luar.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
+              <div>
+                <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Kanal Pembayaran Terintegrasi</div>
+                <div class="space-y-2">
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center">
+                    <span class="font-semibold text-slate-200">Virtual Account</span>
+                    <span class="text-[11px] text-slate-400">BCA, Mandiri, BRI, BNI</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center">
+                    <span class="font-semibold text-slate-200">QRIS Dinamis</span>
+                    <span class="text-[11px] text-emerald-400">0% Admin Fee • Instan</span>
+                  </div>
+                  <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex justify-between items-center">
+                    <span class="font-semibold text-slate-200">Kartu Kredit</span>
+                    <span class="text-[11px] text-slate-400">Visa / Mastercard 3DS</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 p-3 rounded-lg bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400">
+                ⏱️ <strong>Batas Waktu Bayar:</strong> 10 Menit dihitung dari timestamp server dengan countdown realtime.
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Kami mengerti Telkomsel memiliki ekosistem mobile MyTelkomsel yang kuat. Halaman pembayaran kami dirancang reusable: saat dibuka dalam WebView aplikasi mobile dengan embed=1, header web hilang dan menyatu mulus layaknya modul native. Seluruh pembayaran memiliki kunci idempotensi anti-debet ganda."
+      },
+      {
+        tag: "SLIDE 10 • E-TICKET & ANTI-FRAUD",
+        title: "Deep Dive: Digital Pass & Dynamic Barcode",
+        subtitle: "Memberantas calo di pintu gerbang venue dengan rotasi QR Code 30 detik",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-auto text-xs">
+            <div class="space-y-3">
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Rotasi QR Code Tiap 30 Detik</div>
+                <p class="text-slate-400 leading-relaxed">
+                  Payload QR code dienkripsi dan diperbarui secara dinamis pada perangkat pembeli. Mencegah calo menjual foto screenshot yang sama ke 10 orang berbeda.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Gate Scanner Offline-Tolerant</div>
+                <p class="text-slate-400 leading-relaxed">
+                  Scanner gate di venue konser memverifikasi tanda tangan kriptografis token QR secara instan tanpa tergantung koneksi internet venue yang sering padat.
+                </p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white text-sm mb-1">Multi-Channel Delivery</div>
+                <p class="text-slate-400 leading-relaxed">
+                  E-tiket terkirim otomatis ke Email pemesan, tersedia di halaman /result, dan dapat diunduh sebagai PDF atau disimpan ke Apple/Google Wallet.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center justify-center text-center">
+              <div class="w-full max-w-xs bg-slate-900 rounded-xl p-4 border border-slate-800 text-left relative overflow-hidden">
+                <div class="text-[10px] text-red-400 font-bold uppercase tracking-wider">OFFICIAL PASS</div>
+                <div class="text-sm font-bold text-white mt-1">Deploy Jumat Sore Live 2025</div>
+                <div class="text-[11px] text-slate-400">13 Des 2026 • VIP Section (Gate A)</div>
+                <div class="my-4 p-3 bg-white rounded-lg flex flex-col items-center justify-center">
+                  <div class="w-24 h-24 bg-slate-900 rounded flex items-center justify-center text-white font-mono text-xs">
+                    [DYNAMIC QR]
+                  </div>
+                  <div class="text-[10px] text-slate-600 mt-1 font-mono">Rotates in <span class="text-red-600 font-bold">28s</span></div>
+                </div>
+                <div class="text-[10px] text-slate-400 flex justify-between border-t border-slate-800 pt-2">
+                  <span>Nama: Riyan S.</span>
+                  <span>NIK: 3171********1234</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        notes: "Keamanan tidak berhenti setelah transaksi sukses. Untuk melindungi fans dan promotor dari penipuan calo di pintu masuk, kami menghadirkan Dynamic QR Code. Barcode berotasi tiap 30 detik. Tangkapan layar yang dijual calo di medsos tidak akan berlaku saat dipindai di gate."
+      },
+      {
+        tag: "SLIDE 11 • QA & PIPELINE",
+        title: "Standar Rekayasa Perangkat Lunak & CI/CD",
+        subtitle: "Teruji dengan 666 skenario automated tests dan coverage minimal 80% per file",
+        content: `
+          <div class="space-y-4 text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-2xl font-extrabold text-emerald-400 font-mono">666</div>
+                <div class="text-[11px] text-slate-400 mt-1">Automated Unit Tests</div>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-2xl font-extrabold text-blue-400 font-mono">91</div>
+                <div class="text-[11px] text-slate-400 mt-1">Test Suites Passed</div>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-2xl font-extrabold text-purple-400 font-mono">&ge; 80%</div>
+                <div class="text-[11px] text-slate-400 mt-1">Coverage per File</div>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="text-2xl font-extrabold text-amber-400 font-mono">0 Error</div>
+                <div class="text-[11px] text-slate-400 mt-1">Strict TypeScript Checks</div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+              <div class="font-bold text-white text-xs mb-3 flex items-center justify-between">
+                <span>Pipeline Otomatis GitLab CI/CD:</span>
+                <span class="text-emerald-400 font-semibold text-[11px]">✓ All Pipelines Passed</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-center text-[11px]">
+                <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                  <div class="font-bold text-slate-300">1. compile-file</div>
+                  <div class="text-slate-500 text-[10px]">tsc -b --noEmit</div>
+                </div>
+                <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                  <div class="font-bold text-slate-300">2. test:coverage</div>
+                  <div class="text-slate-500 text-[10px]">Vitest 666 Tests</div>
+                </div>
+                <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                  <div class="font-bold text-slate-300">3. build-web</div>
+                  <div class="text-slate-500 text-[10px]">Vite Bundle (13s)</div>
+                </div>
+                <div class="p-2.5 rounded bg-slate-900 border border-slate-800">
+                  <div class="font-bold text-slate-300">4. containerize</div>
+                  <div class="text-slate-500 text-[10px]">Docker Multi-Stage</div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="text-slate-400 text-[11px] px-1">
+              Setiap commit ke branch <code>main</code> diverifikasi secara otomatis. Tidak ada kode yang masuk tanpa memenuhi standar kualitas enterprise Telkomsel.
+            </p>
+          </div>
+        `,
+        notes: "Sebagai bukti keseriusan teknis PT DJS, aplikasi ini tidak hanya berfungsi di layar, tetapi ditopang oleh 666 skenario unit test dengan cakupan di atas 80% per file. Setiap regresi ditangkap otomatis di pipeline GitLab CI/CD, menjamin kode yang Anda terima siap dideploy ke produksi tanpa celah bug fatal."
+      },
+      {
+        tag: "SLIDE 12 • LIVE DEMO RUNBOOK",
+        title: "Panduan Skenario Live Demonstrasi",
+        subtitle: "Langkah terstruktur untuk mendemonstrasikan keunggulan Booket.id secara langsung",
+        content: `
+          <div class="space-y-3 my-auto text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-red-400 text-xs mb-1">Skenario 1: Happy Path & Waiting Room</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Buka beranda &rarr; Pilih konser 'Deploy Jumat Sore' &rarr; Masuk Waiting Room &rarr; Tunjukkan nomor antrean & status sinkronisasi &rarr; Auto-redirect ke /booking saat slot tiba.
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-blue-400 text-xs mb-1">Skenario 2: Validasi Kuota 3 Tiket / NIK</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Pilih tiket &rarr; Masukkan NIK &rarr; Coba tambah tiket ke-4 (tombol terkunci otomatis) &rarr; Masukkan NIK ganda pada formulir peserta (terdeteksi duplikasi seketika).
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-emerald-400 text-xs mb-1">Skenario 3: Session Persistence (Anti-PHP)</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Tutup tab atau klik kembali ke Beranda &rarr; Tunjukkan kartu 'Lanjutkan Antrean' di Beranda &rarr; Klik lanjutkan dan posisi antrean pulih seketika.
+                </p>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
+                <div class="font-bold text-purple-400 text-xs mb-1">Skenario 4: Pembayaran & Dynamic QR</div>
+                <p class="text-slate-400 leading-relaxed text-[11px]">
+                  Pilih Mandiri VA &rarr; Tunjukkan timer bayar 10 menit & nomor rekening &rarr; Selesaikan pembayaran &rarr; Tunjukkan tiket digital dengan QR code berotasi.
+                </p>
+              </div>
+            </div>
+            
+            <div class="p-3 rounded-lg bg-red-950/20 border border-red-800/40 text-red-300 text-[11px] text-center font-medium">
+              👉 Sekarang mari kita beralih ke layar aplikasi untuk menjalankan skenario live demo ini bersama-sama!
+            </div>
+          </div>
+        `,
+        notes: "Bapak dan ibu, mari kita buktikan secara langsung di layar aplikasi. Saya akan memandu Anda melalui 4 skenario pembuktian: mulai dari antrean tertib, validasi kuota 3 NIK, pemulihan sesi saat berpindah tab, hingga penerbitan tiket ber-QR dinamis."
+      },
+      {
+        tag: "SLIDE 13 • VALUE FOR TELKOMSEL",
+        title: "Nilai Strategis bagi Ekosistem Bisnis Telkomsel",
+        subtitle: "Lebih dari sekadar aplikasi tiket: Solusi penguat ekosistem digital dan kepuasan pelanggan",
+        content: `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <div class="font-bold text-white text-sm">📱 Integrasi Mulus MyTelkomsel</div>
+              <p class="text-slate-400 leading-relaxed">
+                Fitur ticketing ini dapat langsung disematkan ke dalam aplikasi MyTelkomsel sebagai kanal lifestyle dan entertainment eksklusif untuk jutaan pelanggan setia.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <div class="font-bold text-white text-sm">🎁 Utilisasi Telkomsel Poin & Loyalty</div>
+              <p class="text-slate-400 leading-relaxed">
+                Peluang penukaran Telkomsel Poin untuk mendapatkan diskon tiket atau antrean prioritas (Fast Track Queue) khusus pengguna kartu Halo / loyal customer.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <div class="font-bold text-white text-sm">🛡️ Proteksi Reputasi Brand</div>
+              <p class="text-slate-400 leading-relaxed">
+                Menghilangkan sentimen negatif warganet akibat server down atau kecurigaan calo orang dalam. Menempatkan Telkomsel sebagai penyelenggara ticketing paling terpercaya.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+              <div class="font-bold text-white text-sm">📊 Kedaulatan & Analitik Data</div>
+              <p class="text-slate-400 leading-relaxed">
+                Data demografi dan perilaku pembelian tiket tetap aman di bawah kedaulatan data Telkomsel, siap dimanfaatkan untuk personalisasi promo data/kuota konser berikutnya.
+              </p>
+            </div>
+          </div>
+        `,
+        notes: "Booket.id bukan sekadar software penjualan tiket, melainkan instrumen penguat ekosistem MyTelkomsel. Penukaran Telkomsel Poin untuk tiket konser eksklusif akan mendorong peningkatan Monthly Active Users, sekaligus melindungi reputasi Telkomsel dari keluhan server down."
+      },
+      {
+        tag: "SLIDE 14 • KESIMPULAN & Q&A",
+        title: "Kesimpulan & Sesi Tanya Jawab Teknis",
+        subtitle: "PT DJS (Deploy Jumat Sore) siap menjadi mitra terpercaya Telkomsel",
+        content: `
+          <div class="space-y-6 my-auto text-xs text-center max-w-2xl mx-auto">
+            <div class="p-6 rounded-2xl bg-gradient-to-b from-red-950/30 to-slate-950 border border-red-900/40">
+              <h3 class="text-xl font-bold text-white mb-2">Siap Produksi & Teruji di Setiap Lini</h3>
+              <p class="text-slate-300 leading-relaxed">
+                Dengan kombinasi arsitektur tahan banting, perlindungan FCFS tanpa celah, jaminan zero-oversell, dan 666 automated tests, PT DJS siap mengawal suksesnya event konser musik akbar Telkomsel.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white">100% Zero Oversell</div>
+                <div class="text-[10px] text-slate-400">Atomic Postgres Update</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white">Anti-Calo & Bot</div>
+                <div class="text-[10px] text-slate-400">30s Dynamic Barcode</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                <div class="font-bold text-white">Reliabilitas Tinggi</div>
+                <div class="text-[10px] text-slate-400">Two-Tier Server TTL</div>
+              </div>
+            </div>
+
+            <div class="text-slate-400 pt-2">
+              Kami menyambut hangat setiap pertanyaan dan diskusi mendalam dari bapak/ibu tim penilai teknis.
+            </div>
+          </div>
+        `,
+        notes: "Sebagai penutup, kami di PT DJS menegaskan kesiapan penuh kami untuk bekerja sama dengan Telkomsel. Kami siap mengawal load testing, deployment, hingga pendampingan teknis saat hari-H. Terima kasih atas perhatian bapak dan ibu sekalian, mari kita buka sesi tanya jawab."
+      }
+    ];
+
+    let currentSlide = 0;
+    let showNotes = true;
+
+    const slideBody = document.getElementById('slideBody');
+    const speakerNotesText = document.getElementById('speakerNotesText');
+    const speakerNotesContainer = document.getElementById('speakerNotesContainer');
+    const currentSlideNum = document.getElementById('currentSlideNum');
+    const totalSlidesNum = document.getElementById('totalSlidesNum');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const toggleNotesBtn = document.getElementById('toggleNotes');
+    const notesState = document.getElementById('notesState');
+
+    totalSlidesNum.innerText = slides.length;
+
+    function renderSlide(index) {
+      const s = slides[index];
+      currentSlideNum.innerText = index + 1;
+      
+      slideBody.innerHTML = `
+        <div class="mb-4">
+          <div class="text-[11px] font-mono tracking-wider font-semibold text-red-400 mb-1">${s.tag}</div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">${s.title}</h2>
+          <p class="text-xs text-slate-400 mt-1">${s.subtitle}</p>
+        </div>
+        <div class="min-h-[290px] flex flex-col justify-center">
+          ${s.content}
+        </div>
+      `;
+
+      speakerNotesText.innerText = `"${s.notes}"`;
+      
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === slides.length - 1;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        renderSlide(currentSlide);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        renderSlide(currentSlide);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+          renderSlide(currentSlide);
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          renderSlide(currentSlide);
+        }
+      } else if (e.key === 'n' || e.key === 'N') {
+        toggleNotes();
+      }
+    });
+
+    function toggleNotes() {
+      showNotes = !showNotes;
+      speakerNotesContainer.style.display = showNotes ? 'block' : 'none';
+      notesState.innerText = showNotes ? 'ON' : 'OFF';
+    }
+
+    toggleNotesBtn.addEventListener('click', toggleNotes);
+
+    // Initial render
+    renderSlide(0);
+  </script>
+</body>
+</html>
