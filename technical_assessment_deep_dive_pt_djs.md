@@ -1,6 +1,6 @@
 # 🛡️ Technical Architecture Deep-Dive & Assessment Defense
 ### PT DJS (Deploy Jumat Sore) — Booket.id Platform
-**Target Audiens:** Technical Assessors, Enterprise Architects, & Engineering Leads (Telkomsel)
+**Target Audiens:** Technical Assessors, Enterprise Architects, &amp; Engineering Leads (Panel Klien)
 
 ---
 
@@ -22,7 +22,7 @@ Platform **Booket.id** dirancang oleh **PT DJS (Deploy Jumat Sore)** untuk menja
 flowchart TD
     subgraph ClientTier["1. Client Tier (Web & Mobile)"]
         WEB["React 18 SPA (Desktop/Mobile Web)"]
-        MOB["MyTelkomsel App / WebView (?embed=1)"]
+        MOB["Mobile App / WebView (?embed=1)"]
     end
 
     subgraph EdgeTier["2. Edge & Ingress Tier"]

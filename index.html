@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="./booket-logo.png" />
-  <title>Booket — Presentasi Arsitektur &amp; Demo PT DJS (TSEL Assessment)</title>
+  <title>Booket — Presentasi Arsitektur &amp; Demo PT DJS</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -211,7 +211,7 @@
         chapter: "Overview",
         tag: "PENDAHULUAN • PROPOSAL TEKNIS",
         title: "Booket — Sistem War Tiket Konser & Virtual Queue",
-        subtitle: "Presentasi Arsitektur & Demonstrasi Sistem — Tender Rusuh Booking Ticket Telkomsel",
+        subtitle: "Presentasi Arsitektur &amp; Demonstrasi Sistem — Tender Rusuh Booking Ticket",
         content: `
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-auto">
             <!-- Left Narrative Column -->
@@ -224,7 +224,7 @@
                 Arsitektur Resilien Tanpa <span class="text-rose-600">Kompromi Integritas</span>
               </h1>
               <p class="text-slate-600 text-sm leading-relaxed">
-                Platform reservasi tiket berdaya tampung tinggi dengan isolasi beban antrean di hulu, proteksi stok atomik, dan jaminan keadilan akses bagi konsumen Telkomsel.
+                Platform reservasi tiket berdaya tampung tinggi dengan isolasi beban antrean di hulu, proteksi stok atomik, dan jaminan keadilan akses bagi seluruh pembeli tiket.
               </p>
               <div class="pt-1 flex flex-wrap gap-2 text-[11px] font-mono font-semibold">
                 <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">Redis FCFS O(log n)</span>
@@ -254,8 +254,8 @@
                   <span class="font-bold text-white">PT DJS (Deploy Jumat Sore)</span>
                 </div>
                 <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
-                  <span class="text-slate-400">Klien / Assessor</span>
-                  <span class="font-bold text-rose-400">Telkomsel (Tender Evaluation)</span>
+                  <span class="text-slate-400">Klien / Panel Penilai</span>
+                  <span class="font-bold text-rose-400">Tender &amp; Technical Assessment</span>
                 </div>
                 <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
                   <span class="text-slate-400">Core Engine</span>
@@ -274,7 +274,7 @@
             </div>
           </div>
         `,
-        notes: "Selamat pagi rekan-rekan dan bapak ibu tim penilai Telkomsel. Kami dari tim engineering PT DJS mempersembahkan Booket. Nama kami memang terdengar santai—Deploy Jumat Sore—tetapi filosofi rekayasa kami sangat jelas: sistem yang kami bangun harus sedemikian teruji, terisolasi, dan stabil, sehingga bahkan diuji di skenario puncak traffic hari Jumat pun, tim operasi tetap tenang. Mari kita bedah bagaimana arsitektur ini memecahkan masalah war tiket konser."
+        notes: "Selamat pagi rekan-rekan dan bapak ibu panel penilai. Kami dari tim engineering PT DJS mempersembahkan Booket. Nama kami memang terdengar santai—Deploy Jumat Sore—tetapi filosofi rekayasa kami sangat jelas: sistem yang kami bangun harus sedemikian teruji, terisolasi, dan stabil, sehingga bahkan diuji di skenario puncak traffic hari Jumat pun, tim operasi tetap tenang. Mari kita bedah bagaimana arsitektur ini memecahkan masalah war tiket konser."
       },
       {
         chapter: "Overview",
@@ -811,29 +811,29 @@
       },
       {
         chapter: "Integrasi",
-        tag: "NILAI BISNIS TELKOMSEL",
-        title: "Sinergi Strategis dengan Ekosistem Telkomsel",
-        subtitle: "Kesiapan integrasi SSO/WebView ke MyTelkomsel, Telkomsel Poin, dan proteksi reputasi brand",
+        tag: "NILAI BISNIS & EKOSISTEM KLIEN",
+        title: "Sinergi Strategis dengan Ekosistem Digital Klien",
+        subtitle: "Kesiapan integrasi SSO/WebView ke aplikasi mobile mitra, program loyalitas, dan proteksi reputasi brand",
         content: `
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
             <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-1">
-              <div class="font-black text-slate-900 text-xs">Akselerasi Monthly Active Users MyTelkomsel</div>
+              <div class="font-black text-slate-900 text-xs">Akselerasi Monthly Active Users Aplikasi Klien</div>
               <p class="text-slate-600 text-[11px] leading-relaxed">
-                Arsitektur modular serta dukungan mode WebView embedded memungkinkan fitur war tiket konser musik eksklusif disematkan ke dalam MyTelkomsel untuk meningkatkan transaksi in-app.
+                Arsitektur modular serta dukungan mode WebView embedded memungkinkan fitur war tiket konser musik eksklusif disematkan ke dalam aplikasi mobile mitra untuk meningkatkan transaksi in-app.
               </p>
             </div>
 
             <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-2">
-              <div class="font-black text-slate-900 text-xs">Utilisasi Telkomsel Poin &amp; Priority Access</div>
+              <div class="font-black text-slate-900 text-xs">Integrasi Program Loyalitas &amp; Priority Access</div>
               <p class="text-slate-600 text-[11px] leading-relaxed">
-                Integrasi mudah dengan sistem penukaran Telkomsel Poin untuk diskon harga tiket atau jalur antrean prioritas khusus pelanggan loyal Telkomsel.
+                Integrasi fleksibel dengan sistem penukaran poin loyalitas atau membership eksklusif untuk diskon harga tiket maupun jalur antrean prioritas bagi pelanggan setia.
               </p>
             </div>
 
             <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-3">
-              <div class="font-black text-slate-900 text-xs">Proteksi Reputasi Brand Telkomsel</div>
+              <div class="font-black text-slate-900 text-xs">Proteksi Reputasi Brand Penyelenggara</div>
               <p class="text-slate-600 text-[11px] leading-relaxed">
-                Meniadakan sentimen negatif di media sosial akibat server tumbang, stok minus, atau kecurigaan orang dalam—mengokohkan citra Telkomsel di lini digital lifestyle.
+                Meniadakan sentimen negatif di media sosial akibat server tumbang, stok minus, atau kecurigaan orang dalam—mengokohkan citra promotor &amp; mitra di lini digital lifestyle.
               </p>
             </div>
 
@@ -845,13 +845,13 @@
             </div>
           </div>
         `,
-        notes: "Booket bukan sekadar web aplikasi tiket yang berdiri sendiri, melainkan komponen yang siap bersinergi dengan ekosistem MyTelkomsel. Dengan region deployment di Jakarta, autentikasi Keycloak berbasis standar OIDC, serta proteksi terhadap server crash di hari-H, kami yakin solusi ini memberi nilai bisnis langsung bagi Telkomsel."
+        notes: "Booket bukan sekadar web aplikasi tiket yang berdiri sendiri, melainkan komponen yang siap bersinergi dengan ekosistem aplikasi mobile klien. Dengan region deployment di Jakarta, autentikasi Keycloak berbasis standar OIDC, serta proteksi terhadap server crash di hari-H, kami yakin solusi ini memberi nilai bisnis langsung bagi promotor dan mitra."
       },
       {
         chapter: "Integrasi",
         tag: "PENUTUP • TECHNICAL DEFENSE",
         title: "Kesimpulan &amp; Sesi Tanya Jawab Teknis",
-        subtitle: "PT DJS (Deploy Jumat Sore) siap mendampingi Telkomsel mengawal event konser akbar",
+        subtitle: "PT DJS (Deploy Jumat Sore) siap mendampingi klien mengawal event konser akbar",
         content: `
           <div class="space-y-5 my-auto text-xs text-center max-w-2xl mx-auto stagger-1">
             <div class="relative overflow-hidden p-6 rounded-3xl bg-[#18191e] text-white border border-slate-800 shadow-2xl space-y-2">
@@ -886,7 +886,7 @@
             </div>
           </div>
         `,
-        notes: "Sebagai penutup, kami di PT DJS menegaskan kesiapan penuh kami untuk mendampingi Telkomsel mulai dari load testing gabungan hingga pendampingan on-site di hari-H konser. Terima kasih atas perhatian bapak dan ibu sekalian, mari kita buka sesi tanya jawab teknis."
+        notes: "Sebagai penutup, kami di PT DJS menegaskan kesiapan penuh kami untuk mendampingi klien mulai dari load testing gabungan hingga pendampingan on-site di hari-H konser. Terima kasih atas perhatian bapak dan ibu sekalian, mari kita buka sesi tanya jawab teknis."
       }
     ];
 
