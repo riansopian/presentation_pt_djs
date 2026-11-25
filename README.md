@@ -19,8 +19,8 @@ Akses slide presentasi interaktif langsung melalui browser:
 ## 📂 Struktur Dokumen
 
 1. **[`index.html`](index.html)**:
-   - Slide deck interaktif **15 slide** dengan tema aplikasi web **Booket** (*light app shell*, crimson `#e11d48`, hero `#18191e`, *shimmer progress bar*, &amp; *notched ticket pass*).
-   - Mencakup Overview, Inventaris 17 Cloud Run (`booket-512519`), Concurrency PG 18, Self-Healing Fallback, CI/CD 6 Stage, Live Demo Runbook, dan **3 Slide Budget &amp; Roadmap PoC**.
+   - Presentasi HTML interaktif berisi **16 slide** dengan tema Booket dan lima tangkapan layar aplikasi dalam mode demo.
+   - Materi mencakup arsitektur frontend dan backend, antrean, transaksi, demo, serta anggaran dan rencana PoC.
 2. **[`presentation_deck_pt_djs.md`](presentation_deck_pt_djs.md)**:
    - Naskah presentasi slide-by-slide, speaker notes, dan panduan demo.
 3. **[`technical_assessment_deep_dive_pt_djs.md`](technical_assessment_deep_dive_pt_djs.md)**:

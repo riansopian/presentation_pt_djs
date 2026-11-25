@@ -1,1234 +1,709 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="./booket-logo.png" />
-  <title>Booket — Presentasi Arsitektur, Demo &amp; Budget PoC PT DJS</title>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Presentasi Booket untuk Tender Rusuh Booking Ticket oleh PT DJS.">
+  <link rel="icon" href="./booket-logo.png" type="image/png">
+  <title>Booket | Presentasi PT DJS</title>
   <style>
     :root {
-      --background: 210 20% 98%;
-      --foreground: 222 47% 11%;
-      --primary: 346.8 77.2% 49.8%;
+      color-scheme: light;
+      --background: #f8fafc;
+      --surface: #fff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --border: #dfe5ed;
+      --rose: #e11d48;
+      --rose-strong: #be123c;
+      --rose-soft: #fff1f2;
+      --green: #047857;
+      --dark: #18191e;
+      --page: 76rem;
     }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     body {
-      background-color: #f8fafc;
-      color: #0f172a;
-      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      background: var(--background);
+      color: var(--ink);
+      font: 400 1rem/1.55 -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", Inter, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
-    code, pre, .font-mono {
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-    }
+    h1, h2, h3, p, figure, ol, ul, dl, dd { margin: 0; }
+    h1, h2, h3 { line-height: 1.13; }
+    button, select { font: inherit; }
+    button, select, a { -webkit-tap-highlight-color: transparent; }
+    button, select { cursor: pointer; }
+    button:disabled { cursor: default; opacity: .45; }
+    a { color: var(--rose-strong); text-underline-offset: .22em; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid var(--rose); outline-offset: 4px; }
+    code, .number { font-variant-numeric: tabular-nums; }
+    code { font-size: .88em; overflow-wrap: anywhere; }
+    .shell { width: min(var(--page), 100% - 3rem); margin-inline: auto; }
 
-    /* Booket Shimmer Animation (from globals.css) */
-    @keyframes shimmer-slide {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-bottom: 1px solid var(--border);
+      background: rgb(255 255 255 / .97);
     }
-    .animate-shimmer {
-      animation: shimmer-slide 1.8s ease-in-out infinite;
+    .progress { height: 3px; width: 100%; display: block; border: 0; appearance: none; background: #f1f5f9; }
+    .progress::-webkit-progress-bar { background: #f1f5f9; }
+    .progress::-webkit-progress-value { background: var(--rose); }
+    .progress::-moz-progress-bar { background: var(--rose); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 4.4rem; }
+    .brand { display: flex; align-items: center; gap: .65rem; color: var(--ink); text-decoration: none; }
+    .brand img { width: 2.35rem; height: 2.35rem; border-radius: .65rem; object-fit: contain; }
+    .brand strong { display: block; font-size: 1.27rem; font-weight: 850; letter-spacing: -.055em; line-height: 1.05; }
+    .brand strong::after { content: "."; color: var(--rose); }
+    .brand small { display: block; color: var(--muted); font-size: .67rem; line-height: 1.1; margin-top: .2rem; }
+    .chapters, .header-actions, .page-actions { display: flex; align-items: center; gap: .35rem; }
+    .chapters a, .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .4rem;
+      min-height: 2.5rem;
+      padding: .45rem .9rem;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      font-size: .86rem;
+      font-weight: 650;
+      text-decoration: none;
+      white-space: nowrap;
     }
+    .chapters a:hover, .button:not(:disabled):hover { background: #f1f5f9; color: var(--ink); }
+    .chapters a[aria-current], .button[aria-pressed="true"] { background: var(--rose-soft); color: var(--rose-strong); }
+    .button.outline { border-color: var(--border); background: var(--surface); }
+    .button.primary { background: var(--rose); border-color: var(--rose); color: white; }
+    .button.primary:not(:disabled):hover { background: var(--rose-strong); border-color: var(--rose-strong); color: white; }
 
-    /* Slide Directional Entrance Transitions */
-    .slide-enter-next {
-      animation: enterFromRight 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .presentation { padding-block: clamp(1.1rem, 3vw, 2.15rem) 1.5rem; }
+    .slide { min-height: clamp(29rem, calc(100svh - 12rem), 44rem); scroll-margin-top: 7.5rem; }
+    .paper {
+      padding: clamp(1.35rem, 4.5vh, 3.4rem) clamp(1.35rem, 4vw, 3.4rem);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 26px rgb(15 23 42 / .035);
     }
-    .slide-enter-prev {
-      animation: enterFromLeft 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .slide-title { max-width: 22ch; font-size: clamp(2rem, 4.5vw, 3.5rem); letter-spacing: -.048em; font-weight: 830; }
+    .lead { max-width: 66ch; margin-top: .8rem; color: var(--muted); font-size: clamp(1rem, 1.65vw, 1.22rem); }
+    .slide-body { margin-top: clamp(1.4rem, 3.2vw, 2.5rem); }
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: clamp(1.3rem, 4vw, 3.5rem); }
+    .eyebrow { color: var(--rose-strong); font-weight: 720; font-size: .92rem; }
+    .notes {
+      margin-top: 1rem;
+      padding: 1rem 1.15rem;
+      border: 1px solid #fecdd3;
+      border-radius: .95rem;
+      background: var(--rose-soft);
+      color: var(--muted);
+      font-size: .92rem;
     }
-    @keyframes enterFromRight {
-      from { opacity: 0; transform: translateX(22px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes enterFromLeft {
-      from { opacity: 0; transform: translateX(-22px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
+    .notes strong { display: block; margin-bottom: .2rem; color: var(--rose-strong); }
+    .fine-print { margin-top: .9rem; color: var(--muted); font-size: .9rem; }
+    .source-links { display: flex; flex-wrap: wrap; gap: .25rem 1.3rem; margin-top: .85rem; font-size: .9rem; }
 
-    /* Staggered Item Entrance */
-    .stagger-1 { animation: itemFade 0.38s 0.04s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger-2 { animation: itemFade 0.38s 0.09s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger-3 { animation: itemFade 0.38s 0.14s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger-4 { animation: itemFade 0.38s 0.19s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-    @keyframes itemFade {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .cover {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, .9fr);
+      align-items: center;
+      gap: clamp(1.6rem, 5vw, 4.5rem);
+      padding: clamp(1.5rem, 4.5vh, 3.25rem) clamp(1.5rem, 5vw, 4.25rem);
+      border-radius: 1.5rem;
+      color: white;
+      background: var(--dark);
+      overflow: hidden;
     }
-
-    /* Booket Soft Card Hover */
-    .booket-card {
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    .cover-product {
+      grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+      background: linear-gradient(135deg, #491826, #191b27 53%, #14171f);
     }
-    .booket-card:hover {
-      border-color: #fda4af;
-      box-shadow: 0 10px 24px -8px rgba(225, 29, 72, 0.1);
-      transform: translateY(-1px);
+    .cover .eyebrow { color: #fda4af; margin-bottom: .8rem; }
+    .cover h1 { font-size: clamp(2.75rem, 5.4vw, 4.6rem); line-height: 1.02; letter-spacing: -.06em; font-weight: 850; }
+    .cover h1 span { display: block; }
+    .cover h1 span:last-child { color: #fda4af; }
+    .cover .lead { color: #e2e8f0; margin-top: 1.3rem; }
+    .cover .credit { margin-top: 1.8rem; color: #e2e8f0; font-size: .94rem; font-weight: 650; }
+    .cover .button { margin-top: 1.4rem; }
+    .app-view { min-width: 0; }
+    .app-view img {
+      display: block;
+      width: 100%;
+      height: auto;
+      padding: .35rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      background: var(--background);
+      box-shadow: 0 10px 25px rgb(15 23 42 / .08);
     }
-
-    /* Booket Ticket Notch Effect */
-    .ticket-cutout-left {
+    .app-view figcaption { margin-top: .55rem; color: var(--muted); font-size: .85rem; }
+    .cover .app-view img { border-color: #475569; background: #212a3b; box-shadow: 0 14px 30px rgb(0 0 0 / .24); }
+    .cover .app-view figcaption { color: #cbd5e1; }
+    .architecture .split {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      margin-top: 1.2rem;
+    }
+    .architecture .step-list li { padding-block: .45rem; font-size: .95rem; line-height: 1.4; }
+    .architecture-details { margin-top: 1.1rem; }
+    .pass {
+      min-width: 0;
+      position: relative;
+      border: 1px solid #3b3d45;
+      border-radius: 1.3rem;
+      background: #22242c;
+      color: white;
+      padding: clamp(1rem, 2.7vw, 1.65rem);
+    }
+    .pass.cutout { overflow: hidden; }
+    .pass.cutout::before, .pass.cutout::after {
+      content: "";
       position: absolute;
-      left: -12px;
       top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      border-radius: 9999px;
-      background-color: #ffffff;
-      border-right: 1px solid #e2e8f0;
-      z-index: 10;
+      width: 1.35rem;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--dark);
+      border: 1px solid #3b3d45;
     }
-    .ticket-cutout-right {
-      position: absolute;
-      right: -12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      border-radius: 9999px;
-      background-color: #ffffff;
-      border-left: 1px solid #e2e8f0;
-      z-index: 10;
+    .pass.cutout::before { left: 0; transform: translate(-55%, -50%); }
+    .pass.cutout::after { right: 0; transform: translate(55%, -50%); }
+    .pass-header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .35rem .75rem; color: #fda4af; font-size: .88rem; font-weight: 720; }
+    .pass-main { display: block; margin-top: .7rem; font-size: clamp(1.65rem, 3.2vw, 2.7rem); font-weight: 820; line-height: 1.13; letter-spacing: -.045em; }
+    .pass p { margin-top: .5rem; color: #d5dde8; font-size: .94rem; }
+    .pass hr { margin-block: 1.05rem; border: 0; border-top: 1px dashed #686d7a; }
+    .pass-link { color: #fda4af; }
+
+    .list { list-style: none; padding: 0; border-top: 1px solid var(--border); }
+    .list li { display: grid; grid-template-columns: minmax(10rem, .55fr) minmax(0, 1fr); gap: .4rem 1.3rem; padding: .9rem 0; border-bottom: 1px solid var(--border); }
+    .list strong { font-weight: 750; }
+    .list span, .list p { color: var(--muted); }
+    .list.narrow li { display: block; }
+    .list.narrow p { margin-top: .15rem; }
+    .architecture-details li { grid-template-columns: minmax(12rem, .32fr) minmax(0, 1fr); padding-block: .48rem; font-size: .95rem; }
+    .callout { margin-top: 1.15rem; padding: .9rem 1rem; border-left: 3px solid var(--rose); background: var(--rose-soft); color: var(--muted); }
+    .callout strong { color: var(--ink); }
+    .flow { list-style: none; display: flex; flex-wrap: wrap; gap: .55rem; padding: 0; align-items: center; }
+    .flow li { display: flex; align-items: center; gap: .55rem; min-width: 0; }
+    .flow li:not(:last-child)::after { content: "→" / ""; color: var(--rose-strong); font-weight: 650; }
+    .flow span { padding: .6rem .8rem; background: #f1f5f9; border: 1px solid var(--border); border-radius: .65rem; font-weight: 650; }
+    .flow + .list { margin-top: 1.3rem; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem 1.2rem; border-block: 1px solid var(--border); padding-block: 1rem; margin-bottom: 1.3rem; }
+    .stats div { display: flex; flex-direction: column-reverse; }
+    .stats dt { color: var(--muted); font-size: .85rem; }
+    .stats dd { color: var(--rose-strong); font-size: clamp(1.45rem, 3vw, 2.2rem); font-weight: 820; line-height: 1.15; }
+    .table-wrap { overflow-x: auto; }
+    .table-hint { display: none; }
+    table { width: 100%; border-collapse: collapse; font-size: .96rem; }
+    th, td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    thead th { background: #f1f5f9; font-size: .89rem; }
+    tbody th { font-weight: 700; }
+    td { color: var(--muted); }
+    .number { white-space: nowrap; }
+    .budget th:first-child { min-width: 10.5rem; }
+    .budget .featured { background: var(--rose-soft); }
+    .budget .featured strong { color: var(--rose-strong); }
+    .comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .price { padding: .85rem 1.05rem; background: #f1f5f9; border-radius: .85rem; }
+    .price.target { background: var(--rose-soft); }
+    .price dt { font-size: .9rem; color: var(--muted); }
+    .price dd { font-size: clamp(1.25rem, 3vw, 2rem); font-weight: 820; letter-spacing: -.035em; }
+    .price.target dd { color: var(--rose-strong); }
+    .price small { font-size: .72em; font-weight: 550; letter-spacing: 0; }
+    .comparison + .list { margin-top: 1rem; }
+    .timeline li { grid-template-columns: minmax(6.5rem, .25fr) minmax(0, 1fr); padding-block: .65rem; }
+    .timer-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.4rem; }
+    .timer-list div { padding: 1rem 1.1rem; border: 1px solid var(--border); border-radius: .85rem; }
+    .timer-list dt { color: var(--muted); font-weight: 650; }
+    .timer-list dd { font-size: clamp(1.5rem, 4vw, 2.6rem); font-weight: 800; color: var(--rose-strong); letter-spacing: -.035em; }
+    .step-list { list-style: none; padding: 0; counter-reset: step; }
+    .step-list li { counter-increment: step; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .85rem; padding: .64rem 0; border-bottom: 1px solid var(--border); }
+    .step-list li::before { content: counter(step) / ""; grid-row: span 2; width: 1.85rem; height: 1.85rem; display: grid; place-items: center; border-radius: 50%; background: var(--rose-soft); color: var(--rose-strong); font-weight: 750; }
+    .step-list p { color: var(--muted); }
+
+    .controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .65rem 1rem; padding-top: 1rem; }
+    .slide-picker { display: flex; align-items: center; gap: .7rem; min-width: 0; color: var(--muted); }
+    .slide-picker select { max-width: 21rem; min-width: 0; padding: .48rem .65rem; border: 1px solid var(--border); border-radius: .7rem; background: white; color: var(--ink); font-size: .9rem; }
+    .slide-picker output { white-space: nowrap; font-size: .89rem; }
+    .keys { color: var(--muted); font-size: .81rem; display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+    kbd { border: 1px solid var(--border); background: white; padding: 0 .28rem; border-radius: .25rem; }
+    @media (max-width: 64rem) { .keys { display: none; } }
+    @media (max-width: 53rem) {
+      .header-inner { flex-wrap: wrap; gap: 0 1rem; padding-top: .55rem; }
+      .chapters { order: 3; width: 100%; overflow-x: auto; padding-block: .3rem; }
+      .chapters a { padding-inline: .68rem; }
+      .cover, .cover-product, .split, .architecture .split { grid-template-columns: 1fr; }
+      .pass { max-width: 34rem; }
+    }
+    @media (max-width: 42rem) {
+      .table-hint { display: block; margin: 0 0 .5rem; }
+    }
+    @media (max-width: 34rem) {
+      .shell { width: calc(100% - 1.4rem); }
+      .header-inner { column-gap: .3rem; }
+      .header-actions { gap: .2rem; }
+      .header-actions .button { padding-inline: .6rem; font-size: .78rem; }
+      .chapters { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .18rem; overflow: visible; }
+      .chapters a { padding: .25rem .1rem; text-align: center; white-space: normal; font-size: .69rem; line-height: 1.2; }
+      .paper, .cover { border-radius: 1.15rem; }
+      .list li { grid-template-columns: 1fr; gap: .16rem; }
+      .timeline li { grid-template-columns: 5.2rem minmax(0, 1fr); gap: .5rem; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats div:last-child { grid-column: 1 / -1; padding-top: .65rem; border-top: 1px solid var(--border); }
+      .price { padding: .65rem .55rem; }
+      .price small { display: block; }
+      .controls, .slide-picker { width: 100%; }
+      .slide-picker select { flex: 1; max-width: none; }
+      .page-actions { margin-left: auto; }
+    }
+    @media print {
+      .site-header, .controls, .cover .button { display: none !important; }
+      .shell { width: 100%; }
+      .slide, .slide[hidden] { display: block !important; break-after: page; min-height: 0; box-shadow: none; }
+      .cover { print-color-adjust: exact; }
     }
   </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col antialiased select-none overflow-x-hidden">
-
-  <!-- Booket Top Shimmer Progress Bar -->
-  <div class="fixed top-0 left-0 w-full h-1 bg-slate-200/80 z-50 overflow-hidden">
-    <div id="progressBar" class="relative h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-600 transition-all duration-300 ease-out overflow-hidden" style="width: 6.67%;">
-      <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent animate-shimmer"></div>
-    </div>
-  </div>
-
-  <!-- Booket Signature Sticky White Navbar (mirrors DesktopNavbar.tsx) -->
-  <header class="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-sm">
-    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 py-3">
-      <!-- Brand Lockup -->
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="flex items-center gap-2.5 shrink-0">
-          <img
-            src="./booket-logo.png"
-            alt="Booket Logo"
-            onerror="this.style.display='none'"
-            class="size-9 rounded-xl object-contain shadow-sm border border-slate-100 bg-white"
-          />
-          <div class="leading-tight whitespace-nowrap">
-            <div class="flex items-center gap-1.5">
-              <span class="font-black text-lg tracking-tight text-slate-950">booket</span>
-              <span class="size-1.5 rounded-full bg-rose-600 animate-pulse"></span>
-            </div>
-            <p class="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase">
-              CONCERT &amp; QUEUE • PT DJS
-            </p>
-          </div>
-        </div>
-
-        <div class="h-5 w-px bg-slate-200 hidden lg:block"></div>
-
-        <!-- Chapter Quick Navigation Pills -->
-        <nav id="chapterNav" class="hidden lg:flex items-center gap-1 text-xs font-bold whitespace-nowrap"></nav>
-      </div>
-
-      <!-- Right Controls -->
-      <div class="flex items-center gap-2 shrink-0 text-xs">
-        <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800">
-          <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Assessment + PoC</span>
-        </span>
-
-        <button id="toggleNotesBtn" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50/90 hover:bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-700 transition-colors">
-          <span class="size-1.5 rounded-full bg-rose-600" id="notesDot"></span>
-          <span>Notes (<span id="notesStatusText">ON</span>)</span>
-        </button>
-
-        <button id="fullscreenBtn" class="hidden sm:inline-flex items-center rounded-full border border-slate-200 bg-white hover:bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-700 transition-colors">
-          Fullscreen
-        </button>
-
-        <div class="rounded-full bg-slate-900 text-white px-3 py-1 font-mono text-[11px] font-bold tabular-nums shadow-xs">
-          <span id="slideIndexText">1</span>/<span id="totalSlideText">15</span>
-        </div>
+<body>
+  <header class="site-header">
+    <progress id="progress" class="progress" value="1" max="16" aria-label="Progres presentasi"></progress>
+    <div class="shell header-inner">
+      <a class="brand" href="#slide-1" aria-label="Booket, kembali ke sampul">
+        <img src="./booket-logo.png" alt="" width="38" height="38">
+        <span><strong>booket</strong><small>Concert &amp; Queue</small></span>
+      </a>
+      <nav class="chapters" aria-label="Bagian presentasi">
+        <a href="#slide-1" aria-current="true">Ringkasan</a>
+        <a href="#slide-3">Arsitektur</a>
+        <a href="#slide-7">Transaksi</a>
+        <a href="#slide-10">QA &amp; Demo</a>
+        <a href="#slide-13">Anggaran PoC</a>
+      </nav>
+      <div class="header-actions" data-interactive hidden>
+        <button id="notes-toggle" class="button outline" type="button" aria-controls="speaker-notes" aria-pressed="false" aria-keyshortcuts="N">Catatan</button>
+        <button id="fullscreen" class="button outline" type="button" aria-pressed="false" aria-keyshortcuts="F">Layar penuh</button>
       </div>
     </div>
   </header>
 
-  <!-- Main Presentation Stage -->
-  <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
-    <!-- Crisp White Card Shell matching ScreenCard / Booket App Cards -->
-    <div class="w-full rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-9 shadow-xl shadow-slate-900/5 relative min-h-[560px] flex flex-col justify-between overflow-hidden">
-      
-      <!-- Dynamic Slide Body -->
-      <div id="slideContentArea" class="flex-1 flex flex-col"></div>
+  <main class="shell presentation" id="presentation">
+    <section class="slide cover cover-product" id="slide-1" aria-labelledby="title-1">
+      <div>
+        <p class="eyebrow">Tender Rusuh Booking Ticket</p>
+        <h1 id="title-1" class="slide-title"><span>Booket</span><span>Antrean tiket konser</span></h1>
+        <p class="lead">Cara Booket mengatur giliran pembeli, menjaga stok tiket saat ramai, dan memproses pembayaran sampai e-tiket terbit.</p>
+        <p class="credit">PT DJS (Deploy Jumat Sore)</p>
+        <a href="#slide-2" class="button primary">Mulai presentasi <span aria-hidden="true">→</span></a>
+      </div>
+      <figure class="app-view">
+        <img src="./assets/beranda.jpg" width="1202" height="428" fetchpriority="high" alt="Sorotan Booket Rock Fest, sisa kuota, harga, dan tombol Pesan Tiket">
+        <figcaption>Beranda Booket · mode demo</figcaption>
+      </figure>
+      <template class="speaker-note">Kami dari PT DJS. Kami akan mulai dari alur pembeli, lalu membahas cara antrean dan pembayaran bekerja saat trafik naik. Di bagian akhir, kami jelaskan apa yang masih perlu diuji dan berapa anggarannya.</template>
+    </section>
 
-      <!-- Speaker Notes Collapsible Drawer -->
-      <div id="notesDrawer" class="mt-6 rounded-2xl border border-rose-200/80 bg-rose-50/60 p-4 text-xs text-slate-700 transition-all duration-200">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-rose-700 font-bold mb-1 flex items-center gap-1.5">
-          <span class="size-1.5 rounded-full bg-rose-600"></span>
-          <span>Naskah Presenter • PT DJS (Deploy Jumat Sore)</span>
+    <section class="slide paper" id="slide-2" aria-labelledby="title-2">
+      <h2 id="title-2" class="slide-title">Saat penjualan tiket dibuka</h2>
+      <p class="lead">Banyak pembeli datang bersamaan. Ada empat hal yang perlu dijaga agar transaksi tetap berjalan.</p>
+      <ul class="list slide-body">
+        <li><strong>Koneksi database</strong><span>Permintaan yang datang serentak bisa memenuhi koneksi database. Antrean membatasi berapa pembeli yang masuk ke checkout.</span></li>
+        <li><strong>Stok tiket</strong><span>Dua pembeli bisa melihat satu tiket terakhir. Stok perlu diperiksa dan dikurangi dalam transaksi database yang sama.</span></li>
+        <li><strong>Worker saat sepi</strong><span>Worker yang hanya mendapat CPU saat ada request HTTP bisa tertunda, padahal masih ada antrean atau transaksi yang perlu diproses.</span></li>
+        <li><strong>Pembayaran mendekati tenggat</strong><span>Transfer bisa berhasil sebelum tenggat, sementara callback datang belakangan. Status harus diperiksa sebelum stok dilepas.</span></li>
+      </ul>
+      <template class="speaker-note">Bayangkan dua orang memilih tiket terakhir pada saat yang sama. Database harus menentukan siapa yang mendapat tiket. Setelah itu, sistem masih perlu memastikan pembayarannya masuk, termasuk ketika notifikasi dari gateway datang terlambat.</template>
+    </section>
+
+    <section class="slide paper" id="slide-3" aria-labelledby="title-3">
+      <h2 id="title-3" class="slide-title">Alur pemesanan di Booket</h2>
+      <p class="lead">Waiting room mengatur giliran. Setelah pembeli masuk, PostgreSQL menjaga stok dan kuota NIK.</p>
+      <div class="slide-body">
+        <ol class="flow" aria-label="Tahapan pemesanan">
+          <li><span>Pilih konser</span></li><li><span>Masuk antrean</span></li><li><span>Checkout</span></li><li><span>Bayar</span></li><li><span>Terima e-tiket</span></li>
+        </ol>
+        <ul class="list">
+          <li><strong>Antrean</strong><span><code>service-waiting-room</code> membuka slot checkout sesuai kapasitas.</span></li>
+          <li><strong>Pesanan</strong><span>PostgreSQL 18 mencatat pemesanan dan memeriksa sisa stok serta kuota NIK dalam satu transaksi.</span></li>
+          <li><strong>Setelah transaksi</strong><span>Rancangan PoC memakai outbox untuk mengirim event ke Confluent Kafka. Layanan tiket dan notifikasi dapat memprosesnya secara terpisah.</span></li>
+        </ul>
+      </div>
+      <template class="speaker-note">Waiting room mengatur berapa orang yang boleh melanjutkan sekaligus. Setelah pesanan tercatat, pekerjaan seperti pengiriman email dapat diteruskan lewat event. Pada PoC, kita akan menguji Kafka dan CPU kontinu untuk worker antrean, pesanan, dan outbox.</template>
+    </section>
+
+    <section class="slide paper" id="slide-4" aria-labelledby="title-4">
+      <h2 id="title-4" class="slide-title">Infrastruktur Booket di Jakarta</h2>
+      <p class="lead">Inventaris proyek <code>booket-512519</code> berdasarkan audit 23 November 2026.</p>
+      <div class="slide-body">
+        <dl class="stats">
+          <div><dt>Layanan Cloud Run</dt><dd>17</dd></div>
+          <div><dt>VM aktif</dt><dd>2</dd></div>
+          <div><dt>Database utama</dt><dd>PostgreSQL 18</dd></div>
+        </dl>
+        <ul class="list">
+          <li><strong>Akses dan identitas</strong><span>Cloudflare untuk dua situs, API Gateway, Keycloak, dan middleware Go serta Rust.</span></li>
+          <li><strong>Transaksi dan tiket</strong><span>Layanan antrean, order, produk dan tiket memakai Cloud SQL Enterprise Plus dengan SSD 100 GiB.</span></li>
+          <li><strong>Integrasi</strong><span>Brevo untuk email. Confluent Cloud Standard di Jakarta masuk dalam usulan PoC.</span></li>
+        </ul>
+      </div>
+      <template class="speaker-note">Dalam audit, kami juga mencatat lima repositori Artifact Registry, tiga bucket, dan Direct VPC egress pada layanan terbaru. Untuk PoC, kami memprioritaskan tiga worker inti dan meninjau ulang connector serta IP yang belum terpakai.</template>
+    </section>
+
+    <section class="slide paper architecture" id="slide-5" aria-labelledby="title-5">
+      <h2 id="title-5" class="slide-title">Arsitektur frontend Booket</h2>
+      <p class="lead">Booket memakai React 18, TypeScript, Vite, dan SDK Booket.</p>
+      <div class="slide-body split">
+        <ol class="step-list" aria-label="Alur frontend">
+          <li><strong>Halaman React</strong><p>React Router memilih halaman sesuai URL.</p></li>
+          <li><strong>Hook fitur</strong><p><code>src/features</code> memuat data dan menangani aksi pengguna.</p></li>
+          <li><strong>SDK Booket</strong><p><code>@booketid/core</code> 0.11.1 menyediakan façade untuk tiap fitur.</p></li>
+          <li><strong>Sumber data</strong><p>Mock dari SDK saat demo, API Booket saat live.</p></li>
+        </ol>
+        <figure class="app-view">
+          <img src="./assets/katalog.jpg" width="913" height="439" alt="Dua kartu konser di katalog, masing-masing menampilkan status, kuota, harga, dan tombol Pesan">
+          <figcaption>Kartu konser di katalog · mode demo</figcaption>
+        </figure>
+      </div>
+      <ul class="list architecture-details">
+        <li><strong>Sinkronisasi state</strong><span><code>useFacadeStore</code> menghubungkan <code>FlowStore</code> dari SDK dengan React lewat <code>useSyncExternalStore</code>.</span></li>
+        <li><strong>Validasi checkout</strong><span><code>src/domain/rules.ts</code> mengecek format dan duplikasi NIK serta batas tiga tiket per pesanan.</span></li>
+        <li><strong>Sesi pengguna</strong><span><code>AuthFacade</code> memakai bridge Keycloak. <code>CoreProvider</code> memasok token ke façade yang memerlukannya.</span></li>
+      </ul>
+      <template class="speaker-note">Ambil katalog sebagai contoh. AppRouter memilih halaman, hook fitur meminta data dari HomeFacade, lalu useFacadeStore meneruskan perubahan ke React. CoreProvider memegang konfigurasi demo atau live dan satu OrderFacade yang dipakai lintas halaman. Ketika operasi memerlukan login, façade mengambil token dari AuthFacade.</template>
+    </section>
+
+    <section class="slide paper" id="slide-6" aria-labelledby="title-6">
+      <h2 id="title-6" class="slide-title">Giliran masuk ke checkout</h2>
+      <p class="lead">Pembeli masuk sesuai urutan selama masih ada slot checkout.</p>
+      <div class="slide-body split">
+        <ul class="list narrow">
+          <li><strong>Slot checkout</strong><p>Waiting room membersihkan slot kedaluwarsa lalu mengambil peserta terdepan secara atomik di penyimpanan in-memory.</p></li>
+          <li><strong>Pembaruan status</strong><p>Browser menanyakan status dengan interval dari server dan sedikit variasi waktu agar permintaan tidak datang bersamaan.</p></li>
+          <li><strong>Perkiraan waktu</strong><p>UI menampilkan <code>queueNumber</code> dan memperbarui hitung mundur dari <code>etaSeconds</code> setiap kali status disinkronkan.</p></li>
+        </ul>
+        <figure class="app-view">
+          <img src="./assets/antrean.jpg" width="700" height="381" alt="Kartu antrean aktif dengan nomor urut 1250, perkiraan waktu, dan indikator progres">
+          <figcaption>Nomor antrean dan estimasi waktu · mode demo</figcaption>
+        </figure>
+      </div>
+      <template class="speaker-note">Polling mengikuti interval yang dikirim server. Pola ini menjaga request status tetap stateless dan menghindari kebutuhan membuka koneksi WebSocket untuk setiap pembeli. Saat slot siap, aplikasi melanjutkan ke checkout.</template>
+    </section>
+
+    <section class="slide paper" id="slide-7" aria-labelledby="title-7">
+      <h2 id="title-7" class="slide-title">Stok tiket dan kuota NIK</h2>
+      <p class="lead">Satu pesanan bisa memuat hingga tiga tiket. Setiap tiket harus memakai NIK peserta yang berbeda.</p>
+      <div class="slide-body">
+        <ol class="flow" aria-label="Urutan transaksi stok">
+          <li><span>Periksa kuota NIK</span></li><li><span>Kurangi stok jika cukup</span></li><li><span>Simpan pesanan dan outbox</span></li>
+        </ol>
+        <ul class="list">
+          <li><strong>Validasi peserta</strong><span>Frontend memeriksa NIK 16 digit dan menolak duplikasi antar peserta. Skenario demo memakai <code>dukcapil-mock</code>.</span></li>
+          <li><strong>Transaksi stok</strong><span>Dalam rancangan backend, NIK di-hash dengan HMAC-SHA256 untuk memeriksa kuota. Jika kuota atau stok gagal diperbarui, transaksi dibatalkan.</span></li>
+          <li><strong>Pesanan lintas kategori</strong><span>Kategori dikunci mengikuti urutan ID. Worker kedaluwarsa dapat melewati baris yang sedang dikunci dengan <code>SKIP LOCKED</code>.</span></li>
+        </ul>
+      </div>
+      <template class="speaker-note">Ambil contoh dua transaksi yang berebut satu tiket tersisa. PostgreSQL hanya mengurangi stok jika jumlahnya masih cukup. Jika syarat itu gagal, pesanan dan pencatatan kuotanya juga dibatalkan.</template>
+    </section>
+
+    <section class="slide paper" id="slide-8" aria-labelledby="title-8">
+      <h2 id="title-8" class="slide-title">Batas waktu checkout dan pembayaran</h2>
+      <p class="lead">Timer di layar mengikuti waktu kedaluwarsa dari server. Pembayaran perlu diperiksa sebelum pesanan ditutup.</p>
+      <div class="slide-body">
+        <dl class="timer-list">
+          <div><dt>Waktu checkout</dt><dd class="number">5 menit</dd></div>
+          <div><dt>Waktu pembayaran sandbox</dt><dd class="number">10 menit</dd></div>
+        </dl>
+        <ul class="list">
+          <li><strong>Checkout habis</strong><span>Aplikasi menampilkan pemberitahuan sesi berakhir dan slot checkout dilepas.</span></li>
+          <li><strong>Sebelum ke Midtrans</strong><span>Aplikasi menyimpan ringkasan pesanan untuk memulihkan tampilan sesudah pengalihan.</span></li>
+          <li><strong>Callback terlambat atau berulang</strong><span>Worker memeriksa status ke gateway sebelum menutup pesanan. Pemrosesan ulang tidak boleh menggandakan pencatatan atau event.</span></li>
+        </ul>
+      </div>
+      <template class="speaker-note">Salah satu skenario uji PoC adalah pembayaran berhasil di menit terakhir ketika callback terlambat. Kami periksa apakah status pesanan dan stok tetap benar, lalu ulangi callback untuk memastikan hasilnya tetap sama.</template>
+    </section>
+
+    <section class="slide paper" id="slide-9" aria-labelledby="title-9">
+      <h2 id="title-9" class="slide-title">Frontend saat format API berbeda</h2>
+      <p class="lead">Booket punya jalur cadangan untuk membaca format lama pada respons waiting room.</p>
+      <div class="slide-body">
+        <ul class="list">
+          <li><strong>Aturan bisnis</strong><span>Validasi NIK dan batas jumlah tiket berada di <code>src/domain/rules.ts</code>, terpisah dari komponen React.</span></li>
+          <li><strong>Integrasi SDK</strong><span>UI berlangganan perubahan state dari façade waiting room, checkout, dan order di <code>@booketid/core</code> 0.11.1.</span></li>
+          <li><strong>Format lama</strong><span>Saat SDK mengembalikan <code>INVALID_RESPONSE</code>, <code>waitingRoomFallback.ts</code> membaca respons lama dan memisahkan kegagalan permanen dari gangguan yang bisa dicoba ulang.</span></li>
+        </ul>
+        <p class="callout">Respons HTTP 200 masih bisa membawa struktur data yang tidak sesuai kontrak SDK. Jika format lamanya dikenal, Booket tetap bisa menampilkan antrean.</p>
+      </div>
+      <template class="speaker-note">Kasusnya pernah muncul pada respons HTTP 200 dari waiting room. SDK menolak struktur lama, sementara angka antrean masih bisa dibaca. Karena itu kami buat fallback khusus untuk respons yang bentuknya sudah kami kenal.</template>
+    </section>
+
+    <section class="slide paper" id="slide-10" aria-labelledby="title-10">
+      <h2 id="title-10" class="slide-title">Pembayaran dan e-tiket</h2>
+      <p class="lead">Setelah pembayaran terkonfirmasi, pembeli bisa membuka e-tiket dari menu Tiket Saya.</p>
+      <div class="slide-body split">
+        <ul class="list narrow">
+          <li><strong>Bayar di Midtrans Sandbox</strong><p>Pembeli dapat mencoba virtual account, QRIS, atau kartu. Booket menampilkan status sesuai hasil pembayaran.</p></li>
+          <li><strong>E-tiket di aplikasi</strong><p>Pembeli membuka daftar booking dan detail tiket per peserta dari menu Tiket Saya.</p></li>
+          <li><strong>Email e-tiket</strong><p>Pada rancangan PoC, event pembayaran diteruskan lewat outbox dan Kafka ke layanan notifikasi Brevo.</p></li>
+        </ul>
+        <figure class="app-view">
+          <img src="./assets/tiket.jpg" width="798" height="329" alt="Halaman Tiket Saya berisi dua booking contoh dengan tombol Lihat tiket">
+          <figcaption>Daftar booking di Tiket Saya · mode demo</figcaption>
+        </figure>
+      </div>
+      <template class="speaker-note">Untuk uji pembayaran, gunakan Midtrans Sandbox. Setelah statusnya sukses, Booket Pass menampilkan kategori, pintu masuk, dan barcode yang diperbarui setiap 30 detik. Gambar pada slide ini memakai data contoh di Tiket Saya. Integrasi email lewat Brevo masuk dalam rencana uji PoC.</template>
+    </section>
+
+    <section class="slide paper" id="slide-11" aria-labelledby="title-11">
+      <h2 id="title-11" class="slide-title">Pengujian dan rilis frontend</h2>
+      <p class="lead">GitLab CI menjalankan pemeriksaan kode, tes, dan build sebelum paket dikirim ke Cloud Run.</p>
+      <div class="slide-body">
+        <dl class="stats">
+          <div><dt>Tes lulus pada snapshot</dt><dd>666</dd></div>
+          <div><dt>File tes pada snapshot</dt><dd>91</dd></div>
+          <div><dt>Ambang coverage per file yang diukur</dt><dd>80%</dd></div>
+        </dl>
+        <ol class="flow" aria-label="Enam tahap pipeline GitLab">
+          <li><span>npm audit &amp; Gitleaks</span></li><li><span>Vitest</span></li><li><span>SonarQube</span></li><li><span>TypeScript &amp; Vite</span></li><li><span>Artifact Registry</span></li><li><span>Cloud Run</span></li>
+        </ol>
+        <p class="fine-print">Jumlah tes mengacu pada snapshot di materi assessment. Pipeline mencatat coverage dalam LCOV dan hasil tes dalam JUnit.</p>
+      </div>
+      <template class="speaker-note">Kami sertakan hasil pengujian frontend dari snapshot assessment. Kalau panel ingin menelusuri satu contoh, aturan NIK dan fallback waiting room punya tes yang dapat ditunjukkan sebelum melihat pipeline rilis.</template>
+    </section>
+
+    <section class="slide paper" id="slide-12" aria-labelledby="title-12">
+      <h2 id="title-12" class="slide-title">Demo pemesanan tiket</h2>
+      <p class="lead">Empat hal yang akan kita lihat langsung di aplikasi Booket.</p>
+      <div class="slide-body split">
+        <ol class="step-list">
+          <li><strong>Masuk antrean</strong><p>Login, pilih konser, lalu tunggu sampai checkout terbuka.</p></li>
+          <li><strong>Coba NIK ganda</strong><p>Pilih hingga tiga tiket, lalu isi dua slot dengan NIK yang sama. Aplikasi menampilkan validasi.</p></li>
+          <li><strong>Lanjutkan antrean</strong><p>Dari Beranda, buka kartu “Antrean Anda” untuk kembali ke sesi yang masih aktif.</p></li>
+          <li><strong>Bayar dan buka tiket</strong><p>Untuk demo pembayaran sandbox, lanjutkan dari checkout hingga e-tiket tersedia.</p></li>
+        </ol>
+        <figure class="app-view">
+          <img src="./assets/checkout.jpg" width="694" height="479" alt="Pemilihan tiket Festival, Tribun, dan VIP di checkout dengan batas maksimal tiga tiket">
+          <figcaption>Pemilihan tier di checkout · mode demo</figcaption>
+        </figure>
+      </div>
+      <div class="source-links"><a href="https://booket.id/" target="_blank" rel="noopener noreferrer">Buka aplikasi Booket <span aria-hidden="true">↗</span></a></div>
+      <template class="speaker-note">Mulai dari Beranda dan masuk antrean seperti pembeli biasa. Sebelum bayar, gunakan data uji untuk mendemokan NIK ganda, lalu perbaiki isian. Untuk memperlihatkan tampilan tiket di mode demo, buka Tiket Saya yang sudah berisi data contoh.</template>
+    </section>
+
+    <section class="slide paper" id="slide-13" aria-labelledby="title-13">
+      <h2 id="title-13" class="slide-title">Biaya bulanan infrastruktur</h2>
+      <p class="lead">PoC menguji Cloud SQL yang lebih kecil dan mengalokasikan CPU kontinu untuk tiga worker inti.</p>
+      <div class="slide-body">
+        <dl class="comparison">
+          <div class="price"><dt>Konfigurasi saat ini + Kafka</dt><dd class="number">US$2.343,11 <small>/ bulan</small></dd></div>
+          <div class="price target"><dt>Target setelah transisi PoC</dt><dd class="number">US$1.936,46 <small>/ bulan</small></dd></div>
+        </dl>
+        <ul class="list">
+          <li><strong>Cloud SQL</strong><span>Dari 8 vCPU / 64 GiB ke 4 vCPU / 32 GiB jika lolos uji beban. Estimasi biaya turun dari US$1.059,03 ke US$503,64 per bulan.</span></li>
+          <li><strong>Cloud Run</strong><span>Satu instance dengan CPU kontinu untuk masing-masing worker antrean, order, dan outbox. Estimasi Cloud Run US$239,02 per bulan.</span></li>
+          <li><strong>Kafka dan email</strong><span>Confluent Standard 1 eCKU sekitar US$554,90 dan Brevo US$499 per bulan. Egress GCP dihitung terpisah.</span></li>
+        </ul>
+        <p class="fine-print">Estimasi 730 jam, sebelum pajak dan cadangan. Sampel tujuh hari menunjukkan rata-rata CPU database 0,94% dan RAM 38,39%. Kapasitas saat puncak penjualan masih perlu diuji.</p>
+      </div>
+      <template class="speaker-note">Konfigurasi saat ini sebelum tambahan Kafka diperkirakan US$1.786,31 per bulan. Pembanding di layar sudah memasukkan Kafka di kedua sisi. Angka penggunaan database dari tujuh hari menjadi alasan untuk menguji 32 GiB. Keputusan resize menunggu hasil uji.</template>
+    </section>
+
+    <section class="slide paper" id="slide-14" aria-labelledby="title-14">
+      <h2 id="title-14" class="slide-title">Anggaran PoC tiga bulan</h2>
+      <p class="lead">Usulan dana US$7.200 untuk 1 Desember 2026–28 Februari 2027, termasuk dua minggu transisi.</p>
+      <div class="slide-body">
+        <p class="fine-print table-hint">Geser tabel untuk melihat semua kolom.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Perbandingan tiga skenario anggaran">
+          <table class="budget">
+            <thead><tr><th scope="col">Skenario</th><th scope="col">Estimasi 3 bulan</th><th scope="col">Pagu usulan</th><th scope="col">Proyeksi 1 tahun</th></tr></thead>
+            <tbody>
+              <tr class="featured"><th scope="row">PoC dengan transisi</th><td class="number">US$7.140,74</td><td class="number"><strong>US$7.200</strong></td><td class="number">US$28.108,88</td></tr>
+              <tr><th scope="row">SQL tetap 64 GiB</th><td class="number">US$8.364,11</td><td class="number"><strong>US$8.400</strong></td><td class="number">US$33.740,73</td></tr>
+              <tr><th scope="row">Uji beban 100× sampel</th><td class="number">US$9.766,19</td><td class="number"><strong>US$9.800</strong></td><td>Kampanye terpisah</td></tr>
+            </tbody>
+          </table>
         </div>
-        <p id="notesContentText" class="leading-relaxed text-slate-700 font-medium"></p>
+        <p class="fine-print">Angka sebelum pajak, dengan cadangan 20% dan satu perpanjangan domain. Skenario PoC diproyeksikan menghemat US$5.631,85 per tahun (~16,7%) dibanding konfigurasi saat ini dengan Kafka.</p>
+        <div class="source-links">
+          <a href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_3_BULAN.md">Rincian 3 bulan</a>
+          <a href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_1_TAHUN.md">Proyeksi tahunan</a>
+        </div>
       </div>
-    </div>
+      <template class="speaker-note">Jika 32 GiB belum cukup saat uji beban, skenario cadangan mempertahankan SQL 64 GiB. Pagu uji beban mencakup aktivitas Cloud Run 100 kali sampel, sekitar 2,74 juta panggilan container per bulan, dan Kafka 2 eCKU. Angka aktivitas itu dipakai untuk menghitung biaya kampanye.</template>
+    </section>
 
-    <!-- Bottom Controls -->
-    <div class="w-full mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 px-1">
-      <div class="flex items-center gap-2 text-[11px] font-medium">
-        <span class="text-slate-400">Shortcut:</span>
-        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">←</kbd>
-        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">→</kbd>
-        <span class="text-slate-300">•</span>
-        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">N</kbd>
-        <span>Notes</span>
-        <span class="text-slate-300">•</span>
-        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">F</kbd>
-        <span>Fullscreen</span>
+    <section class="slide paper" id="slide-15" aria-labelledby="title-15">
+      <h2 id="title-15" class="slide-title">Rencana PoC 12 minggu</h2>
+      <p class="lead">Keputusan konfigurasi produksi diambil sesudah uji fungsi, pemulihan, dan beban.</p>
+      <ol class="list timeline slide-body">
+        <li><strong>Minggu 1–2</strong><span>Cek tagihan dan penawaran vendor. Ambil metrik awal dan uji backup serta restore.</span></li>
+        <li><strong>Minggu 3–4</strong><span>Siapkan CPU kontinu untuk tiga worker dan sambungkan outbox ke Kafka serta Brevo.</span></li>
+        <li><strong>Minggu 5–8</strong><span>Uji antrean, NIK, pembayaran sandbox, dan worker saat HTTP sepi selama 30 menit.</span></li>
+        <li><strong>Minggu 9–10</strong><span>Naikkan beban bertahap. Uji apakah SQL 32 GiB cukup dan ulangi simulasi pemulihan.</span></li>
+        <li><strong>Minggu 11–12</strong><span>Bandingkan biaya aktual dengan estimasi dan putuskan konfigurasi yang dibawa ke produksi.</span></li>
+      </ol>
+      <p class="callout">Targetnya nol oversell, callback duplikat diproses idempoten, dan outbox tetap berjalan. Untuk API inti, target error &lt;1% dan latensi p95 &lt;2 detik.</p>
+      <p class="fine-print">Estimasi memakai resource yang sudah ada. Pajak, tenaga pengembangan dan operasional, biaya transaksi Midtrans, kelebihan pemakaian Brevo, serta lingkungan kedua di luar pagu.</p>
+      <template class="speaker-note">Pada awal PoC kita cocokkan estimasi dengan tagihan dan penawaran vendor. Saat uji beban, kita ukur error, p95, penggunaan RAM, dan koneksi SQL. Hasil itu menjadi dasar memilih kapasitas produksi.</template>
+    </section>
+
+    <section class="slide cover" id="slide-16" aria-labelledby="title-16">
+      <div>
+        <p class="eyebrow">PT DJS (Deploy Jumat Sore)</p>
+        <h2 id="title-16" class="slide-title">Keputusan PoC dan tanya jawab</h2>
+        <p class="lead">Kami mengusulkan PoC 12 minggu untuk menguji antrean saat ramai, pemulihan transaksi, dan biaya operasional sebelum menentukan konfigurasi produksi.</p>
+        <a href="#slide-12" class="button primary">Kembali ke panduan demo <span aria-hidden="true">→</span></a>
       </div>
-
-      <!-- Dot Indicators -->
-      <div id="slideDotsArea" class="flex items-center gap-1.5 flex-wrap justify-center"></div>
-
-      <!-- Prev / Next Buttons -->
-      <div class="flex items-center gap-2">
-        <button id="prevSlideBtn" class="px-4 py-2 rounded-full bg-white hover:bg-slate-100 active:scale-95 text-slate-700 border border-slate-200 font-bold transition shadow-xs disabled:opacity-40 disabled:pointer-events-none">
-          ← Kembali
-        </button>
-        <button id="nextSlideBtn" class="px-5 py-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold shadow-md shadow-rose-600/25 transition disabled:opacity-40 disabled:pointer-events-none">
-          Lanjut →
-        </button>
+      <div class="pass cutout">
+        <div class="pass-header">Keputusan anggaran</div>
+        <strong class="pass-main number">US$7.200</strong>
+        <p>Usulan utama sebelum pajak. Pagu US$8.400 jika Cloud SQL perlu tetap di 64 GiB.</p>
+        <hr>
+        <a class="pass-link" href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_PROPOSAL_POC.md">Baca proposal PoC</a>
       </div>
-    </div>
+      <template class="speaker-note">Keputusan yang kami minta hari ini adalah persetujuan pagu PoC. Kami ajukan US$7.200 dan akan membawa hasil uji beban serta biaya aktual sebelum merekomendasikan konfigurasi produksi. Terima kasih, kami buka sesi tanya jawab.</template>
+    </section>
+
+    <aside id="speaker-notes" class="notes" hidden aria-label="Catatan presenter">
+      <strong>Catatan presenter</strong>
+      <p></p>
+    </aside>
+
+    <footer class="controls" data-interactive hidden>
+      <div class="slide-picker">
+        <output id="slide-count" class="number" aria-label="Nomor slide" aria-live="polite"></output>
+        <select id="slide-select" aria-label="Pilih slide"></select>
+      </div>
+      <div class="keys" aria-label="Pintasan keyboard">
+        <kbd>←</kbd><kbd>→</kbd> Slide <kbd>N</kbd> Catatan <kbd>F</kbd> Layar penuh
+      </div>
+      <div class="page-actions">
+        <button id="previous" class="button outline" type="button"><span aria-hidden="true">←</span> Kembali</button>
+        <button id="next" class="button primary" type="button">Lanjut <span aria-hidden="true">→</span></button>
+      </div>
+    </footer>
   </main>
 
   <script>
-    const deck = [
-      {
-        chapter: "Overview",
-        tag: "PENDAHULUAN • PROPOSAL TEKNIS & PoC",
-        title: "Booket — Sistem War Tiket Konser &amp; Virtual Queue",
-        subtitle: "Presentasi Arsitektur, Live Demo, &amp; Anggaran PoC — Tender Rusuh Booking Ticket",
-        content: `
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-auto">
-            <div class="lg:col-span-6 stagger-1 space-y-4">
-              <div class="inline-flex items-center gap-2 rounded-full bg-rose-50 border border-rose-200 px-3 py-1 text-[11px] font-bold text-rose-700">
-                <span class="size-1.5 rounded-full bg-rose-600 animate-ping"></span>
-                <span>PT DJS (Deploy Jumat Sore)</span>
-              </div>
-              <h1 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight leading-tight">
-                Arsitektur Resilien Tanpa <span class="text-rose-600">Kompromi Integritas</span>
-              </h1>
-              <p class="text-slate-600 text-sm leading-relaxed">
-                Platform reservasi tiket berdaya tampung tinggi dengan isolasi beban antrean di hulu, proteksi stok atomik, event streaming Kafka, dan rancangan PoC berbiaya terukur.
-              </p>
-              <div class="pt-1 flex flex-wrap gap-2 text-[11px] font-mono font-semibold">
-                <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">17 Cloud Run + PG 18</span>
-                <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">Confluent Kafka + Brevo</span>
-                <span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">PoC: US$7.200 / 3 Bln</span>
-              </div>
-            </div>
-
-            <div class="lg:col-span-6 stagger-2 relative overflow-hidden rounded-3xl bg-[#18191e] text-white p-6 shadow-2xl border border-slate-800 space-y-4">
-              <div class="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-rose-600/20 blur-3xl"></div>
-              <div class="pointer-events-none absolute -left-16 bottom-0 size-56 rounded-full bg-rose-950/30 blur-3xl"></div>
-
-              <div class="relative flex items-center justify-between border-b border-slate-800 pb-3">
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-600/20 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-rose-400 border border-rose-500/30">
-                  <span class="size-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                  PROPOSAL TEKNIS &amp; PoC
-                </span>
-                <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 font-mono border border-emerald-500/30">
-                  Project: booket-512519
-                </span>
-              </div>
-
-              <div class="relative space-y-2 text-xs">
-                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
-                  <span class="text-slate-400">Tim Pengembang</span>
-                  <span class="font-bold text-white">PT DJS (Deploy Jumat Sore)</span>
-                </div>
-                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
-                  <span class="text-slate-400">Stack Live</span>
-                  <span class="font-mono text-slate-200">Cloud Run • PG 18 • Cloudflare • Brevo</span>
-                </div>
-                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
-                  <span class="text-slate-400">Event Streaming</span>
-                  <span class="font-mono text-slate-200">Confluent Cloud Standard (1 eCKU)</span>
-                </div>
-                <div class="flex justify-between items-center py-1.5">
-                  <span class="text-slate-400">Region Target</span>
-                  <span class="font-mono text-emerald-400 font-semibold">GCP Jakarta (asia-southeast2)</span>
-                </div>
-              </div>
-
-              <div class="relative rounded-2xl bg-slate-900/90 border border-slate-800 p-3 flex items-center justify-between">
-                <span class="text-[11px] font-semibold text-slate-300">Usulan Dana PoC (1 Des '26 – 28 Feb '27)</span>
-                <span class="font-mono text-xs font-bold text-amber-400">US$7.140,74 (~US$7.200)</span>
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Selamat pagi rekan-rekan dan bapak ibu panel penilai. Kami dari tim engineering PT DJS mempersembahkan Booket—bukan hanya demonstrasi aplikasi frontend dan arsitektur backend, tetapi hari ini juga dilengkapi audit konfigurasi infrastruktur live project booket-512519 Jakarta beserta rancangan budget PoC 3 bulan dan proyeksi 1 tahun yang terukur."
-      },
-      {
-        chapter: "Overview",
-        tag: "ANALISIS MASALAH • ROOT CAUSE",
-        title: "Mengapa Platform Tiket Konvensional Selalu Rusuh?",
-        subtitle: "Empat titik kerentanan arsitektural yang berulang kali menumbangkan sistem ticketing",
-        content: `
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
-            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-1 space-y-2">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-[10px] font-mono uppercase text-rose-700 font-bold tracking-wider">[01] CONNECTION EXHAUSTION</div>
-              <h3 class="font-black text-slate-900 text-sm">Spike Beban Memukul Database Transaksional</h3>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Di detik ke-0 pembukaan tiket, ribuan request langsung membuka koneksi ke database relasional, memicu connection saturation, lock contention, dan HTTP 504 Gateway Timeout.
-              </p>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-2 space-y-2">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[10px] font-mono uppercase text-amber-800 font-bold tracking-wider">[02] DIRTY READS &amp; OVERSELLING</div>
-              <h3 class="font-black text-slate-900 text-sm">Race Condition pada Pengurangan Stok</h3>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Pola tradisional <em>read-then-update</em> di layer aplikasi gagal menjaga konsistensi saat konkurensi tinggi. Dua transaksi membaca stok tersisa 1 dan keduanya lolos hingga stok minus.
-              </p>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-3 space-y-2">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-slate-200/70 border border-slate-300 text-[10px] font-mono uppercase text-slate-800 font-bold tracking-wider">[03] BACKGROUND WORKER IDLE DROP</div>
-              <h3 class="font-black text-slate-900 text-sm">Consumer &amp; Outbox Kehilangan CPU Saat Tidak Ada HTTP</h3>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Pada Cloud Run request-based billing (<code>cpuIdle=true</code>), background worker seperti admission, outbox, dan rekonsiliasi berisiko terhenti saat tidak ada trafik HTTP aktif.
-              </p>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-4 space-y-2">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-[10px] font-mono uppercase text-emerald-700 font-bold tracking-wider">[04] FALSE TIMEOUT ("PHP")</div>
-              <h3 class="font-black text-slate-900 text-sm">Sesi Hangus &amp; Duplikasi Event Asinkron</h3>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Pembeli sudah membayar di detik akhir, namun callback telat atau event terduplikasi. Sistem harus tetap menjaga konsistensi order, claim, dan email tanpa mengorbankan hak pembeli.
-              </p>
-            </div>
-          </div>
-        `,
-        notes: "Selain masalah klasik war tiket seperti connection exhaustion dan overselling, hasil peninjauan teknis backend menemukan titik krusial pada Cloud Run: apabila worker outbox, admission, dan waiting room hanya mengandalkan request-based billing, proses background bisa kekurangan CPU saat tidak ada request HTTP. Karena itu dalam usulan PoC, tiga worker inti kami anggarkan dengan instance-based billing CPU kontinu."
-      },
-      {
-        chapter: "Arsitektur",
-        tag: "STRATEGI ARSITEKTUR • CORE DESIGN",
-        title: "Tiga Prinsip Inti: Isolasi, Atomik, dan Event-Driven",
-        subtitle: "Membatasi laju trafik di hulu serta menjamin worker outbox dan database tetap konsisten",
-        content: `
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
-            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card flex flex-col justify-between stagger-1 space-y-4">
-              <div>
-                <div class="text-[11px] font-mono text-rose-600 font-bold">PRINSIP 01</div>
-                <h4 class="font-black text-slate-900 text-sm mt-1 mb-2">Admission Control &amp; Worker Kontinu</h4>
-                <p class="text-slate-600 text-xs leading-relaxed">
-                  Menahan trafik melalui <code>service-waiting-room</code>. Tiga worker inti (<code>order</code>, <code>outbox</code>, <code>waiting-room</code>) memakai min 1 instance CPU kontinu untuk menjamin background tick tanpa putus.
-                </p>
-              </div>
-              <div class="pt-3 border-t border-slate-100 text-[11px] font-mono font-semibold text-slate-500">
-                Pemisahan Hot-Path &amp; Asynchronous Worker
-              </div>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card flex flex-col justify-between stagger-2 space-y-4">
-              <div>
-                <div class="text-[11px] font-mono text-amber-600 font-bold">PRINSIP 02</div>
-                <h4 class="font-black text-slate-900 text-sm mt-1 mb-2">Event Streaming Confluent Kafka</h4>
-                <p class="text-slate-600 text-xs leading-relaxed">
-                  <code>service-outbox</code> mempublikasikan event pemesanan secara durable ke Confluent Cloud Standard (GCP Jakarta, TLS/SASL) untuk dikonsumsi modul notifikasi Brevo &amp; tiket.
-                </p>
-              </div>
-              <div class="pt-3 border-t border-slate-100 text-[11px] font-mono font-semibold text-slate-500">
-                Decoupled Eventing • Replikasi 3x
-              </div>
-            </div>
-
-            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card flex flex-col justify-between stagger-3 space-y-4">
-              <div>
-                <div class="text-[11px] font-mono text-emerald-600 font-bold">PRINSIP 03</div>
-                <h4 class="font-black text-slate-900 text-sm mt-1 mb-2">PostgreSQL 18 Conditional Update</h4>
-                <p class="text-slate-600 text-xs leading-relaxed">
-                  Stok dan kuota NIK dikurangi dalam satu transaksi Cloud SQL Enterprise Plus PG 18 yang atomik dengan klausa <code>WHERE</code> guard. Bebas oversell &amp; duplikasi claim.
-                </p>
-              </div>
-              <div class="pt-3 border-t border-slate-100 text-[11px] font-mono font-semibold text-slate-500">
-                Jaminan Mutlak Zero-Overselling
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Ketiga prinsip inilah yang menyatukan arsitektur kode dan rencana PoC kami: admission control di service-waiting-room dengan CPU worker persisten, event streaming via outbox ke Confluent Kafka di region Jakarta, dan transaksi stok atomik di PostgreSQL 18."
-      },
-      {
-        chapter: "Arsitektur",
-        tag: "INVENTARIS INFRASTRUKTUR AKTUAL • booket-512519",
-        title: "Topologi Cloud Run &amp; Ekosistem Layanan Aktual",
-        subtitle: "Dipetakan langsung dari snapshot live GCP Jakarta (asia-southeast2), Cloudflare, Brevo, &amp; Kafka",
-        content: `
-          <div class="p-5 bg-slate-50/80 rounded-2xl border border-slate-200 text-xs space-y-3.5 stagger-1">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 text-center">
-              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Edge &amp; Web</div>
-                <div class="font-black text-slate-900 mt-1">Cloudflare (2 Sites)</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">CDN Cache, Workers/Pages, Domain .id</div>
-              </div>
-              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Compute &amp; Auth</div>
-                <div class="font-black text-slate-900 mt-1">17 Cloud Run + 2 VM</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Keycloak, API Gateway, 2 VM (GW/Datastore)</div>
-              </div>
-              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Durable Storage</div>
-                <div class="font-black text-slate-900 mt-1">Cloud SQL PG 18</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Enterprise Plus N2 • SSD 100 GiB</div>
-              </div>
-              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Event &amp; Comms</div>
-                <div class="font-black text-slate-900 mt-1">Confluent + Brevo</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Kafka Standard Jakarta &amp; Email CRM</div>
-              </div>
-            </div>
-
-            <!-- Actual Cloud Run Services Inventory -->
-            <div class="p-4 rounded-2xl bg-[#18191e] text-white border border-slate-800 space-y-2.5 shadow-lg">
-              <div class="font-mono text-[11px] text-slate-300 flex justify-between items-center">
-                <span class="font-bold">Inventaris Microservices Aktif (booket-512519):</span>
-                <span class="text-emerald-400 font-bold">Direct VPC &amp; Managed Ingress</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10.5px] font-mono">
-                <div class="p-2 rounded-xl bg-rose-950/60 border border-rose-700/50 text-rose-200">
-                  <div class="font-bold text-rose-400">Core Workers (Min 1 PoC)</div>
-                  <div class="mt-0.5 text-slate-300">service-waiting-room, service-order, service-outbox</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
-                  <div class="font-bold text-amber-400">Polyglot Middleware</div>
-                  <div class="mt-0.5">service-middleware-go, service-middleware-rust</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
-                  <div class="font-bold text-emerald-400">Business &amp; Identity</div>
-                  <div class="mt-0.5">keycloak, service-ticket, service-product, service-user</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
-                  <div class="font-bold text-sky-400">Gateway &amp; Supporting</div>
-                  <div class="mt-0.5">booket-api-gateway, booket-id-web, service-notification, dukcapil-mock</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row justify-between text-[11px] text-slate-600 gap-2 font-mono">
-              <span>• Artifact &amp; Storage: 5 Artifact Registry + 3 Bucket (<code>booket-id</code>, <code>bucket-id-public</code>, <code>cdn.booket.id</code>).</span>
-              <span>• Network Audit: Direct VPC egress aktif pada service terbaru; connector &amp; unused IP siap dirapikan di PoC.</span>
-            </div>
-          </div>
-        `,
-        notes: "Slide ini memetakan inventaris infrastruktur live pada project booket-512519 di Jakarta. Ada 17 Cloud Run services termasuk middleware Go dan Rust, keycloak, outbox, serta 2 VM aktif. Dalam PoC ini kami memfokuskan CPU kontinu untuk 3 worker utama yaitu waiting room, order, dan outbox, sambil mengevaluasi konsumen service lain saat idle."
-      },
-      {
-        chapter: "Arsitektur",
-        tag: "DEEP DIVE • WAITING ROOM INTERNALS",
-        title: "Algoritma Antrean FCFS &amp; Adaptive Polling",
-        subtitle: "Evaluasi slot atomik di in-memory store dan alasan memilih Polling Adaptif dibanding WebSocket",
-        content: `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-auto text-xs">
-            <div class="space-y-3 stagger-1">
-              <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d221b] via-[#132921] to-[#1e151c] p-4 text-white shadow-xl border border-emerald-950/60 space-y-3">
-                <div class="flex items-center justify-between text-[10px]">
-                  <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-0.5 font-bold text-emerald-300 border border-emerald-500/30">
-                    <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    ANTREAN AKTIF • SERVICE-WAITING-ROOM
-                  </span>
-                  <span class="font-mono text-slate-300">Polling Adaptif</span>
-                </div>
-                <div class="flex items-baseline justify-between">
-                  <div>
-                    <div class="text-[9px] uppercase tracking-widest text-slate-400 font-bold">NOMOR URUT</div>
-                    <div class="text-3xl font-black font-mono">#1.248</div>
-                  </div>
-                  <div class="text-right font-mono text-[11px] text-emerald-300">
-                    ETA = ZRANK / Rate<sub>5m</sub>
-                  </div>
-                </div>
-                <div class="relative h-2.5 w-full overflow-hidden rounded-full bg-black/60 p-0.5 border border-white/10">
-                  <div class="relative h-full w-3/4 rounded-full bg-gradient-to-r from-emerald-600 via-amber-500 to-rose-600 overflow-hidden">
-                    <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent animate-shimmer"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="p-3.5 rounded-2xl bg-[#18191e] border border-slate-800 font-mono text-[10.5px] text-slate-300 leading-relaxed">
-                <div class="text-slate-400 font-sans font-bold text-xs pb-1.5 mb-1.5 border-b border-slate-800 flex justify-between items-center">
-                  <span class="text-white">Atomic Admission (Lua Script)</span>
-                  <span class="text-rose-400 text-[10px]">In-Memory Engine</span>
-                </div>
-                <span class="text-slate-500">-- Pop K user terdepan secara atomik</span><br/>
-                redis.call('ZREMRANGEBYSCORE', 'q:active', '-inf', now)<br/>
-                local free = maxSlots - redis.call('ZCARD', 'q:active')<br/>
-                local admitted = redis.call('ZPOPMIN', 'q:waiting', free)<br/>
-                redis.call('ZADD', 'q:active', now + ttl, admitted)
-              </div>
-            </div>
-
-            <div class="space-y-3 stagger-2 flex flex-col justify-center">
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5">
-                <div class="font-black text-slate-900 text-xs">Trade-Off: Polling Adaptif vs WebSocket</div>
-                <p class="text-slate-600 text-[11px] leading-relaxed">
-                  Pada lonjakan trafik seluler, puluhan ribu koneksi WebSocket persisten menghabiskan memory gateway dan memicu <em>reconnection storm</em>. Polling adaptif dengan header <code>pollAfterSeconds</code> + random jitter bersifat stateless, hemat resource Cloudflare/Cloud Run, dan andal di jaringan mobile.
-                </p>
-              </div>
-
-              <div class="p-4 rounded-2xl bg-white border border-slate-200 booket-card space-y-1">
-                <div class="font-black text-slate-900 text-xs">Sinkronisasi Countdown Real-Time</div>
-                <p class="text-slate-600 text-[11px] leading-relaxed">
-                  Server mengirim <code>etaSeconds</code> dan <code>queueNumber</code> (kontrak <code>@booketid/core</code> 0.11.1). UI menghitung countdown lokal per detik dan melakukan re-sync berkala.
-                </p>
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Di sisi waiting room, kami mempertahankan polling adaptif ketimbang WebSocket persisten agar kompatibel sempurna dengan arsitektur Cloud Run stateless dan edge caching Cloudflare. Kontrak SDK @booketid/core versi 0.11.1 juga telah diselaraskan memakai etaSeconds langsung dari backend."
-      },
-      {
-        chapter: "Concurrency",
-        tag: "DEEP DIVE • DATABASE INTEGRITY",
-        title: "Pencegahan Overselling &amp; Aturan NIK 1-Tiket",
-        subtitle: "Eksekusi satu transaksi Cloud SQL PostgreSQL 18 atomik untuk mengunci inventaris &amp; kuota NIK",
-        content: `
-          <div class="space-y-3.5 text-xs my-auto">
-            <div class="bg-[#18191e] p-4 rounded-2xl border border-slate-800 font-mono text-[11px] text-slate-200 overflow-x-auto stagger-1 shadow-lg">
-              <div class="text-slate-400 mb-1.5 font-sans text-xs font-bold flex justify-between">
-                <span>Transaksi Tunggal Atomik (Cloud SQL Enterprise Plus PostgreSQL 18)</span>
-                <span class="text-emerald-400 font-mono text-[10px]">Zero-Oversell Guard</span>
-              </div>
-              <span class="text-purple-400">BEGIN TRANSACTION;</span><br/>
-              &nbsp;&nbsp;<span class="text-slate-500">-- 1. Guard Kuota NIK per Event (Maks 3 tiket/order, 1 NIK = 1 Tiket Peserta)</span><br/>
-              &nbsp;&nbsp;<span class="text-sky-400">INSERT INTO</span> nik_quotas (event_id, nik_hash, reserved_qty)<br/>
-              &nbsp;&nbsp;<span class="text-sky-400">VALUES</span> (:event_id, :nik_hash, :qty)<br/>
-              &nbsp;&nbsp;<span class="text-sky-400">ON CONFLICT</span> (event_id, nik_hash) <span class="text-rose-400">DO NOTHING</span>;<br/>
-              <br/>
-              &nbsp;&nbsp;<span class="text-slate-500">-- 2. Pengurangan Stok Kategori (Conditional Decrement)</span><br/>
-              &nbsp;&nbsp;<span class="text-sky-400">UPDATE</span> ticket_categories <span class="text-sky-400">SET</span> available = available - :qty<br/>
-              &nbsp;&nbsp;<span class="text-rose-400">WHERE</span> id = :category_id <span class="text-rose-400">AND</span> available &gt;= :qty;<br/>
-              <span class="text-purple-400">COMMIT;</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 stagger-2">
-              <div class="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card">
-                <div class="font-black text-slate-900 text-xs mb-1">1 Order Maks 3 • 1 NIK = 1 Tiket</div>
-                <div class="text-slate-600 text-[11px]">Tervalidasi murni di <code>src/domain/rules.ts</code> (<code>MAX_TICKETS_PER_ORDER = 3</code>) dan unik NIK per slot peserta.</div>
-              </div>
-              <div class="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card">
-                <div class="font-black text-slate-900 text-xs mb-1">Kepatuhan UU PDP &amp; Verifikasi</div>
-                <div class="text-slate-600 text-[11px]">NIK 16 digit di-hash HMAC-SHA256 untuk lookup kuota dan diverifikasi lewat layanan identitas (<code>dukcapil-mock</code>).</div>
-              </div>
-              <div class="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card">
-                <div class="font-black text-slate-900 text-xs mb-1">Anti-Deadlock &amp; SKIP LOCKED</div>
-                <div class="text-slate-600 text-[11px]">Order multi-tier diurutkan ascending by ID; sweeper memakai <code>FOR UPDATE SKIP LOCKED</code> non-blocking.</div>
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Database utama kami berjalan di Cloud SQL Enterprise Plus PostgreSQL 18. Pengurangan stok menggunakan conditional update di dalam satu transaksi ACID bersama penguncian kuota NIK dan pencatatan outbox, sehingga mustahil terjadi stok negatif meski terjadi race condition concurrent."
-      },
-      {
-        chapter: "Concurrency",
-        tag: "DEEP DIVE • STATE MACHINE &amp; REKONSILIASI",
-        title: "Two-Tier TTL &amp; Kebijakan Rekonsiliasi Anti-PHP",
-        subtitle: "Banner countdown server-authoritative dan perlindungan pembeli saat webhook bank mengalami latensi",
-        content: `
-          <div class="space-y-4 my-auto text-xs">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-2xl bg-rose-600 px-5 py-3 text-white shadow-md stagger-1">
-              <div class="flex items-center gap-2.5">
-                <span class="size-2.5 rounded-full bg-white animate-pulse"></span>
-                <div>
-                  <p class="text-xs font-black">Sesi Checkout Aktif • Server-Authoritative UTC Expiry</p>
-                  <p class="text-[11px] text-rose-100">Timer klien disinkronkan dari <code>expiryEpochSeconds</code> server; manipulasi jam lokal tidak mempan.</p>
-                </div>
-              </div>
-              <div class="font-mono text-xs font-black bg-rose-700/80 px-3 py-1 rounded-xl border border-rose-500/50 self-start sm:self-auto">
-                HOLD: 05:00 | PAY: 10:00
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-2">
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-2.5">
-                <div class="font-black text-slate-900 text-xs pb-1.5 border-b border-slate-200">
-                  Dua Tingkat Server-Authoritative TTL
-                </div>
-                <div>
-                  <div class="text-rose-600 font-mono text-[11px] font-bold">1. HOLD CHECKOUT (5 MENIT)</div>
-                  <p class="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
-                    Saat sesi habis sebelum submit (<code>HTTP_410</code> / <code>CHECKOUT_EXPIRED</code>), modal <code>BookingExpiredModal</code> muncul dan slot dilepas ke antrean.
-                  </p>
-                </div>
-                <div>
-                  <div class="text-emerald-700 font-mono text-[11px] font-bold">2. PAYMENT SANDBOX MIDTRANS (10 MENIT)</div>
-                  <p class="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
-                    Snapshot order disimpan di <code>orderSnapshot.ts</code> sebelum redirect ke Midtrans, dan status terkonfirmasi memicu event outbox Kafka + email Brevo.
-                  </p>
-                </div>
-              </div>
-
-              <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200 booket-card flex flex-col justify-between">
-                <div>
-                  <div class="font-black text-emerald-800 text-xs pb-1.5 border-b border-emerald-200">
-                    Rekonsiliasi Background &amp; Event Outbox
-                  </div>
-                  <p class="text-slate-600 text-[11px] mt-2 leading-relaxed">
-                    Duplikasi event atau callback payment tidak menghasilkan pencatatan ganda; sweeper memastikan transaksi settled tidak hangus secara sepihak:
-                  </p>
-                  <div class="mt-2.5 p-2.5 rounded-xl bg-white border border-emerald-200 text-[11px] font-mono text-slate-700 space-y-1">
-                    <div>✓ Inquiry ke gateway sebelum expire booking.</div>
-                    <div>✓ Outbox event diproses ulang aman saat consumer lag.</div>
-                    <div>✓ Worker terus aktif meski HTTP dalam kondisi idle.</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Dalam PoC ini, kami memastikan state akhir order, claim stok, dan outbox tetap konsisten meski terjadi duplikasi callback atau event lag di Kafka. Rekonsiliasi dan outbox di-design idempoten serta dijaga tetap aktif CPU-nya."
-      },
-      {
-        chapter: "Concurrency",
-        tag: "DEEP DIVE • FRONTEND ENGINEERING",
-        title: "Clean Architecture &amp; Self-Healing Fallback",
-        subtitle: "Isolasi domain rules murni dan ketahanan klien saat menerima payload API legacy",
-        content: `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
-            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-3 stagger-1">
-              <div>
-                <div class="font-black text-slate-900 text-xs">Domain-Driven Pure Functions</div>
-                <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">
-                  Modul <code>src/domain/rules.ts</code> bebas dependensi React dan I/O: <code>isValidNik()</code>, <code>maxSelectableQty()</code>, <code>buildParticipantSlots()</code>, dan <code>hasDuplicateParticipantNiks()</code>. Logika bisnis teruji deterministik 100%.
-                </p>
-              </div>
-              <div class="pt-2.5 border-t border-slate-200">
-                <div class="font-black text-slate-900 text-xs">Facade Pattern &amp; Reactive Store</div>
-                <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">
-                  Integrasi <code>@booketid/core</code> 0.11.1 dibungkus melalui <code>WaitingRoomFacade</code>, <code>CheckoutFacade</code>, dan <code>OrderFacade</code> via reactive subscription <code>useFacadeStore</code>.
-                </p>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card stagger-2 space-y-2.5">
-              <div class="font-black text-rose-600 text-xs pb-1.5 border-b border-slate-100 flex items-center justify-between">
-                <span>Self-Healing Fallback Engine</span>
-                <span class="font-mono text-[10px] text-slate-400">waitingRoomFallback.ts</span>
-              </div>
-              <p class="text-slate-600 text-[11px] leading-relaxed">
-                Diuji langsung dari kasus nyata HTTP 200 OK dengan payload format legacy yang ditolak DTO strict core (<code>INVALID_RESPONSE</code>):
-              </p>
-              <div class="p-3 rounded-xl bg-[#18191e] text-slate-200 font-mono text-[10.5px] leading-relaxed">
-                <span class="text-slate-500">// Auto-recovery di useWaitingRoom.ts</span><br/>
-                <span class="text-rose-400">if</span> (coreState.errorCode === <span class="text-emerald-400">"INVALID_RESPONSE"</span>) {<br/>
-                &nbsp;&nbsp;facade.stop();<br/>
-                &nbsp;&nbsp;fetchWaitingRoomFallback(token); <span class="text-slate-500">// parse etaSeconds / legacy eta</span><br/>
-                }
-              </div>
-              <p class="text-emerald-700 font-semibold text-[11px]">
-                ✓ Mengklasifikasikan error permanen (400/404/410) vs transient retry; UI antrean tetap berjalan mulus tanpa blank screen.
-              </p>
-            </div>
-          </div>
-        `,
-        notes: "Di frontend, kami menerapkan Clean Architecture serta Self-Healing Fallback. Saat API waiting room mengembalikan format payload legacy 200 OK yang sempat ditolak DTO ketat core, waitingRoomFallback.ts langsung mengambil alih parsing etaSeconds dan error classification tanpa memutus pengalaman user."
-      },
-      {
-        chapter: "QA & Demo",
-        tag: "PAYMENT, NOTIFIKASI &amp; VENUE SECURITY",
-        title: "Midtrans, Notifikasi Brevo, &amp; E-Ticket Notched Pass",
-        subtitle: "Alur bayar terverifikasi, pengiriman e-tiket transaksional via Brevo, dan Dynamic Barcode",
-        content: `
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center my-auto text-xs">
-            <div class="lg:col-span-5 space-y-3 stagger-1">
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-2">
-                <div class="font-black text-slate-900 text-xs">Midtrans Sandbox &amp; Callback Resmi</div>
-                <p class="text-slate-600 text-[11px] leading-relaxed">
-                  Virtual Account, QRIS, &amp; Kartu Kredit kembali ke route <code>/payment/success</code>, <code>/payment/status</code>, atau <code>/payment/failed</code>. <em>Catatan anggaran: fee transaksi gateway berada di luar pagu infra PoC.</em>
-                </p>
-              </div>
-              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5">
-                <div class="font-black text-slate-900 text-xs">Event Kafka &rarr; Email CRM Brevo</div>
-                <p class="text-slate-600 text-[11px] leading-relaxed">
-                  Setelah pembayaran settled, outbox menerbitkan event ke Kafka yang diteruskan <code>service-notification</code> via Brevo (US$499/bln) untuk email e-tiket resmi &amp; CRM kontak.
-                </p>
-              </div>
-            </div>
-
-            <div class="lg:col-span-7 stagger-2 relative overflow-hidden rounded-3xl bg-[#18191e] text-white shadow-2xl border border-slate-800 p-5 sm:p-6">
-              <div class="ticket-cutout-left hidden sm:block"></div>
-              <div class="ticket-cutout-right hidden sm:block"></div>
-              <div class="pointer-events-none absolute -right-12 -top-12 size-44 rounded-full bg-rose-600/20 blur-3xl"></div>
-
-              <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-                <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded bg-rose-600 text-[10px] font-black tracking-wider uppercase">BOOKET PASS</span>
-                  <span class="text-[10px] font-bold text-rose-400 font-mono">• TERVERIFIKASI MIDTRANS</span>
-                </div>
-                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
-                  <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  ACTIVE &amp; VALID
-                </span>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
-                <div class="sm:col-span-7 space-y-2">
-                  <div class="text-[10px] font-bold uppercase tracking-wider text-rose-500">DEPLOY JUMAT SORE LIVE</div>
-                  <div class="text-base font-black text-white leading-tight">CONCERT &amp; QUEUE ARENA</div>
-                  <div class="border-t border-dashed border-slate-800 my-2"></div>
-                  <div class="grid grid-cols-2 gap-2 text-[11px]">
-                    <div>
-                      <span class="text-[9px] uppercase text-slate-400">Kategori</span>
-                      <p class="font-bold text-rose-400">VIP Sunset</p>
-                    </div>
-                    <div>
-                      <span class="text-[9px] uppercase text-slate-400">NIK Peserta</span>
-                      <p class="font-mono font-bold text-slate-200">3174********0004</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sm:col-span-5 rounded-2xl border border-slate-800 bg-slate-950/90 p-3 text-center space-y-1.5">
-                  <div class="mx-auto size-20 rounded-xl bg-white text-slate-900 flex items-center justify-center font-mono text-[10px] font-bold border border-slate-200">
-                    [QR PASS]
-                  </div>
-                  <div class="flex items-center justify-center gap-1 text-[9px] text-emerald-400 font-mono">
-                    <span class="size-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>Dynamic • 30s</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Dari pembayaran Midtrans, status lunas memicu event di Confluent Kafka dan diteruskan oleh service-notification ke Brevo untuk mengirim email e-tiket secara otomatis dan dapat dilacak status pengirimannya. Sementara di aplikasi, user langsung menerima Booket PASS berlekuk dengan Dynamic QR."
-      },
-      {
-        chapter: "QA & Demo",
-        tag: "SOFTWARE QUALITY ASSURANCE • GITLAB CI/CD",
-        title: "6-Stage Pipeline, SonarQube &amp; 666 Automated Tests",
-        subtitle: "Standar rekayasa perangkat lunak terverifikasi dari kode hingga deploy otomatis Cloud Run",
-        content: `
-          <div class="space-y-4 my-auto text-xs">
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center stagger-1">
-              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
-                <div class="text-2xl font-black font-mono text-emerald-600">666</div>
-                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">Vitest Unit Tests</div>
-              </div>
-              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
-                <div class="text-2xl font-black font-mono text-slate-900">91</div>
-                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">Test Files Passed</div>
-              </div>
-              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
-                <div class="text-2xl font-black font-mono text-rose-600">&ge; 80%</div>
-                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">Coverage Threshold</div>
-              </div>
-              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
-                <div class="text-2xl font-black font-mono text-amber-600">0</div>
-                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">TypeScript Errors</div>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-[#18191e] text-white border border-slate-800 stagger-2 space-y-2.5 shadow-lg">
-              <div class="font-mono text-xs font-bold text-slate-200 flex justify-between items-center">
-                <span>6 Stages Pipeline (.gitlab-ci.yml → booket-id-web)</span>
-                <span class="text-emerald-400 text-[11px]">✓ Cloud Run Deployed</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center font-mono text-[10px]">
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <div class="text-rose-400 font-bold">1. code-quality</div>
-                  <div class="text-slate-400 mt-0.5">npm audit &amp; Gitleaks</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <div class="text-emerald-400 font-bold">2. case-coverage</div>
-                  <div class="text-slate-400 mt-0.5">Vitest + JUnit + LCOV</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <div class="text-amber-400 font-bold">3. code-rank</div>
-                  <div class="text-slate-400 mt-0.5">SonarQube Gate</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <div class="text-sky-400 font-bold">4. build</div>
-                  <div class="text-slate-400 mt-0.5">tsc -b &amp; Vite build</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <div class="text-purple-400 font-bold">5. package</div>
-                  <div class="text-slate-400 mt-0.5">Artifact Registry JKT</div>
-                </div>
-                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <div class="text-white font-bold">6. deploy</div>
-                  <div class="text-slate-400 mt-0.5">GCP Cloud Run</div>
-                </div>
-              </div>
-            </div>
-            
-            <p class="text-slate-500 text-[11px] font-mono stagger-3">
-              Setiap push ke branch <code>main</code> diaudit keamanannya (Gitleaks + npm audit), diuji dengan 666 unit tests, dipindai SonarQube, dan dibungkus ke Artifact Registry Jakarta.
-            </p>
-          </div>
-        `,
-        notes: "Repository frontend kami memiliki 6 stage CI/CD lengkap di GitLab: mulai dari secret scanning Gitleaks dan npm audit, unit test Vitest dengan 666 test pass di 91 file, SonarQube quality gate, build Vite + TypeScript strict, containerisasi ke Artifact Registry Jakarta, hingga deploy otomatis ke Cloud Run."
-      },
-      {
-        chapter: "QA & Demo",
-        tag: "DEMONSTRASI LANGSUNG • RUNBOOK",
-        title: "Skenario Demonstrasi Sistem (Live Demo)",
-        subtitle: "Empat skenario pengujian langsung untuk memverifikasi alur end-to-end aplikasi Booket",
-        content: `
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 my-auto text-xs">
-            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-1 space-y-1.5">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 font-mono font-bold text-rose-700 text-[10px]">[SKENARIO 1] HAPPY PATH &amp; WAITING ROOM</div>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Login Keycloak &rarr; Pilih konser &rarr; Masuk Waiting Room (<code>/waiting-room</code>) &rarr; Pantau nomor urut &amp; countdown live &rarr; Auto-redirect ke <code>/checkout</code> saat slot tiba.
-              </p>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-2 space-y-1.5">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 font-mono font-bold text-amber-800 text-[10px]">[SKENARIO 2] QUOTA MAX 3 &amp; NIK UNIK</div>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Tambah hingga 3 tiket (batas maksimal order terkunci otomatis) &rarr; Isi NIK peserta yang sama pada 2 slot &rarr; Validasi menolak duplikasi (<code>1 NIK = 1 Tiket</code>).
-              </p>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-3 space-y-1.5">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 font-mono font-bold text-emerald-700 text-[10px]">[SKENARIO 3] SESSION RESTORE (ANTI-PHP)</div>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Kembali ke Beranda saat masih berada di antrean &rarr; Kartu <strong>"Antrean Anda"</strong> muncul otomatis &rarr; Klik lanjutkan dan sesi pulih tanpa kehilangan antrean.
-              </p>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-4 space-y-1.5">
-              <div class="inline-block px-2 py-0.5 rounded-md bg-slate-200/80 border border-slate-300 font-mono font-bold text-slate-800 text-[10px]">[SKENARIO 4] MIDTRANS &amp; E-TICKET</div>
-              <p class="text-slate-600 text-xs leading-relaxed">
-                Submit checkout &rarr; Selesaikan pembayaran Midtrans &rarr; Halaman sukses menampilkan Pass Konser Berlekuk &amp; tiket tersimpan rapi di menu <code>/tiket</code>.
-              </p>
-            </div>
-          </div>
-        `,
-        notes: "Sekarang mari kita buktikan secara langsung di layar aplikasi Booket lewat 4 skenario live demo: alur antrean hingga checkout, guard NIK unik per tiket, pemulihan antrean lewat Beranda, hingga penerbitan Pass Konser dan log transaksi."
-      },
-      {
-        chapter: "Budget & PoC",
-        tag: "OPTIMASI CLOUD &amp; ARSITEKTUR PoC",
-        title: "Audit Biaya Eksisting vs Konfigurasi Target PoC",
-        subtitle: "Optimasi Cloud SQL &amp; pengalokasian CPU kontinu pada 3 worker inti (Project: booket-512519)",
-        content: `
-          <div class="space-y-3.5 my-auto text-xs">
-            <!-- Comparison Header Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-1">
-              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-mono text-[10px] font-bold uppercase text-slate-500">KONDISI EXISTING + KAFKA</span>
-                  <span class="font-mono font-black text-slate-900 text-sm">US$2.343,11 <span class="text-[10px] font-normal text-slate-500">/bln*</span></span>
-                </div>
-                <ul class="text-[11px] text-slate-600 space-y-1">
-                  <li>• Cloud SQL: <strong>N2 8 vCPU, 64 GiB</strong>, cache 375 GiB (<strong>US$1.059,03/bln</strong>).</li>
-                  <li>• Sample metrik rendah 7 hari: CPU 0,94%, RAM 38,39% (~24,57 GiB).</li>
-                  <li>• Cloud Run: 17 service request-based (run rate eksisting pra-Kafka: <strong>US$1.786,31/bln</strong>).</li>
-                </ul>
-              </div>
-
-              <div class="p-4 rounded-2xl bg-rose-50/60 border border-rose-200 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-mono text-[10px] font-bold uppercase text-rose-700">TARGET PoC TEROPTIMASI (REKOMENDASI)</span>
-                  <span class="font-mono font-black text-rose-700 text-sm">US$1.936,46 <span class="text-[10px] font-normal text-rose-600">/bln*</span></span>
-                </div>
-                <ul class="text-[11px] text-slate-700 space-y-1">
-                  <li>• Cloud SQL resize: <strong>N2 4 vCPU, 32 GiB</strong>, cache off pasca-uji + backup 20 GiB (~<strong>US$503,64/bln</strong>).</li>
-                  <li>• 3 Worker Inti (<code>order</code>, <code>outbox</code>, <code>waiting-room</code>): <strong>min 1 instance CPU kontinu</strong> (~<strong>US$239,02/bln</strong> Cloud Run).</li>
-                  <li>• Rencana lepas unused IP (<code>gitlab-runner</code>) &amp; review VPC connector pasca verifikasi.</li>
-                </ul>
-              </div>
-            </div>
-
-            <!-- Breakdown Table of Stable PoC Run Rate -->
-            <div class="rounded-2xl border border-slate-200 overflow-hidden stagger-2">
-              <div class="bg-[#18191e] text-white px-4 py-2 flex justify-between items-center font-mono text-[10.5px]">
-                <span class="font-bold">Komponen Utama Biaya Layanan (Target Stabil PoC vs Existing)</span>
-                <span class="text-emerald-400">Hemat ~16,7% / Tahun dengan Resize + Worker Aktif</span>
-              </div>
-              <div class="grid grid-cols-2 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 bg-white text-center text-[11px] p-2">
-                <div class="p-2">
-                  <div class="text-slate-500 font-medium">Cloud SQL PG 18</div>
-                  <div class="font-mono font-black text-slate-900 mt-0.5">US$503,64</div>
-                  <div class="text-[9.5px] text-emerald-600">Turun dari US$1.059,03</div>
-                </div>
-                <div class="p-2">
-                  <div class="text-slate-500 font-medium">Confluent Kafka</div>
-                  <div class="font-mono font-black text-slate-900 mt-0.5">US$554,90</div>
-                  <div class="text-[9.5px] text-slate-500">1 eCKU Standard + Egress $1,90</div>
-                </div>
-                <div class="p-2">
-                  <div class="text-slate-500 font-medium">Brevo Email &amp; CRM</div>
-                  <div class="font-mono font-black text-slate-900 mt-0.5">US$499,00</div>
-                  <div class="text-[9.5px] text-slate-500">Sesuai informasi paket</div>
-                </div>
-                <div class="p-2">
-                  <div class="text-slate-500 font-medium">Cloud Run (17 svc)</div>
-                  <div class="font-mono font-black text-slate-900 mt-0.5">US$239,02</div>
-                  <div class="text-[9.5px] text-amber-600">3 core worker CPU aktif 24/7</div>
-                </div>
-                <div class="p-2">
-                  <div class="text-slate-500 font-medium">VM, Net, Cloudflare</div>
-                  <div class="font-mono font-black text-slate-900 mt-0.5">~US$139,90</div>
-                  <div class="text-[9.5px] text-slate-500">2 VM + Storage + CF Free</div>
-                </div>
-              </div>
-            </div>
-
-            <p class="text-[10.5px] text-slate-500 font-mono stagger-3">
-              *Angka bulanan standar (730 jam) dalam USD sebelum pajak &amp; cadangan 20%. Cloud SQL 4 vCPU/32 GiB bersifat bersyarat hasil load test.
-            </p>
-          </div>
-        `,
-        notes: "Ini adalah temuan penting dari tim infrastruktur/backend kami pada 23 November 2026: kondisi existing memiliki Cloud SQL besar 8 vCPU/64 GiB yang utilitas rata-rata hariannya baru 38% RAM, sementara worker background belum memiliki CPU kontinu. Dengan mengoptimalkan Cloud SQL ke 4 vCPU/32 GiB dan mengalihkan dana ke CPU kontinu untuk 3 worker inti serta Kafka Confluent 1 eCKU, kita tidak hanya meningkatkan reliabilitas proses async, tetapi justru menurunkan biaya bulanan dari 2.343 dolar menjadi 1.936 dolar sebelum cadangan."
-      },
-      {
-        chapter: "Budget & PoC",
-        tag: "PROYEKSI ANGGARAN • 3 BULAN (PoC) &amp; 1 TAHUN",
-        title: "3 Skenario Proyeksi Budget &amp; Rekomendasi Dana PoC",
-        subtitle: "Perbandingan skenario untuk periode PoC (1 Des 2026 – 28 Feb 2027) dan proyeksi operasional 12 bulan",
-        content: `
-          <div class="space-y-4 my-auto text-xs">
-            <!-- 3 Scenario Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-1">
-              <!-- Recommended PoC -->
-              <div class="p-5 rounded-2xl bg-[#18191e] text-white border-2 border-rose-500 shadow-xl space-y-3 relative overflow-hidden">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded-full bg-rose-600 text-[10px] font-black uppercase tracking-wider">USULAN UTAMA • PoC</span>
-                  <span class="text-[10px] font-mono text-emerald-400">Hemat 16,7%</span>
-                </div>
-                <div>
-                  <div class="text-slate-400 text-[11px]">Kas 3 Bulan (incl. Cadangan 20%)</div>
-                  <div class="text-2xl font-black font-mono text-white">US$7.140,74</div>
-                  <div class="text-[11px] font-mono text-amber-400">Pembulatan usulan: US$7.200,00</div>
-                </div>
-                <div class="pt-2 border-t border-slate-800 space-y-1 text-[11px] text-slate-300">
-                  <div class="flex justify-between"><span>Sebelum cadangan (3 bln):</span><span class="font-mono font-bold">US$5.939,25</span></div>
-                  <div class="flex justify-between"><span>Proyeksi 1 Tahun (+20%):</span><span class="font-mono font-bold text-emerald-400">US$28.108,88 (~$28.2k)</span></div>
-                  <p class="text-[10px] text-slate-400 pt-1">Sudah termasuk 14 hari transisi Des, Brevo, Confluent 1 eCKU, &amp; 1 renewal domain .id (US$15,15).</p>
-                </div>
-              </div>
-
-              <!-- Fallback Existing + Kafka -->
-              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 booket-card space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-800 text-[10px] font-black uppercase">FALLBACK KONDISI EXISTING</span>
-                </div>
-                <div>
-                  <div class="text-slate-500 text-[11px]">Kas 3 Bulan (incl. Cadangan 20%)</div>
-                  <div class="text-2xl font-black font-mono text-slate-900">US$8.364,11</div>
-                  <div class="text-[11px] font-mono text-slate-600">Pembulatan fallback: US$8.400,00</div>
-                </div>
-                <div class="pt-2 border-t border-slate-200 space-y-1 text-[11px] text-slate-600">
-                  <div class="flex justify-between"><span>Sebelum cadangan (3 bln):</span><span class="font-mono font-bold">US$6.958,73</span></div>
-                  <div class="flex justify-between"><span>Proyeksi 1 Tahun (+20%):</span><span class="font-mono font-bold text-slate-900">US$33.740,73 (~$33.8k)</span></div>
-                  <p class="text-[10px] text-slate-500 pt-1">Digunakan apabila uji beban menyatakan resize SQL ke 32 GiB tidak mencukupi saat peak.</p>
-                </div>
-              </div>
-
-              <!-- Load Test Conservative Envelope -->
-              <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 booket-card space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-black uppercase">ENVELOPE UJI BEBAN 100x</span>
-                </div>
-                <div>
-                  <div class="text-slate-500 text-[11px]">Kas 3 Bulan (incl. Cadangan 20%)</div>
-                  <div class="text-2xl font-black font-mono text-slate-900">US$9.766,19</div>
-                  <div class="text-[11px] font-mono text-amber-700">Pembulatan uji beban: US$9.800,00</div>
-                </div>
-                <div class="pt-2 border-t border-slate-200 space-y-1 text-[11px] text-slate-600">
-                  <div class="flex justify-between"><span>Sebelum cadangan (3 bln):</span><span class="font-mono font-bold">US$8.127,12</span></div>
-                  <div class="flex justify-between"><span>Cloud Run 100x (~2,74jt req/bln)</span><span class="font-mono font-bold">Kafka 2 eCKU</span></div>
-                  <p class="text-[10px] text-slate-500 pt-1">Ditambah Cloudflare Workers Paid ($5/bln), log 100 GiB, &amp; egress tinggi. Hanya dipakai bila kampanye load test dijalankan.</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Calendar Snapshot & Alert Governance -->
-            <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row justify-between items-center gap-2 text-[11px] stagger-2">
-              <div class="text-emerald-900 font-medium">
-                <strong>Penghematan Tahunan Target PoC:</strong> Mencapai <strong>US$5.631,85 (~16,7%)</strong> termasuk cadangan 20% dibandingkan mempertahankan konfigurasi existing 8 vCPU/64 GiB + Kafka sepanjang tahun.
-              </div>
-              <span class="shrink-0 font-mono text-[10px] px-2.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-800 font-bold">
-                Budget Alert: 50% / 80% / 100%
-              </span>
-            </div>
-          </div>
-        `,
-        notes: "Kami menyiapkan 3 skenario anggaran transparan sebelum pajak agar manajemen bisa mengambil keputusan berbasis data. Rekomendasi utama PoC 3 bulan adalah 7.200 dolar (perhitungan akurat 7.140,74 dolar sudah termasuk buffer 20% dan 14 hari masa transisi). Jika uji beban menunjukkan database harus tetap 64 GiB, ada skenario fallback 8.400 dolar. Dan jika kita ingin menyimulasikan uji beban 100x aktivitas API dengan Kafka 2 eCKU, envelope maksimalnya adalah 9.800 dolar."
-      },
-      {
-        chapter: "Budget & PoC",
-        tag: "ROADMAP 12 MINGGU • TATA KELOLA PoC",
-        title: "Tahapan Pelaksanaan PoC, Kriteria Uji &amp; Batas Cakupan",
-        subtitle: "Rencana eksekusi 1 Desember 2026 – 28 Februari 2027 beserta governance yang transparan",
-        content: `
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 my-auto text-xs">
-            <!-- Left: 5-Phase Roadmap -->
-            <div class="lg:col-span-7 space-y-2 stagger-1">
-              <div class="font-black text-slate-900 text-xs mb-1">Timeline Implementasi &amp; Verifikasi PoC (12 Minggu)</div>
-              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex gap-3 items-start">
-                <span class="px-2 py-0.5 rounded bg-rose-600 text-white font-mono text-[10px] font-bold shrink-0">W 1–2</span>
-                <div class="text-[11px] text-slate-700"><strong>Baseline &amp; Validasi Kontrak:</strong> Cek invoice GCP/registrar, quote Confluent regional &amp; kuota Brevo, uji backup/restore awal.</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex gap-3 items-start">
-                <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold shrink-0">W 3–4</span>
-                <div class="text-[11px] text-slate-700"><strong>Konfigurasi PoC &amp; Integrasi Event:</strong> Terapkan resize bersyarat, CPU kontinu 3 worker, hubungkan outbox Kafka &amp; email Brevo.</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex gap-3 items-start">
-                <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold shrink-0">W 5–8</span>
-                <div class="text-[11px] text-slate-700"><strong>UAT Terbatas &amp; Uji Idle 30 Menit:</strong> Uji antrean, kuota NIK, bayar sandbox Midtrans, &amp; buktikan background worker jalan saat HTTP idle.</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex gap-3 items-start">
-                <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold shrink-0">W 9–10</span>
-                <div class="text-[11px] text-slate-700"><strong>Uji Beban Bertahap &amp; Simulasi Restore:</strong> Ukur error rate (&lt;1%), p95 latency API inti (&lt;2s), &amp; verifikasi kelayakan RAM 32 GiB.</div>
-              </div>
-              <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex gap-3 items-start">
-                <span class="px-2 py-0.5 rounded bg-emerald-600 text-white font-mono text-[10px] font-bold shrink-0">W 11–12</span>
-                <div class="text-[11px] text-emerald-900"><strong>Rekonsiliasi Biaya &amp; Keputusan Lanjut:</strong> Bandingkan biaya SKU nyata vs proyeksi, tetapkan arsitektur produksi final.</div>
-              </div>
-            </div>
-
-            <!-- Right: Success Criteria & Boundaries -->
-            <div class="lg:col-span-5 space-y-3 stagger-2">
-              <div class="p-4 rounded-2xl bg-[#18191e] text-white border border-slate-800 space-y-2">
-                <div class="font-bold text-emerald-400 text-xs">Target Keberhasilan PoC yang Diajukan</div>
-                <ul class="text-[11px] text-slate-300 space-y-1 leading-relaxed">
-                  <li>• <strong>Konsistensi Stok:</strong> 0 oversell &amp; idempoten pada event/callback duplikat.</li>
-                  <li>• <strong>Worker &amp; Kafka:</strong> Consumer lag terkendali &amp; outbox aktif saat idle 30 menit.</li>
-                  <li>• <strong>Kinerja API Inti:</strong> Target uji awal error &lt;1% &amp; p95 &lt;2 detik (diuji setelah baseline).</li>
-                </ul>
-              </div>
-
-              <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-1.5">
-                <div class="font-black text-amber-900 text-xs">Batas Cakupan Anggaran (Transparansi)</div>
-                <p class="text-[10.5px] text-amber-900/90 leading-relaxed">
-                  Estimasi infrastruktur memakai ulang resource existing (bukan billing export final karena dataset BigQuery belum aktif), <strong>belum termasuk</strong> pajak, tenaga pengembangan/operasional, fee transaksi Midtrans, overage Brevo (SMS/WA), serta biaya lingkungan paralel kedua.
-                </p>
-              </div>
-            </div>
-          </div>
-        `,
-        notes: "Kami membagi pelaksanaan PoC dalam 12 minggu dengan 5 tahapan terukur, mulai dari validasi invoice vendor di minggu pertama, pengujian worker idle selama 30 menit di fase UAT, hingga load test bertahap. Kami juga secara eksplisit memaparkan batas cakupan anggaran—bahwa angka US$7.200 mencakup platform cloud & vendor eksternal sebelum pajak dan di luar fee transaksi payment gateway atau jasa development."
-      },
-      {
-        chapter: "Budget & PoC",
-        tag: "PENUTUP • TECHNICAL &amp; PoC DEFENSE",
-        title: "Kesimpulan &amp; Sesi Tanya Jawab",
-        subtitle: "PT DJS (Deploy Jumat Sore) siap mengawal PoC 12 minggu hingga skala produksi penuh",
-        content: `
-          <div class="space-y-4 my-auto text-xs text-center max-w-3xl mx-auto stagger-1">
-            <div class="relative overflow-hidden p-6 rounded-3xl bg-[#18191e] text-white border border-slate-800 shadow-2xl space-y-2">
-              <div class="pointer-events-none absolute -right-12 -top-12 size-44 rounded-full bg-rose-600/20 blur-3xl"></div>
-              <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30 mb-1">
-                <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                SIAP UNTUK TINJAUAN TEKNIS, LIVE DEMO &amp; APPROVAL PoC
-              </div>
-              <h3 class="text-xl font-black text-white">Rekayasa Matang &amp; Tata Kelola Biaya Transparan</h3>
-              <p class="text-slate-300 text-xs leading-relaxed max-w-xl mx-auto">
-                Integrasi arsitektur Cloud Run &amp; PostgreSQL 18 bebas oversell, 666 automated unit tests, serta rancangan PoC 3 bulan sebesar <strong>US$7.200</strong> (proyeksi tahunan hemat ~16,7%) siap mengantar Booket menuju tahap produksi.
-              </p>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center stagger-2 font-mono text-[11px]">
-              <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
-                <div class="font-black text-emerald-700">Zero Oversell</div>
-                <div class="text-[10px] text-emerald-600 mt-0.5">PG 18 Conditional</div>
-              </div>
-              <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200">
-                <div class="font-black text-rose-700">1 NIK = 1 Tiket</div>
-                <div class="text-[10px] text-rose-600 mt-0.5">Maks 3 / Order</div>
-              </div>
-              <div class="p-3 rounded-2xl bg-slate-100 border border-slate-200">
-                <div class="font-black text-slate-900">666 Tests</div>
-                <div class="text-[10px] text-slate-600 mt-0.5">6-Stage CI/CD</div>
-              </div>
-              <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200">
-                <div class="font-black text-amber-800">US$7.200 PoC</div>
-                <div class="text-[10px] text-amber-700 mt-0.5">Fallback $8.400</div>
-              </div>
-            </div>
-
-            <div class="text-slate-500 font-medium pt-1 text-xs stagger-3">
-              Kami mengundang bapak/ibu panel penilai untuk masuk ke sesi Live Demo &amp; diskusi tanya jawab.
-            </div>
-          </div>
-        `,
-        notes: "Sebagai penutup, kami merekomendasikan langkah berikutnya: meninjau envelope PoC US$7.200 (dengan fallback US$8.400), melengkapi validasi invoice & quote vendor di minggu pertama, dan memulai pengujian baseline agar konfigurasi produksi nantinya betul-betul berdasar pengukuran riil. Terima kasih, mari kita lanjutkan ke demo dan tanya jawab."
-      }
-    ];
-
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const chapters = Array.from(document.querySelectorAll(".chapters a"));
+    const picker = document.getElementById("slide-select");
+    const counter = document.getElementById("slide-count");
+    const progress = document.getElementById("progress");
+    const previous = document.getElementById("previous");
+    const next = document.getElementById("next");
+    const notes = document.getElementById("speaker-notes");
+    const notesToggle = document.getElementById("notes-toggle");
+    const fullscreen = document.getElementById("fullscreen");
+    const chapterStarts = chapters.map(link => slides.findIndex(slide => "#" + slide.id === link.hash));
     let current = 0;
-    let showNotes = true;
-    let direction = 'next';
 
-    const slideContentArea = document.getElementById('slideContentArea');
-    const notesContentText = document.getElementById('notesContentText');
-    const notesDrawer = document.getElementById('notesDrawer');
-    const slideIndexText = document.getElementById('slideIndexText');
-    const totalSlideText = document.getElementById('totalSlideText');
-    const prevSlideBtn = document.getElementById('prevSlideBtn');
-    const nextSlideBtn = document.getElementById('nextSlideBtn');
-    const toggleNotesBtn = document.getElementById('toggleNotesBtn');
-    const notesStatusText = document.getElementById('notesStatusText');
-    const notesDot = document.getElementById('notesDot');
-    const progressBar = document.getElementById('progressBar');
-    const slideDotsArea = document.getElementById('slideDotsArea');
-    const chapterNav = document.getElementById('chapterNav');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-    totalSlideText.innerText = deck.length;
-
-    const chapters = [];
-    deck.forEach((s, idx) => {
-      if (!chapters.some(c => c.name === s.chapter)) {
-        chapters.push({ name: s.chapter, startIndex: idx });
-      }
+    slides.forEach((slide, index) => {
+      const title = slide.querySelector(".slide-title");
+      const label = title.innerText.trim().replace(/\s+/g, " ");
+      picker.add(new Option((index + 1) + ". " + label, index));
     });
-
-    function renderChapterPills(activeChapter) {
-      chapterNav.innerHTML = '';
-      chapters.forEach((ch) => {
-        const btn = document.createElement('button');
-        const isActive = ch.name === activeChapter;
-        btn.className = isActive
-          ? 'rounded-full px-3 py-1 bg-rose-600 text-white shadow-sm shadow-rose-600/30 transition-all'
-          : 'rounded-full px-3 py-1 text-slate-600 hover:text-slate-950 hover:bg-slate-100 transition-all';
-        btn.innerText = ch.name;
-        btn.addEventListener('click', () => {
-          direction = ch.startIndex >= current ? 'next' : 'prev';
-          current = ch.startIndex;
-          renderSlide(current);
-        });
-        chapterNav.appendChild(btn);
-      });
-    }
-
-    deck.forEach((_, idx) => {
-      const dot = document.createElement('button');
-      dot.className = `h-1.5 rounded-full transition-all duration-200 ${idx === 0 ? 'bg-rose-600 w-5' : 'bg-slate-300 hover:bg-slate-400 w-2'}`;
-      dot.title = `Slide ${idx + 1}`;
-      dot.addEventListener('click', () => {
-        direction = idx > current ? 'next' : 'prev';
-        current = idx;
-        renderSlide(current);
-      });
-      slideDotsArea.appendChild(dot);
-    });
-
-    function updateDots(index) {
-      const dots = slideDotsArea.querySelectorAll('button');
-      dots.forEach((dot, idx) => {
-        if (idx === index) {
-          dot.className = 'h-1.5 rounded-full bg-rose-600 w-5 transition-all duration-200 shadow-xs';
-        } else {
-          dot.className = 'h-1.5 rounded-full bg-slate-300 hover:bg-slate-400 w-2 transition-all duration-200';
-        }
-      });
-    }
+    progress.max = slides.length;
+    document.querySelectorAll("[data-interactive]").forEach(control => { control.hidden = false; });
 
     function renderSlide(index) {
-      const s = deck[index];
-      slideIndexText.innerText = index + 1;
-
-      const percent = ((index + 1) / deck.length) * 100;
-      progressBar.style.width = `${percent}%`;
-
-      updateDots(index);
-      renderChapterPills(s.chapter);
-
-      const animClass = direction === 'next' ? 'slide-enter-next' : 'slide-enter-prev';
-
-      slideContentArea.innerHTML = `
-        <div class="${animClass} flex-1 flex flex-col justify-between">
-          <div class="mb-4 pb-3 border-b border-slate-100">
-            <div class="text-[10px] font-mono tracking-wider font-bold text-rose-600 mb-1 flex items-center gap-2">
-              <span class="size-1.5 rounded-full bg-rose-600"></span>
-              <span>${s.tag}</span>
-            </div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">${s.title}</h2>
-            <p class="text-xs text-slate-500 mt-1 font-medium">${s.subtitle}</p>
-          </div>
-          <div class="min-h-[300px] flex flex-col justify-center my-auto">
-            ${s.content}
-          </div>
-        </div>
-      `;
-
-      notesContentText.innerText = `"${s.notes}"`;
-
-      prevSlideBtn.disabled = index === 0;
-      nextSlideBtn.disabled = index === deck.length - 1;
+      current = index;
+      slides.forEach((slide, position) => { slide.hidden = position !== index; });
+      for (const [position, link] of chapters.entries()) {
+        const active = index >= chapterStarts[position] && index < (chapterStarts[position + 1] ?? slides.length);
+        if (active) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      }
+      picker.value = index;
+      counter.value = (index + 1) + " / " + slides.length;
+      progress.value = index + 1;
+      previous.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      notes.querySelector("p").textContent = slides[index].querySelector(".speaker-note").content.textContent.trim();
     }
 
-    prevSlideBtn.addEventListener('click', () => {
-      if (current > 0) {
-        direction = 'prev';
-        current--;
-        renderSlide(current);
-      }
-    });
+    function showFromHash() {
+      const index = slides.findIndex(slide => "#" + slide.id === location.hash);
+      renderSlide(Math.max(0, index));
+      window.scrollTo(0, 0);
+    }
 
-    nextSlideBtn.addEventListener('click', () => {
-      if (current < deck.length - 1) {
-        direction = 'next';
-        current++;
-        renderSlide(current);
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        if (current < deck.length - 1) {
-          direction = 'next';
-          current++;
-          renderSlide(current);
-        }
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        if (current > 0) {
-          direction = 'prev';
-          current--;
-          renderSlide(current);
-        }
-      } else if (e.key === 'n' || e.key === 'N') {
-        toggleNotes();
-      } else if (e.key === 'f' || e.key === 'F') {
-        toggleFullscreen();
-      }
-    });
+    function goTo(index) {
+      if (index < 0 || index >= slides.length) return;
+      if (index !== current) history.pushState(null, "", "#" + slides[index].id);
+      showFromHash();
+    }
 
     function toggleNotes() {
-      showNotes = !showNotes;
-      if (showNotes) {
-        notesDrawer.style.display = 'block';
-        notesStatusText.innerText = 'ON';
-        notesDot.className = 'size-1.5 rounded-full bg-rose-600';
-      } else {
-        notesDrawer.style.display = 'none';
-        notesStatusText.innerText = 'OFF';
-        notesDot.className = 'size-1.5 rounded-full bg-slate-400';
+      notes.hidden = !notes.hidden;
+      notesToggle.setAttribute("aria-pressed", String(!notes.hidden));
+    }
+
+    async function toggleFullscreen() {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else await document.documentElement.requestFullscreen();
+      } catch (error) {
+        console.info("Layar penuh tidak tersedia.", error.message);
       }
     }
 
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
+    picker.addEventListener("change", () => goTo(Number(picker.value)));
+    previous.addEventListener("click", () => goTo(current - 1));
+    next.addEventListener("click", () => goTo(current + 1));
+    notesToggle.addEventListener("click", toggleNotes);
+    fullscreen.hidden = !document.fullscreenEnabled;
+    fullscreen.addEventListener("click", toggleFullscreen);
+    document.addEventListener("fullscreenchange", () => {
+      fullscreen.setAttribute("aria-pressed", String(Boolean(document.fullscreenElement)));
+      fullscreen.textContent = document.fullscreenElement ? "Keluar layar penuh" : "Layar penuh";
+    });
+    history.scrollRestoration = "manual";
+    window.addEventListener("popstate", showFromHash);
+    window.addEventListener("hashchange", showFromHash);
+    document.addEventListener("click", event => {
+      if (event.defaultPrevented || event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const link = event.target.closest('a[href^="#slide-"]');
+      if (!link) return;
+      const index = slides.findIndex(slide => "#" + slide.id === link.hash);
+      if (index < 0) return;
+      event.preventDefault();
+      goTo(index);
+    });
+    document.addEventListener("keydown", event => {
+      if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey ||
+          event.target.closest("input, textarea, select, [contenteditable]")) return;
+      if (event.key === " " && event.target.closest("button, a")) return;
+      if (["ArrowLeft", "ArrowRight"].includes(event.key) && event.target.closest(".table-wrap")) return;
+
+      switch (event.key.toLowerCase()) {
+        case "arrowright":
+        case "pagedown":
+        case " ":
+          goTo(current + 1);
+          break;
+        case "arrowleft":
+        case "pageup":
+          goTo(current - 1);
+          break;
+        case "n":
+          toggleNotes();
+          break;
+        case "f":
+          if (!fullscreen.hidden) void toggleFullscreen();
+          break;
+        default:
+          return;
       }
-    }
+      event.preventDefault();
+    });
 
-    toggleNotesBtn.addEventListener('click', toggleNotes);
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
-
-    renderSlide(0);
+    showFromHash();
   </script>
 </body>
 </html>
