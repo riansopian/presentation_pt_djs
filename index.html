@@ -153,6 +153,52 @@
     }
     .architecture .step-list li { padding-block: .45rem; font-size: .95rem; line-height: 1.4; }
     .architecture-details { margin-top: 1.1rem; }
+    .architecture-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.5rem;
+      list-style: none;
+      padding: 0;
+    }
+    .architecture-flow li {
+      position: relative;
+      min-width: 0;
+      padding: .8rem .85rem;
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--rose);
+      border-radius: .65rem;
+      background: var(--background);
+    }
+    .architecture-flow li:not(:last-child)::after {
+      content: "→" / "";
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      width: 1.5rem;
+      transform: translateY(-50%);
+      color: var(--rose-strong);
+      text-align: center;
+      font-weight: 750;
+    }
+    .architecture-flow strong, .architecture-flow span { display: block; }
+    .architecture-flow span { margin-top: .25rem; color: var(--muted); font-size: .9rem; }
+    .architecture-flow + .list { margin-top: 1.2rem; }
+    .route-map {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .1rem 1.5rem;
+    }
+    .route-map div { padding: .68rem 0; border-top: 1px solid var(--border); }
+    .route-map dt { font-weight: 750; }
+    .route-map dt code { color: var(--rose-strong); }
+    .route-map dd { margin-top: .2rem; color: var(--muted); font-size: .95rem; }
+    .subheading { margin-bottom: .65rem; font-size: 1.1rem; font-weight: 770; }
+    .section-stack { display: grid; gap: 1.2rem; }
+    .session-layout { align-items: start; }
+    .session-layout .list li { padding-block: .55rem; }
+    .responsibility-table { min-width: 36rem; }
+    .responsibility-table tbody th { width: 20%; }
+    .responsibility-table td { width: 40%; }
     .pass {
       min-width: 0;
       position: relative;
@@ -244,6 +290,9 @@
     }
     @media (max-width: 42rem) {
       .table-hint { display: block; margin: 0 0 .5rem; }
+      .architecture-flow { grid-template-columns: 1fr; gap: 1.15rem; }
+      .architecture-flow li:not(:last-child)::after { content: "↓" / ""; top: 100%; left: .75rem; transform: none; }
+      .route-map { grid-template-columns: 1fr; }
     }
     @media (max-width: 34rem) {
       .shell { width: calc(100% - 1.4rem); }
@@ -273,7 +322,7 @@
 </head>
 <body>
   <header class="site-header">
-    <progress id="progress" class="progress" value="1" max="16" aria-label="Progres presentasi"></progress>
+    <progress id="progress" class="progress" value="1" max="23" aria-label="Progres presentasi"></progress>
     <div class="shell header-inner">
       <a class="brand" href="#slide-1" aria-label="Booket, kembali ke sampul">
         <img src="./booket-logo.png" alt="" width="38" height="38">
@@ -281,9 +330,9 @@
       </a>
       <nav class="chapters" aria-label="Bagian presentasi">
         <a href="#slide-1" aria-current="true">Ringkasan</a>
-        <a href="#slide-3">Arsitektur</a>
-        <a href="#slide-7">Transaksi</a>
-        <a href="#slide-10">QA &amp; Demo</a>
+        <a href="#slide-5">Frontend</a>
+        <a href="#slide-4">Backend</a>
+        <a href="#slide-11">QA &amp; Demo</a>
         <a href="#slide-13">Anggaran PoC</a>
       </nav>
       <div class="header-actions" data-interactive hidden>
@@ -298,7 +347,7 @@
       <div>
         <p class="eyebrow">Tender Rusuh Booking Ticket</p>
         <h1 id="title-1" class="slide-title"><span>Booket</span><span>Antrean tiket konser</span></h1>
-        <p class="lead">Cara Booket mengatur giliran pembeli, menjaga stok tiket saat ramai, dan memproses pembayaran sampai e-tiket terbit.</p>
+        <p class="lead">Arsitektur aplikasi web, dari layar pembeli sampai layanan yang mengatur antrean, stok tiket, dan pembayaran.</p>
         <p class="credit">PT DJS (Deploy Jumat Sore)</p>
         <a href="#slide-2" class="button primary">Mulai presentasi <span aria-hidden="true">→</span></a>
       </div>
@@ -306,7 +355,7 @@
         <img src="./assets/beranda.jpg" width="1202" height="428" fetchpriority="high" alt="Sorotan Booket Rock Fest, sisa kuota, harga, dan tombol Pesan Tiket">
         <figcaption>Beranda Booket · mode demo</figcaption>
       </figure>
-      <template class="speaker-note">Kami dari PT DJS. Kami akan mulai dari alur pembeli, lalu membahas cara antrean dan pembayaran bekerja saat trafik naik. Di bagian akhir, kami jelaskan apa yang masih perlu diuji dan berapa anggarannya.</template>
+      <template class="speaker-note">Kami dari PT DJS. Kami mulai dari alur yang dilihat pembeli, lalu tunjukkan bagaimana web membaca state SDK, menyambung sesi, dan menangani checkout. Setelah itu kita masuk ke rancangan backend dan usulan PoC.</template>
     </section>
 
     <section class="slide paper" id="slide-2" aria-labelledby="title-2">
@@ -321,6 +370,24 @@
       <template class="speaker-note">Bayangkan dua orang memilih tiket terakhir pada saat yang sama. Database harus menentukan siapa yang mendapat tiket. Setelah itu, sistem masih perlu memastikan pembayarannya masuk, termasuk ketika notifikasi dari gateway datang terlambat.</template>
     </section>
 
+    <section class="slide paper" id="arsitektur-sistem" aria-labelledby="title-arsitektur-sistem">
+      <h2 id="title-arsitektur-sistem" class="slide-title">Peta sistem Booket</h2>
+      <p class="lead">Web menampilkan alur pembeli dan memakai SDK untuk mengakses API. Layanan di belakang gateway memutuskan giliran, stok, dan status pesanan.</p>
+      <div class="slide-body">
+        <ol class="architecture-flow" aria-label="Jalur dari browser ke layanan">
+          <li><strong>Browser</strong><span>React merender halaman dan menangani interaksi.</span></li>
+          <li><strong>Event Core</strong><span>Klien Kotlin/JS yang dipakai web lewat <code>@booketid/core</code>.</span></li>
+          <li><strong>API Gateway</strong><span><code>api.booket.id</code> menerima panggilan mode live.</span></li>
+          <li><strong>Layanan Booket</strong><span>Katalog, akun, antrean, pesanan, dan tiket.</span></li>
+        </ol>
+        <ul class="list">
+          <li><strong>Identitas</strong><span>Web login melalui Keycloak. SDK menyertakan bearer token pada operasi yang memerlukannya.</span></li>
+          <li><strong>Data dan integrasi</strong><span>Rancangan menempatkan PostgreSQL sebagai sumber data transaksi. Midtrans memproses pembayaran, sementara outbox meneruskan event ke Kafka.</span></li>
+        </ul>
+      </div>
+      <template class="speaker-note">Diagram memadukan kode frontend web dengan peta layanan dari Booket App Design. Referensi menggambarkan Event Core sebagai rancangan bersama Web, Android, dan iOS. Slide ini membahas pemakaian SDK di web. Mode demo dapat menjalankan alur dengan data contoh SDK.</template>
+    </section>
+
     <section class="slide paper" id="slide-3" aria-labelledby="title-3">
       <h2 id="title-3" class="slide-title">Alur pemesanan di Booket</h2>
       <p class="lead">Waiting room mengatur giliran. Setelah pembeli masuk, PostgreSQL menjaga stok dan kuota NIK.</p>
@@ -329,30 +396,12 @@
           <li><span>Pilih konser</span></li><li><span>Masuk antrean</span></li><li><span>Checkout</span></li><li><span>Bayar</span></li><li><span>Terima e-tiket</span></li>
         </ol>
         <ul class="list">
-          <li><strong>Antrean</strong><span><code>service-waiting-room</code> membuka slot checkout sesuai kapasitas.</span></li>
-          <li><strong>Pesanan</strong><span>PostgreSQL 18 mencatat pemesanan dan memeriksa sisa stok serta kuota NIK dalam satu transaksi.</span></li>
-          <li><strong>Setelah transaksi</strong><span>Rancangan PoC memakai outbox untuk mengirim event ke Confluent Kafka. Layanan tiket dan notifikasi dapat memprosesnya secara terpisah.</span></li>
+          <li><strong>Masuk antrean</strong><span>Tombol Pesan memanggil <code>OrderFacade.beginCheckout</code>. Web membuka ruang tunggu atau checkout sesuai hasil dari server.</span></li>
+          <li><strong>Isi dan kirim pesanan</strong><span>Pilihan tier dan data peserta diisi di browser. Saat dikirim, layanan order memeriksa kuota dan stok sebelum membuat sesi bayar.</span></li>
+          <li><strong>Bayar dan ambil tiket</strong><span>Pembeli membayar di Midtrans, lalu kembali ke Booket. Web membaca status order dan menampilkan tiket yang tersedia.</span></li>
         </ul>
       </div>
-      <template class="speaker-note">Waiting room mengatur berapa orang yang boleh melanjutkan sekaligus. Setelah pesanan tercatat, pekerjaan seperti pengiriman email dapat diteruskan lewat event. Pada PoC, kita akan menguji Kafka dan CPU kontinu untuk worker antrean, pesanan, dan outbox.</template>
-    </section>
-
-    <section class="slide paper" id="slide-4" aria-labelledby="title-4">
-      <h2 id="title-4" class="slide-title">Infrastruktur Booket di Jakarta</h2>
-      <p class="lead">Inventaris proyek <code>booket-512519</code> berdasarkan audit 23 November 2026.</p>
-      <div class="slide-body">
-        <dl class="stats">
-          <div><dt>Layanan Cloud Run</dt><dd>17</dd></div>
-          <div><dt>VM aktif</dt><dd>2</dd></div>
-          <div><dt>Database utama</dt><dd>PostgreSQL 18</dd></div>
-        </dl>
-        <ul class="list">
-          <li><strong>Akses dan identitas</strong><span>Cloudflare untuk dua situs, API Gateway, Keycloak, dan middleware Go serta Rust.</span></li>
-          <li><strong>Transaksi dan tiket</strong><span>Layanan antrean, order, produk dan tiket memakai Cloud SQL Enterprise Plus dengan SSD 100 GiB.</span></li>
-          <li><strong>Integrasi</strong><span>Brevo untuk email. Confluent Cloud Standard di Jakarta masuk dalam usulan PoC.</span></li>
-        </ul>
-      </div>
-      <template class="speaker-note">Dalam audit, kami juga mencatat lima repositori Artifact Registry, tiga bucket, dan Direct VPC egress pada layanan terbaru. Untuk PoC, kami memprioritaskan tiga worker inti dan meninjau ulang connector serta IP yang belum terpakai.</template>
+      <template class="speaker-note">Ikuti satu pembeli dari katalog. Tombol Pesan bisa langsung masuk checkout jika hasilnya sudah diterima. Bila harus menunggu, browser memantau posisi dan pindah saat server memberi giliran. Pembayaran terjadi di Midtrans. Setelah kembali, Booket meminta status order dari API.</template>
     </section>
 
     <section class="slide paper architecture" id="slide-5" aria-labelledby="title-5">
@@ -378,21 +427,161 @@
       <template class="speaker-note">Ambil katalog sebagai contoh. AppRouter memilih halaman, hook fitur meminta data dari HomeFacade, lalu useFacadeStore meneruskan perubahan ke React. CoreProvider memegang konfigurasi demo atau live dan satu OrderFacade yang dipakai lintas halaman. Ketika operasi memerlukan login, façade mengambil token dari AuthFacade.</template>
     </section>
 
+    <section class="slide paper" id="frontend-rute" aria-labelledby="title-frontend-rute">
+      <h2 id="title-frontend-rute" class="slide-title">Peta halaman web</h2>
+      <p class="lead"><code>AppRouter</code> memilih halaman dari URL. <code>AppLayout</code> menyediakan navigasi desktop dan seluler, sedangkan setiap fitur menangani logikanya sendiri.</p>
+      <dl class="route-map slide-body">
+        <div><dt><code>/</code> dan <code>/katalog</code> · Konser</dt><dd><code>useConcerts</code> membaca katalog lewat <code>HomeFacade</code>. Filter ditangani di web.</dd></div>
+        <div><dt><code>/waiting-room</code> · Antrean</dt><dd><code>WaitingRoomFacade</code> membaca status memakai token sesi. UI menampilkan nomor dan perkiraan waktu.</dd></div>
+        <div><dt><code>/checkout</code> · Pemesanan</dt><dd><code>CheckoutFacade</code> memuat tier, biaya, dan batas waktu. <code>OrderFacade</code> mengirim pesanan.</dd></div>
+        <div><dt><code>/payment/status</code> · Pembayaran</dt><dd><code>usePaymentResult</code> membaca status order dan memilih tampilan menunggu, sukses, gagal, atau kedaluwarsa.</dd></div>
+        <div><dt><code>/tiket</code> · Tiket Saya</dt><dd><code>TicketFacade</code> memuat daftar booking dan detail tiket per peserta.</dd></div>
+        <div><dt><code>/profil</code> · Profil</dt><dd><code>ProfileFacade</code> memuat akun. <code>ParticipantFacade</code> menangani data peserta untuk isi cepat saat checkout.</dd></div>
+      </dl>
+      <template class="speaker-note">Peta ini mengikuti src/app/AppRouter.tsx dan hook di src/features. /payment/success dan /payment/failed memakai halaman hasil yang sama. Hasil yang ditampilkan tetap mengikuti status order dari API.</template>
+    </section>
+
+    <section class="slide paper" id="frontend-state" aria-labelledby="title-frontend-state">
+      <h2 id="title-frontend-state" class="slide-title">Dari state SDK ke layar</h2>
+      <p class="lead">Aksi pengguna berjalan ke façade lewat hook fitur. Perubahan state SDK berjalan kembali ke React melalui store.</p>
+      <div class="slide-body section-stack">
+        <ol class="architecture-flow" aria-label="Aliran state dari SDK ke layar">
+          <li><strong>Controller Core</strong><span>Menyimpan state fitur di <code>StateFlow</code>.</span></li>
+          <li><strong>Façade JS</strong><span>Membawa state sebagai tipe <code>*Js</code> dan hasil aksi sebagai <code>Promise</code>.</span></li>
+          <li><strong>FlowStore</strong><span>Menyediakan <code>getSnapshot()</code> dan <code>subscribe()</code>.</span></li>
+          <li><strong>React</strong><span><code>useFacadeStore</code> memakai <code>useSyncExternalStore</code> untuk memperbarui layar.</span></li>
+        </ol>
+        <dl class="route-map">
+          <div><dt>Mode demo</dt><dd><code>CoreProvider</code> mengaktifkan <code>useMock</code>. Façade mengambil data contoh dari SDK.</dd></div>
+          <div><dt>Mode live</dt><dd>Façade memakai base URL API dan mengambil token untuk operasi yang perlu autentikasi.</dd></div>
+        </dl>
+      </div>
+      <p class="fine-print"><code>CoreProvider</code> berbagi satu <code>OrderFacade</code> lintas halaman. Pilihan tier dan isian peserta tetap berada di hook checkout.</p>
+      <template class="speaker-note">Sumber kode: src/lib/core/CoreContext.tsx, src/lib/core/useFacadeStore.ts, src/lib/mode.ts, dan src/features/booking/useCheckoutBooking.ts. Aturan pemilihan mode data pada web berbeda dari pengaturan mock autentikasi untuk pengembangan lokal.</template>
+    </section>
+
+    <section class="slide paper" id="frontend-sesi" aria-labelledby="title-frontend-sesi">
+      <h2 id="title-frontend-sesi" class="slide-title">Login dan pemulihan sesi</h2>
+      <p class="lead">Setelah pindah halaman atau memuat ulang tab, web memulihkan konteks untuk membuka lagi antrean atau pesanan.</p>
+      <div class="slide-body split session-layout">
+        <div>
+          <h3 class="subheading">Alur login</h3>
+          <ol class="step-list">
+            <li><strong>Masuk lewat Keycloak</strong><p><code>AuthFacade</code> memakai bridge <code>keycloak-js</code> dengan PKCE.</p></li>
+            <li><strong>Pulihkan sesi</strong><p>Token disimpan di <code>sessionStorage</code> untuk tab tersebut. SDK mengambil token saat diperlukan.</p></li>
+            <li><strong>Muat profil</strong><p>Web membaca profil lewat <code>ProfileFacade</code> bila profil belum tersedia setelah sesi pulih.</p></li>
+          </ol>
+        </div>
+        <div>
+          <h3 class="subheading">Data yang dipakai saat kembali</h3>
+          <ul class="list narrow">
+            <li><strong>Antrean atau checkout</strong><p>Server mengembalikan sesi aktif untuk kartu “Antrean Anda”. Token terakhir di tab membantu tautan antrean.</p></li>
+            <li><strong>Ringkasan pesanan</strong><p><code>orderSnapshot.ts</code> menyimpan ringkasan untuk tampilan. Status dan total dibaca lagi dari API order.</p></li>
+          </ul>
+        </div>
+      </div>
+      <template class="speaker-note">Sumber kode: src/lib/auth/AuthContext.tsx, src/lib/auth/coreBridge.ts, src/lib/auth/tokenStorage.ts, src/features/session/useActiveSessions.ts, src/features/queue/activeQueueStorage.ts, dan src/features/payment/orderSnapshot.ts. Beranda membaca sesi aktif saat dimuat. Polling sesi berkala khusus dipakai di halaman waiting room.</template>
+    </section>
+
     <section class="slide paper" id="slide-6" aria-labelledby="title-6">
       <h2 id="title-6" class="slide-title">Giliran masuk ke checkout</h2>
-      <p class="lead">Pembeli masuk sesuai urutan selama masih ada slot checkout.</p>
+      <p class="lead">Server menentukan giliran. Browser menampilkan status dan berpindah halaman saat checkout tersedia.</p>
       <div class="slide-body split">
         <ul class="list narrow">
-          <li><strong>Slot checkout</strong><p>Waiting room membersihkan slot kedaluwarsa lalu mengambil peserta terdepan secara atomik di penyimpanan in-memory.</p></li>
-          <li><strong>Pembaruan status</strong><p>Browser menanyakan status dengan interval dari server dan sedikit variasi waktu agar permintaan tidak datang bersamaan.</p></li>
+          <li><strong>Pembaruan status</strong><p><code>WaitingRoomFacade</code> melakukan polling dengan token antrean. Hook menghentikan polling saat halaman ditinggalkan.</p></li>
           <li><strong>Perkiraan waktu</strong><p>UI menampilkan <code>queueNumber</code> dan memperbarui hitung mundur dari <code>etaSeconds</code> setiap kali status disinkronkan.</p></li>
+          <li><strong>Giliran tiba</strong><p>Web mengikuti URL checkout dari server. Hitung mundur membantu pembeli memperkirakan giliran.</p></li>
         </ul>
         <figure class="app-view">
           <img src="./assets/antrean.jpg" width="700" height="381" alt="Kartu antrean aktif dengan nomor urut 1250, perkiraan waktu, dan indikator progres">
           <figcaption>Nomor antrean dan estimasi waktu · mode demo</figcaption>
         </figure>
       </div>
-      <template class="speaker-note">Polling mengikuti interval yang dikirim server. Pola ini menjaga request status tetap stateless dan menghindari kebutuhan membuka koneksi WebSocket untuk setiap pembeli. Saat slot siap, aplikasi melanjutkan ke checkout.</template>
+      <template class="speaker-note">Sumber kode: useWaitingRoom.ts, WaitingRoomPage.tsx, dan WaitingRoomStatusCard.tsx. UI memperbarui hitung mundur di antara respons server. Saat perkiraan habis, UI meminta status terbaru. Perpindahan ke checkout menunggu tautan dari server.</template>
+    </section>
+
+    <section class="slide paper" id="slide-9" aria-labelledby="title-9">
+      <h2 id="title-9" class="slide-title">Frontend saat format API berbeda</h2>
+      <p class="lead">Booket punya jalur cadangan untuk membaca format lama pada respons waiting room.</p>
+      <div class="slide-body">
+        <ul class="list">
+          <li><strong>Kapan dipakai</strong><span>Di mode live, fallback dipakai saat SDK mengembalikan <code>INVALID_RESPONSE</code> tanpa posisi antrean atau tautan checkout yang bisa digunakan.</span></li>
+          <li><strong>Cara membaca ulang</strong><span><code>useWaitingRoom</code> menghentikan polling SDK. <code>waitingRoomFallback.ts</code> membaca bentuk respons lama yang dikenal.</span></li>
+          <li><strong>Saat jaringan terganggu</strong><span>UI bisa menjaga posisi terakhir sambil mencoba lagi. Polling berhenti saat server menyatakan sesi berakhir.</span></li>
+        </ul>
+        <p class="callout">Respons HTTP 200 masih bisa membawa struktur data yang tidak sesuai kontrak SDK. Jika format lamanya dikenal, Booket tetap bisa menampilkan antrean.</p>
+      </div>
+      <template class="speaker-note">Kasusnya pernah muncul pada respons HTTP 200 dari waiting room. SDK menolak struktur lama, sementara angka antrean masih bisa dibaca. Karena itu kami buat fallback khusus untuk respons yang bentuknya sudah kami kenal.</template>
+    </section>
+
+    <section class="slide paper" id="frontend-transaksi" aria-labelledby="title-frontend-transaksi">
+      <h2 id="title-frontend-transaksi" class="slide-title">Validasi web dan server</h2>
+      <p class="lead">Browser membantu pengguna memperbaiki isian sebelum mengirim pesanan. Server mengonfirmasi hasil yang ditampilkan web.</p>
+      <div class="slide-body">
+        <p class="fine-print table-hint">Geser tabel untuk melihat semua kolom.</p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Pembagian tanggung jawab frontend dan backend">
+          <table class="responsibility-table">
+            <thead><tr><th scope="col">Bagian</th><th scope="col">Frontend web</th><th scope="col">Backend</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Tier dan jumlah</th><td>Membatasi pilihan hingga tiga tiket dan menampilkan kuota yang diterima.</td><td>Memeriksa stok dan kuota saat submit, lalu mencadangkan tiket jika syarat terpenuhi.</td></tr>
+              <tr><th scope="row">Data peserta</th><td>Meminta nama, NIK 16 digit, dan NIK yang berbeda untuk tiap tiket.</td><td>Memeriksa ulang peserta dan aturan pemakaian NIK untuk konser tersebut.</td></tr>
+              <tr><th scope="row">Masa berlaku</th><td>Menghitung mundur dari waktu server dan menampilkan pesan saat sesi habis.</td><td>Menentukan apakah token checkout masih berlaku saat pesanan dikirim.</td></tr>
+              <tr><th scope="row">Status bayar</th><td>Membaca status dan total lewat <code>OrderFacade.getOrderStatus</code>. Order yang belum final diperiksa ulang setiap tiga detik.</td><td>Memverifikasi pembayaran dengan Midtrans dan menyimpan status akhir order.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <template class="speaker-note">Di web, duplikasi NIK dalam satu checkout memang diperiksa sebelum submit lewat hasDuplicateParticipantNiks. Ini melengkapi tabel pada Booket App Design yang membahas pemeriksaan di core bersama. Callback Midtrans membawa ID pesanan, lalu usePaymentResult meminta status dan total dari API. Parameter callback dapat ditampilkan sebagai konteks.</template>
+    </section>
+
+    <section class="slide paper" id="slide-10" aria-labelledby="title-10">
+      <h2 id="title-10" class="slide-title">Pembayaran dan e-tiket</h2>
+      <p class="lead">Setelah pembayaran terkonfirmasi, pembeli bisa membuka e-tiket dari menu Tiket Saya.</p>
+      <div class="slide-body split">
+        <ul class="list narrow">
+          <li><strong>Bayar di Midtrans Sandbox</strong><p>Pembeli dapat mencoba virtual account, QRIS, atau kartu. Booket menampilkan status sesuai hasil pembayaran.</p></li>
+          <li><strong>E-tiket di aplikasi</strong><p>Pembeli membuka daftar booking dan detail tiket per peserta dari menu Tiket Saya.</p></li>
+          <li><strong>Email e-tiket</strong><p>Pada rancangan PoC, event pembayaran diteruskan lewat outbox dan Kafka ke layanan notifikasi Brevo.</p></li>
+        </ul>
+        <figure class="app-view">
+          <img src="./assets/tiket.jpg" width="798" height="329" alt="Halaman Tiket Saya berisi dua booking contoh dengan tombol Lihat tiket">
+          <figcaption>Daftar booking di Tiket Saya · mode demo</figcaption>
+        </figure>
+      </div>
+      <template class="speaker-note">Untuk uji pembayaran, gunakan Midtrans Sandbox. Setelah statusnya sukses, Booket Pass menampilkan kategori, pintu masuk, dan barcode yang diperbarui setiap 30 detik. Gambar pada slide ini memakai data contoh di Tiket Saya. Integrasi email lewat Brevo masuk dalam rencana uji PoC.</template>
+    </section>
+
+    <section class="slide paper" id="slide-4" aria-labelledby="title-4">
+      <h2 id="title-4" class="slide-title">Infrastruktur Booket di Jakarta</h2>
+      <p class="lead">Inventaris proyek <code>booket-512519</code> berdasarkan audit 23 November 2026.</p>
+      <div class="slide-body">
+        <dl class="stats">
+          <div><dt>Layanan Cloud Run</dt><dd>17</dd></div>
+          <div><dt>VM aktif</dt><dd>2</dd></div>
+          <div><dt>Database utama</dt><dd>PostgreSQL 18</dd></div>
+        </dl>
+        <ul class="list">
+          <li><strong>Akses dan identitas</strong><span>Cloudflare untuk dua situs, API Gateway, Keycloak, dan middleware Go serta Rust.</span></li>
+          <li><strong>Transaksi dan tiket</strong><span>Layanan antrean, order, produk dan tiket memakai Cloud SQL Enterprise Plus dengan SSD 100 GiB.</span></li>
+          <li><strong>Integrasi</strong><span>Brevo untuk email. Confluent Cloud Standard di Jakarta masuk dalam usulan PoC.</span></li>
+        </ul>
+      </div>
+      <template class="speaker-note">Dalam audit, kami juga mencatat lima repositori Artifact Registry, tiga bucket, dan Direct VPC egress pada layanan terbaru. Untuk PoC, kami memprioritaskan tiga worker inti dan meninjau ulang connector serta IP yang belum terpakai.</template>
+    </section>
+
+    <section class="slide paper" id="backend-layanan" aria-labelledby="title-backend-layanan">
+      <h2 id="title-backend-layanan" class="slide-title">Peran layanan backend</h2>
+      <p class="lead">Dalam rancangan, Kong menjadi pintu masuk API dan meneruskan identitas terverifikasi ke layanan yang sesuai.</p>
+      <div class="slide-body">
+        <dl class="route-map">
+          <div><dt><code>service-user</code></dt><dd>Menangani profil, data peserta, dan pemeriksaan NIK lewat integrasi Dukcapil.</dd></div>
+          <div><dt><code>service-waiting-room</code></dt><dd>Mencatat sesi, membuka slot checkout, dan memakai Valkey untuk urutan antrean yang dapat dibangun ulang.</dd></div>
+          <div><dt><code>service-order</code></dt><dd>Mencadangkan stok, membuat sesi Midtrans, dan memeriksa hasil pembayaran.</dd></div>
+          <div><dt><code>service-outbox</code></dt><dd>Mengirim event order ke Kafka agar layanan tiket dan notifikasi dapat memprosesnya.</dd></div>
+        </dl>
+        <p class="callout">PostgreSQL menyimpan data transaksi dan antrean. Valkey mempercepat pembacaan urutan antrean.</p>
+      </div>
+      <template class="speaker-note">Peta ini mengikuti Booket App Design. Dalam rancangan gateway, middleware memverifikasi JWT Keycloak dan meneruskan konteks identitas ke layanan. Di tingkat layanan, handler menerima request, use case menjalankan aturan, dan adapter menghubungkan database atau vendor. Integrasi Kafka untuk PoC dan konfigurasi worker dibahas di bagian anggaran.</template>
     </section>
 
     <section class="slide paper" id="slide-7" aria-labelledby="title-7">
@@ -416,8 +605,8 @@
       <p class="lead">Timer di layar mengikuti waktu kedaluwarsa dari server. Pembayaran perlu diperiksa sebelum pesanan ditutup.</p>
       <div class="slide-body">
         <dl class="timer-list">
-          <div><dt>Waktu checkout</dt><dd class="number">5 menit</dd></div>
-          <div><dt>Waktu pembayaran sandbox</dt><dd class="number">10 menit</dd></div>
+          <div><dt>Akses checkout dalam rancangan</dt><dd class="number">5 menit</dd></div>
+          <div><dt>Sesi Midtrans dalam rancangan</dt><dd class="number">10 menit</dd></div>
         </dl>
         <ul class="list">
           <li><strong>Checkout habis</strong><span>Aplikasi menampilkan pemberitahuan sesi berakhir dan slot checkout dilepas.</span></li>
@@ -425,38 +614,25 @@
           <li><strong>Callback terlambat atau berulang</strong><span>Worker memeriksa status ke gateway sebelum menutup pesanan. Pemrosesan ulang tidak boleh menggandakan pencatatan atau event.</span></li>
         </ul>
       </div>
-      <template class="speaker-note">Salah satu skenario uji PoC adalah pembayaran berhasil di menit terakhir ketika callback terlambat. Kami periksa apakah status pesanan dan stok tetap benar, lalu ulangi callback untuk memastikan hasilnya tetap sama.</template>
+      <template class="speaker-note">Angka pada slide mengacu pada Booket App Design. Checkout membaca waktu kedaluwarsa dari respons server, sehingga durasi pada mode demo dapat berbeda. Salah satu skenario uji PoC adalah pembayaran berhasil di menit terakhir ketika callback terlambat. Kami periksa apakah status pesanan dan stok tetap benar, lalu ulangi callback untuk memastikan hasilnya tetap sama.</template>
     </section>
 
-    <section class="slide paper" id="slide-9" aria-labelledby="title-9">
-      <h2 id="title-9" class="slide-title">Frontend saat format API berbeda</h2>
-      <p class="lead">Booket punya jalur cadangan untuk membaca format lama pada respons waiting room.</p>
+    <section class="slide paper" id="backend-event" aria-labelledby="title-backend-event">
+      <h2 id="title-backend-event" class="slide-title">Status order dan event pembayaran</h2>
+      <p class="lead">Rancangan memisahkan verifikasi pembayaran dari pengiriman event ke layanan tiket dan notifikasi.</p>
       <div class="slide-body">
+        <ol class="architecture-flow" aria-label="Alur konfirmasi pembayaran dan pengiriman event">
+          <li><strong>Periksa Midtrans</strong><span>Callback, pembacaan status, atau worker dapat memicu pemeriksaan.</span></li>
+          <li><strong>Simpan hasil</strong><span>Perubahan order dan baris outbox disimpan dalam satu transaksi.</span></li>
+          <li><strong>Terbitkan event</strong><span>Worker mengirim ke Kafka dan menandai baris setelah Kafka mengonfirmasi.</span></li>
+          <li><strong>Proses event</strong><span>Layanan tiket dan notifikasi menangani event dengan deduplikasi.</span></li>
+        </ol>
         <ul class="list">
-          <li><strong>Aturan bisnis</strong><span>Validasi NIK dan batas jumlah tiket berada di <code>src/domain/rules.ts</code>, terpisah dari komponen React.</span></li>
-          <li><strong>Integrasi SDK</strong><span>UI berlangganan perubahan state dari façade waiting room, checkout, dan order di <code>@booketid/core</code> 0.11.1.</span></li>
-          <li><strong>Format lama</strong><span>Saat SDK mengembalikan <code>INVALID_RESPONSE</code>, <code>waitingRoomFallback.ts</code> membaca respons lama dan memisahkan kegagalan permanen dari gangguan yang bisa dicoba ulang.</span></li>
+          <li><strong>Jika gagal atau kedaluwarsa</strong><span>Rancangan melepaskan stok dan reservasi NIK setelah status akhir dikonfirmasi.</span></li>
+          <li><strong>Jika pengiriman gagal</strong><span>Baris outbox tetap menunggu. Consumer harus bisa menerima kiriman ulang untuk <code>eventId</code> yang sama.</span></li>
         </ul>
-        <p class="callout">Respons HTTP 200 masih bisa membawa struktur data yang tidak sesuai kontrak SDK. Jika format lamanya dikenal, Booket tetap bisa menampilkan antrean.</p>
       </div>
-      <template class="speaker-note">Kasusnya pernah muncul pada respons HTTP 200 dari waiting room. SDK menolak struktur lama, sementara angka antrean masih bisa dibaca. Karena itu kami buat fallback khusus untuk respons yang bentuknya sudah kami kenal.</template>
-    </section>
-
-    <section class="slide paper" id="slide-10" aria-labelledby="title-10">
-      <h2 id="title-10" class="slide-title">Pembayaran dan e-tiket</h2>
-      <p class="lead">Setelah pembayaran terkonfirmasi, pembeli bisa membuka e-tiket dari menu Tiket Saya.</p>
-      <div class="slide-body split">
-        <ul class="list narrow">
-          <li><strong>Bayar di Midtrans Sandbox</strong><p>Pembeli dapat mencoba virtual account, QRIS, atau kartu. Booket menampilkan status sesuai hasil pembayaran.</p></li>
-          <li><strong>E-tiket di aplikasi</strong><p>Pembeli membuka daftar booking dan detail tiket per peserta dari menu Tiket Saya.</p></li>
-          <li><strong>Email e-tiket</strong><p>Pada rancangan PoC, event pembayaran diteruskan lewat outbox dan Kafka ke layanan notifikasi Brevo.</p></li>
-        </ul>
-        <figure class="app-view">
-          <img src="./assets/tiket.jpg" width="798" height="329" alt="Halaman Tiket Saya berisi dua booking contoh dengan tombol Lihat tiket">
-          <figcaption>Daftar booking di Tiket Saya · mode demo</figcaption>
-        </figure>
-      </div>
-      <template class="speaker-note">Untuk uji pembayaran, gunakan Midtrans Sandbox. Setelah statusnya sukses, Booket Pass menampilkan kategori, pintu masuk, dan barcode yang diperbarui setiap 30 detik. Gambar pada slide ini memakai data contoh di Tiket Saya. Integrasi email lewat Brevo masuk dalam rencana uji PoC.</template>
+      <template class="speaker-note">Sumber desain: Booket App Design. Referensi memakai event order-placed, order-paid, dan order-failed. Settlement yang valid diperiksa terhadap pesanan dan jumlah sebelum status PAID dicatat. Status pembayaran pada web tetap dibaca dari API order, sedangkan pengiriman tiket dan email dapat berjalan setelah event diproses.</template>
     </section>
 
     <section class="slide paper" id="slide-11" aria-labelledby="title-11">
@@ -472,6 +648,7 @@
           <li><span>npm audit &amp; Gitleaks</span></li><li><span>Vitest</span></li><li><span>SonarQube</span></li><li><span>TypeScript &amp; Vite</span></li><li><span>Artifact Registry</span></li><li><span>Cloud Run</span></li>
         </ol>
         <p class="fine-print">Jumlah tes mengacu pada snapshot di materi assessment. Pipeline mencatat coverage dalam LCOV dan hasil tes dalam JUnit.</p>
+        <p class="fine-print">Hasil build Vite disajikan oleh Nginx. Saat rute seperti <code>/checkout</code> dibuka langsung, Nginx mengembalikan <code>index.html</code> agar React Router memuat halaman.</p>
       </div>
       <template class="speaker-note">Kami sertakan hasil pengujian frontend dari snapshot assessment. Kalau panel ingin menelusuri satu contoh, aturan NIK dan fallback waiting room punya tes yang dapat ditunjukkan sebelum melihat pipeline rilis.</template>
     </section>
@@ -668,7 +845,7 @@
     window.addEventListener("hashchange", showFromHash);
     document.addEventListener("click", event => {
       if (event.defaultPrevented || event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-      const link = event.target.closest('a[href^="#slide-"]');
+      const link = event.target.closest('a[href^="#"]');
       if (!link) return;
       const index = slides.findIndex(slide => "#" + slide.id === link.hash);
       if (index < 0) return;
