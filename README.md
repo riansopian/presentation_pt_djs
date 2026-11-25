@@ -19,8 +19,8 @@ Akses slide presentasi interaktif langsung melalui browser:
 ## 📂 Struktur Dokumen
 
 1. **[`index.html`](index.html)**:
-   - Presentasi HTML interaktif berisi **23 slide** dengan tema Booket dan lima tangkapan layar aplikasi dalam mode demo.
-   - Bab Frontend membahas routing, state SDK, pemulihan sesi, dan validasi checkout. Bab Backend membahas layanan, stok, pembayaran, dan outbox. Presentasi juga memuat demo serta anggaran dan rencana PoC.
+   - Presentasi HTML interaktif berisi **24 slide** dengan tema Booket dan lima tangkapan layar aplikasi dalam mode demo.
+   - Bab Frontend membahas routing, state SDK, pemulihan sesi, dan validasi checkout. Bab Backend membahas layanan, stok, pembayaran, dan outbox. Presentasi juga memuat demo, biaya bulanan infrastruktur, anggaran PoC tiga bulan, proyeksi anggaran satu tahun, dan rencana PoC 12 minggu.
    - Sebelas diagram diadaptasi dari Booket App Design. Ikon menggunakan [Phosphor](assets/architecture/PHOSPHOR-LICENSE.txt) dan [Simple Icons](https://github.com/simple-icons/simple-icons).
 2. **[`presentation_deck_pt_djs.md`](presentation_deck_pt_djs.md)**:
    - Naskah presentasi slide-by-slide, speaker notes, dan panduan demo.
