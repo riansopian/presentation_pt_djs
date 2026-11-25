@@ -147,42 +147,22 @@
     .app-view figcaption { margin-top: .55rem; color: var(--muted); font-size: .85rem; }
     .cover .app-view img { border-color: #475569; background: #212a3b; box-shadow: 0 14px 30px rgb(0 0 0 / .24); }
     .cover .app-view figcaption { color: #cbd5e1; }
+    .diagram-figure { width: 100%; }
+    .diagram-figure img { padding: .75rem; background: white; box-shadow: none; }
+    .diagram-figure figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; }
+    .diagram-figure figcaption a { font-weight: 650; white-space: nowrap; }
+    .diagram-figure + .list, .diagram-figure + .route-map { margin-top: 1.2rem; }
+    .diagram-compact { max-width: 54rem; margin-inline: auto; }
+    .diagram-details { margin-top: .9rem; padding-top: .6rem; border-top: 1px solid var(--border); }
+    .diagram-details summary { width: fit-content; padding-block: .2rem; color: var(--rose-strong); cursor: pointer; font-weight: 660; }
+    .diagram-details figure { margin-top: .7rem; }
+    .diagram-split { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); }
     .architecture .split {
       grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
       margin-top: 1.2rem;
     }
     .architecture .step-list li { padding-block: .45rem; font-size: .95rem; line-height: 1.4; }
     .architecture-details { margin-top: 1.1rem; }
-    .architecture-flow {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1.5rem;
-      list-style: none;
-      padding: 0;
-    }
-    .architecture-flow li {
-      position: relative;
-      min-width: 0;
-      padding: .8rem .85rem;
-      border: 1px solid var(--border);
-      border-top: 2px solid var(--rose);
-      border-radius: .65rem;
-      background: var(--background);
-    }
-    .architecture-flow li:not(:last-child)::after {
-      content: "→" / "";
-      position: absolute;
-      top: 50%;
-      left: 100%;
-      width: 1.5rem;
-      transform: translateY(-50%);
-      color: var(--rose-strong);
-      text-align: center;
-      font-weight: 750;
-    }
-    .architecture-flow strong, .architecture-flow span { display: block; }
-    .architecture-flow span { margin-top: .25rem; color: var(--muted); font-size: .9rem; }
-    .architecture-flow + .list { margin-top: 1.2rem; }
     .route-map {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -290,9 +270,8 @@
     }
     @media (max-width: 42rem) {
       .table-hint { display: block; margin: 0 0 .5rem; }
-      .architecture-flow { grid-template-columns: 1fr; gap: 1.15rem; }
-      .architecture-flow li:not(:last-child)::after { content: "↓" / ""; top: 100%; left: .75rem; transform: none; }
       .route-map { grid-template-columns: 1fr; }
+      .diagram-figure img { padding: .35rem; }
     }
     @media (max-width: 34rem) {
       .shell { width: calc(100% - 1.4rem); }
@@ -374,14 +353,12 @@
       <h2 id="title-arsitektur-sistem" class="slide-title">Peta sistem Booket</h2>
       <p class="lead">Web menampilkan alur pembeli dan memakai SDK untuk mengakses API. Layanan di belakang gateway memutuskan giliran, stok, dan status pesanan.</p>
       <div class="slide-body">
-        <ol class="architecture-flow" aria-label="Jalur dari browser ke layanan">
-          <li><strong>Browser</strong><span>React merender halaman dan menangani interaksi.</span></li>
-          <li><strong>Event Core</strong><span>Klien Kotlin/JS yang dipakai web lewat <code>@booketid/core</code>.</span></li>
-          <li><strong>API Gateway</strong><span><code>api.booket.id</code> menerima panggilan mode live.</span></li>
-          <li><strong>Layanan Booket</strong><span>Katalog, akun, antrean, pesanan, dan tiket.</span></li>
-        </ol>
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/peta-sistem.svg" width="1160" height="410" alt="Aplikasi memakai Event Core, lalu gateway meneruskan request ke layanan yang terhubung dengan data dan integrasi">
+          <figcaption>Peta rancangan lintas platform dan layanan <a href="./assets/architecture/peta-sistem.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
         <ul class="list">
-          <li><strong>Identitas</strong><span>Web login melalui Keycloak. SDK menyertakan bearer token pada operasi yang memerlukannya.</span></li>
+          <li><strong>Jalur web</strong><span>React mengakses <code>api.booket.id</code> lewat SDK Kotlin/JS. Keycloak menyediakan token untuk operasi yang memerlukan login.</span></li>
           <li><strong>Data dan integrasi</strong><span>Rancangan menempatkan PostgreSQL sebagai sumber data transaksi. Midtrans memproses pembayaran, sementara outbox meneruskan event ke Kafka.</span></li>
         </ul>
       </div>
@@ -392,9 +369,10 @@
       <h2 id="title-3" class="slide-title">Alur pemesanan di Booket</h2>
       <p class="lead">Waiting room mengatur giliran. Setelah pembeli masuk, PostgreSQL menjaga stok dan kuota NIK.</p>
       <div class="slide-body">
-        <ol class="flow" aria-label="Tahapan pemesanan">
-          <li><span>Pilih konser</span></li><li><span>Masuk antrean</span></li><li><span>Checkout</span></li><li><span>Bayar</span></li><li><span>Terima e-tiket</span></li>
-        </ol>
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/alur-pembelian.svg" width="1160" height="380" alt="Peta perjalanan pembeli dari katalog hingga e-tiket, termasuk layanan yang menangani tiap tahap">
+          <figcaption>Layar pembeli dan layanan yang terlibat <a href="./assets/architecture/alur-pembelian.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
         <ul class="list">
           <li><strong>Masuk antrean</strong><span>Tombol Pesan memanggil <code>OrderFacade.beginCheckout</code>. Web membuka ruang tunggu atau checkout sesuai hasil dari server.</span></li>
           <li><strong>Isi dan kirim pesanan</strong><span>Pilihan tier dan data peserta diisi di browser. Saat dikirim, layanan order memeriksa kuota dan stok sebelum membuat sesi bayar.</span></li>
@@ -445,12 +423,10 @@
       <h2 id="title-frontend-state" class="slide-title">Dari state SDK ke layar</h2>
       <p class="lead">Aksi pengguna berjalan ke façade lewat hook fitur. Perubahan state SDK berjalan kembali ke React melalui store.</p>
       <div class="slide-body section-stack">
-        <ol class="architecture-flow" aria-label="Aliran state dari SDK ke layar">
-          <li><strong>Controller Core</strong><span>Menyimpan state fitur di <code>StateFlow</code>.</span></li>
-          <li><strong>Façade JS</strong><span>Membawa state sebagai tipe <code>*Js</code> dan hasil aksi sebagai <code>Promise</code>.</span></li>
-          <li><strong>FlowStore</strong><span>Menyediakan <code>getSnapshot()</code> dan <code>subscribe()</code>.</span></li>
-          <li><strong>React</strong><span><code>useFacadeStore</code> memakai <code>useSyncExternalStore</code> untuk memperbarui layar.</span></li>
-        </ol>
+        <figure class="app-view diagram-figure diagram-compact">
+          <img src="./assets/architecture/state-web.svg" width="756" height="169" alt="StateFlow di Event Core terhubung lewat façade JavaScript dan FlowStore ke UI React">
+          <figcaption><span>Jalur web dari <code>StateFlow</code> sampai React</span> <a href="./assets/architecture/state-web.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
         <dl class="route-map">
           <div><dt>Mode demo</dt><dd><code>CoreProvider</code> mengaktifkan <code>useMock</code>. Façade mengambil data contoh dari SDK.</dd></div>
           <div><dt>Mode live</dt><dd>Façade memakai base URL API dan mengambil token untuk operasi yang perlu autentikasi.</dd></div>
@@ -464,17 +440,14 @@
       <h2 id="title-frontend-sesi" class="slide-title">Login dan pemulihan sesi</h2>
       <p class="lead">Setelah pindah halaman atau memuat ulang tab, web memulihkan konteks untuk membuka lagi antrean atau pesanan.</p>
       <div class="slide-body split session-layout">
-        <div>
-          <h3 class="subheading">Alur login</h3>
-          <ol class="step-list">
-            <li><strong>Masuk lewat Keycloak</strong><p><code>AuthFacade</code> memakai bridge <code>keycloak-js</code> dengan PKCE.</p></li>
-            <li><strong>Pulihkan sesi</strong><p>Token disimpan di <code>sessionStorage</code> untuk tab tersebut. SDK mengambil token saat diperlukan.</p></li>
-            <li><strong>Muat profil</strong><p>Web membaca profil lewat <code>ProfileFacade</code> bila profil belum tersedia setelah sesi pulih.</p></li>
-          </ol>
-        </div>
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/login-profil.svg" width="740" height="480" alt="Urutan login PKCE dengan Keycloak, aktivasi sesi, dan pengambilan profil melalui gateway">
+          <figcaption>Login Keycloak dan pemuatan profil <a href="./assets/architecture/login-profil.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
         <div>
           <h3 class="subheading">Data yang dipakai saat kembali</h3>
           <ul class="list narrow">
+            <li><strong>Login dan profil</strong><p>Token di <code>sessionStorage</code> membantu memulihkan login di tab. <code>ProfileFacade</code> memuat profil bila belum tersedia.</p></li>
             <li><strong>Antrean atau checkout</strong><p>Server mengembalikan sesi aktif untuk kartu “Antrean Anda”. Token terakhir di tab membantu tautan antrean.</p></li>
             <li><strong>Ringkasan pesanan</strong><p><code>orderSnapshot.ts</code> menyimpan ringkasan untuk tampilan. Status dan total dibaca lagi dari API order.</p></li>
           </ul>
@@ -497,6 +470,13 @@
           <figcaption>Nomor antrean dan estimasi waktu · mode demo</figcaption>
         </figure>
       </div>
+      <details class="diagram-details">
+        <summary>Diagram admission antrean</summary>
+        <figure class="app-view diagram-figure diagram-compact">
+          <img src="./assets/architecture/antrean-admission.svg" width="740" height="470" alt="Antrean FIFO, pemeriksaan slot checkout, serta pemulihan urutan Valkey dari PostgreSQL">
+          <figcaption>Rancangan pembagian slot checkout <a href="./assets/architecture/antrean-admission.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
+      </details>
       <template class="speaker-note">Sumber kode: useWaitingRoom.ts, WaitingRoomPage.tsx, dan WaitingRoomStatusCard.tsx. UI memperbarui hitung mundur di antara respons server. Saat perkiraan habis, UI meminta status terbaru. Perpindahan ke checkout menunggu tautan dari server.</template>
     </section>
 
@@ -573,6 +553,10 @@
       <h2 id="title-backend-layanan" class="slide-title">Peran layanan backend</h2>
       <p class="lead">Dalam rancangan, Kong menjadi pintu masuk API dan meneruskan identitas terverifikasi ke layanan yang sesuai.</p>
       <div class="slide-body">
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/layanan-backend.svg" width="1160" height="440" alt="Topologi backend dengan gateway, layanan pengguna, antrean, order, outbox, database, dan vendor eksternal">
+          <figcaption>Topologi layanan dalam rancangan backend <a href="./assets/architecture/layanan-backend.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
         <dl class="route-map">
           <div><dt><code>service-user</code></dt><dd>Menangani profil, data peserta, dan pemeriksaan NIK lewat integrasi Dukcapil.</dd></div>
           <div><dt><code>service-waiting-room</code></dt><dd>Mencatat sesi, membuka slot checkout, dan memakai Valkey untuk urutan antrean yang dapat dibangun ulang.</dd></div>
@@ -580,6 +564,20 @@
           <div><dt><code>service-outbox</code></dt><dd>Mengirim event order ke Kafka agar layanan tiket dan notifikasi dapat memprosesnya.</dd></div>
         </dl>
         <p class="callout">PostgreSQL menyimpan data transaksi dan antrean. Valkey mempercepat pembacaan urutan antrean.</p>
+        <details class="diagram-details">
+          <summary>Diagram gateway dan verifikasi identitas</summary>
+          <figure class="app-view diagram-figure diagram-compact">
+            <img src="./assets/architecture/gateway-identitas.svg" width="740" height="462" alt="Kong memverifikasi bearer token Keycloak lewat middleware sebelum meneruskan konteks pengguna ke layanan">
+            <figcaption>Alur request dan verifikasi token <a href="./assets/architecture/gateway-identitas.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+          </figure>
+        </details>
+        <details class="diagram-details">
+          <summary>Diagram ports dan adapter layanan</summary>
+          <figure class="app-view diagram-figure diagram-compact">
+            <img src="./assets/architecture/ports-adapters.svg" width="740" height="470" alt="Pemisahan handler, use case, domain, port, serta adapter pada layanan pengguna dan Event Core">
+            <figcaption>Lapisan layanan pengguna dan Event Core <a href="./assets/architecture/ports-adapters.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+          </figure>
+        </details>
       </div>
       <template class="speaker-note">Peta ini mengikuti Booket App Design. Dalam rancangan gateway, middleware memverifikasi JWT Keycloak dan meneruskan konteks identitas ke layanan. Di tingkat layanan, handler menerima request, use case menjalankan aturan, dan adapter menghubungkan database atau vendor. Integrasi Kafka untuk PoC dan konfigurasi worker dibahas di bagian anggaran.</template>
     </section>
@@ -587,15 +585,16 @@
     <section class="slide paper" id="slide-7" aria-labelledby="title-7">
       <h2 id="title-7" class="slide-title">Stok tiket dan kuota NIK</h2>
       <p class="lead">Satu pesanan bisa memuat hingga tiga tiket. Setiap tiket harus memakai NIK peserta yang berbeda.</p>
-      <div class="slide-body">
-        <ol class="flow" aria-label="Urutan transaksi stok">
-          <li><span>Periksa kuota NIK</span></li><li><span>Kurangi stok jika cukup</span></li><li><span>Simpan pesanan dan outbox</span></li>
-        </ol>
-        <ul class="list">
-          <li><strong>Validasi peserta</strong><span>Frontend memeriksa NIK 16 digit dan menolak duplikasi antar peserta. Skenario demo memakai <code>dukcapil-mock</code>.</span></li>
-          <li><strong>Transaksi stok</strong><span>Dalam rancangan backend, NIK di-hash dengan HMAC-SHA256 untuk memeriksa kuota. Jika kuota atau stok gagal diperbarui, transaksi dibatalkan.</span></li>
-          <li><strong>Pesanan lintas kategori</strong><span>Kategori dikunci mengikuti urutan ID. Worker kedaluwarsa dapat melewati baris yang sedang dikunci dengan <code>SKIP LOCKED</code>.</span></li>
+      <div class="slide-body split diagram-split">
+        <ul class="list narrow">
+          <li><strong>Validasi peserta</strong><p>Frontend memeriksa NIK 16 digit dan menolak duplikasi antar peserta. Skenario demo memakai <code>dukcapil-mock</code>.</p></li>
+          <li><strong>Transaksi stok</strong><p>Rancangan memakai hash NIK untuk memeriksa kuota. Jika kuota atau stok gagal diperbarui, transaksi dibatalkan.</p></li>
+          <li><strong>Pesanan lintas kategori</strong><p>Kategori dikunci mengikuti urutan ID. Worker kedaluwarsa dapat melewati baris yang terkunci dengan <code>SKIP LOCKED</code>.</p></li>
         </ul>
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/checkout-reservasi.svg" width="740" height="440" alt="Urutan submit checkout, validasi dan reservasi stok di PostgreSQL, serta pembuatan sesi Midtrans">
+          <figcaption>Rancangan reservasi stok dan pembuatan sesi bayar <a href="./assets/architecture/checkout-reservasi.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
       </div>
       <template class="speaker-note">Ambil contoh dua transaksi yang berebut satu tiket tersisa. PostgreSQL hanya mengurangi stok jika jumlahnya masih cukup. Jika syarat itu gagal, pesanan dan pencatatan kuotanya juga dibatalkan.</template>
     </section>
@@ -603,34 +602,38 @@
     <section class="slide paper" id="slide-8" aria-labelledby="title-8">
       <h2 id="title-8" class="slide-title">Batas waktu checkout dan pembayaran</h2>
       <p class="lead">Timer di layar mengikuti waktu kedaluwarsa dari server. Pembayaran perlu diperiksa sebelum pesanan ditutup.</p>
-      <div class="slide-body">
-        <dl class="timer-list">
-          <div><dt>Akses checkout dalam rancangan</dt><dd class="number">5 menit</dd></div>
-          <div><dt>Sesi Midtrans dalam rancangan</dt><dd class="number">10 menit</dd></div>
-        </dl>
-        <ul class="list">
-          <li><strong>Checkout habis</strong><span>Aplikasi menampilkan pemberitahuan sesi berakhir dan slot checkout dilepas.</span></li>
-          <li><strong>Sebelum ke Midtrans</strong><span>Aplikasi menyimpan ringkasan pesanan untuk memulihkan tampilan sesudah pengalihan.</span></li>
-          <li><strong>Callback terlambat atau berulang</strong><span>Worker memeriksa status ke gateway sebelum menutup pesanan. Pemrosesan ulang tidak boleh menggandakan pencatatan atau event.</span></li>
-        </ul>
+      <div class="slide-body split diagram-split">
+        <div>
+          <dl class="timer-list">
+            <div><dt>Akses checkout</dt><dd class="number">5 menit</dd></div>
+            <div><dt>Sesi Midtrans</dt><dd class="number">10 menit</dd></div>
+          </dl>
+          <ul class="list narrow">
+            <li><strong>Checkout habis</strong><p>Aplikasi menampilkan pemberitahuan sesi berakhir dan slot checkout dilepas.</p></li>
+            <li><strong>Callback terlambat atau berulang</strong><p>Worker memeriksa status pembayaran sebelum menutup pesanan. Pemrosesan ulang harus aman.</p></li>
+          </ul>
+        </div>
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/status-pembayaran.svg" width="740" height="470" alt="Status order dari pembuatan pembayaran dan pending hingga paid, expired, atau payment failed">
+          <figcaption>Diagram status order. Durasi mengacu pada rancangan. <a href="./assets/architecture/status-pembayaran.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
       </div>
       <template class="speaker-note">Angka pada slide mengacu pada Booket App Design. Checkout membaca waktu kedaluwarsa dari respons server, sehingga durasi pada mode demo dapat berbeda. Salah satu skenario uji PoC adalah pembayaran berhasil di menit terakhir ketika callback terlambat. Kami periksa apakah status pesanan dan stok tetap benar, lalu ulangi callback untuk memastikan hasilnya tetap sama.</template>
     </section>
 
     <section class="slide paper" id="backend-event" aria-labelledby="title-backend-event">
-      <h2 id="title-backend-event" class="slide-title">Status order dan event pembayaran</h2>
-      <p class="lead">Rancangan memisahkan verifikasi pembayaran dari pengiriman event ke layanan tiket dan notifikasi.</p>
-      <div class="slide-body">
-        <ol class="architecture-flow" aria-label="Alur konfirmasi pembayaran dan pengiriman event">
-          <li><strong>Periksa Midtrans</strong><span>Callback, pembacaan status, atau worker dapat memicu pemeriksaan.</span></li>
-          <li><strong>Simpan hasil</strong><span>Perubahan order dan baris outbox disimpan dalam satu transaksi.</span></li>
-          <li><strong>Terbitkan event</strong><span>Worker mengirim ke Kafka dan menandai baris setelah Kafka mengonfirmasi.</span></li>
-          <li><strong>Proses event</strong><span>Layanan tiket dan notifikasi menangani event dengan deduplikasi.</span></li>
-        </ol>
-        <ul class="list">
-          <li><strong>Jika gagal atau kedaluwarsa</strong><span>Rancangan melepaskan stok dan reservasi NIK setelah status akhir dikonfirmasi.</span></li>
-          <li><strong>Jika pengiriman gagal</strong><span>Baris outbox tetap menunggu. Consumer harus bisa menerima kiriman ulang untuk <code>eventId</code> yang sama.</span></li>
+      <h2 id="title-backend-event" class="slide-title">Outbox dan event order</h2>
+      <p class="lead">Event dikirim ke layanan tiket dan notifikasi setelah status order disimpan.</p>
+      <div class="slide-body split diagram-split">
+        <ul class="list narrow">
+          <li><strong>Simpan hasil</strong><p>Perubahan order dan baris outbox disimpan dalam satu transaksi.</p></li>
+          <li><strong>Terbitkan event</strong><p>Worker menandai baris setelah Kafka mengonfirmasi. Jika pengiriman gagal, baris tetap menunggu.</p></li>
+          <li><strong>Proses event</strong><p>Layanan tiket dan notifikasi menangani kiriman ulang dengan deduplikasi berdasarkan <code>eventId</code>.</p></li>
         </ul>
+        <figure class="app-view diagram-figure">
+          <img src="./assets/architecture/outbox-events.svg" width="740" height="440" alt="Urutan penyimpanan outbox, konfirmasi dari Kafka, pemrosesan consumer, dan percobaan ulang">
+          <figcaption>Rancangan pengiriman event dari outbox ke consumer <a href="./assets/architecture/outbox-events.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+        </figure>
       </div>
       <template class="speaker-note">Sumber desain: Booket App Design. Referensi memakai event order-placed, order-paid, dan order-failed. Settlement yang valid diperiksa terhadap pesanan dan jumlah sebelum status PAID dicatat. Status pembayaran pada web tetap dibaca dari API order, sedangkan pengiriman tiket dan email dapat berjalan setelah event diproses.</template>
     </section>
@@ -855,7 +858,7 @@
     document.addEventListener("keydown", event => {
       if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey ||
           event.target.closest("input, textarea, select, [contenteditable]")) return;
-      if (event.key === " " && event.target.closest("button, a")) return;
+      if (event.key === " " && event.target.closest("button, a, summary")) return;
       if (["ArrowLeft", "ArrowRight"].includes(event.key) && event.target.closest(".table-wrap")) return;
 
       switch (event.key.toLowerCase()) {
