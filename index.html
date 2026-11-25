@@ -1,162 +1,204 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PT DJS (Deploy Jumat Sore) — Booket.id Architecture & Technical Defense</title>
+  <link rel="icon" type="image/png" href="./booket-logo.png" />
+  <title>Booket — Presentasi Arsitektur &amp; Demo PT DJS (TSEL Assessment)</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --background: 210 20% 98%;
+      --foreground: 222 47% 11%;
+      --primary: 346.8 77.2% 49.8%;
+    }
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
     }
     code, pre, .font-mono {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    
-    /* Subtle background grid */
-    .bg-grid {
-      background-size: 40px 40px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
     }
 
-    /* Ambient lighting */
-    .ambient-glow {
-      position: absolute;
-      width: 700px;
-      height: 400px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(225, 29, 72, 0.08) 0%, rgba(37, 99, 235, 0.04) 50%, transparent 70%);
-      filter: blur(90px);
-      pointer-events: none;
-      z-index: 0;
+    /* Booket Shimmer Animation (from globals.css) */
+    @keyframes shimmer-slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .animate-shimmer {
+      animation: shimmer-slide 1.8s ease-in-out infinite;
     }
 
-    /* Smooth slide animations */
+    /* Slide Directional Entrance Transitions */
     .slide-enter-next {
-      animation: enterFromRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: enterFromRight 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .slide-enter-prev {
-      animation: enterFromLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: enterFromLeft 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
     @keyframes enterFromRight {
-      from { opacity: 0; transform: translateX(24px); }
+      from { opacity: 0; transform: translateX(22px); }
       to { opacity: 1; transform: translateX(0); }
     }
     @keyframes enterFromLeft {
-      from { opacity: 0; transform: translateX(-24px); }
+      from { opacity: 0; transform: translateX(-22px); }
       to { opacity: 1; transform: translateX(0); }
     }
 
-    /* Stagger item entrance */
-    .stagger-1 { animation: itemFade 0.4s 0.04s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger-2 { animation: itemFade 0.4s 0.09s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger-3 { animation: itemFade 0.4s 0.14s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .stagger-4 { animation: itemFade 0.4s 0.19s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    /* Staggered Item Entrance */
+    .stagger-1 { animation: itemFade 0.38s 0.04s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .stagger-2 { animation: itemFade 0.38s 0.09s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .stagger-3 { animation: itemFade 0.38s 0.14s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .stagger-4 { animation: itemFade 0.38s 0.19s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
     @keyframes itemFade {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Clean Card Border */
-    .tech-card {
-      background: rgba(15, 20, 31, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      transition: border-color 0.2s ease, transform 0.2s ease;
+    /* Booket Soft Card Hover */
+    .booket-card {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
-    .tech-card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
+    .booket-card:hover {
+      border-color: #fda4af;
+      box-shadow: 0 10px 24px -8px rgba(225, 29, 72, 0.1);
       transform: translateY(-1px);
+    }
+
+    /* Booket Ticket Notch Effect */
+    .ticket-cutout-left {
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background-color: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      z-index: 10;
+    }
+    .ticket-cutout-right {
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background-color: #ffffff;
+      border-left: 1px solid #e2e8f0;
+      z-index: 10;
     }
   </style>
 </head>
-<body class="bg-[#080B11] text-slate-100 min-h-screen flex flex-col select-none overflow-x-hidden relative">
+<body class="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col antialiased select-none overflow-x-hidden">
 
-  <!-- Top Progress Bar -->
-  <div class="fixed top-0 left-0 w-full h-[2px] bg-slate-900 z-50">
-    <div id="progressBar" class="h-full bg-rose-500 transition-all duration-300 ease-out" style="width: 7.69%;"></div>
+  <!-- Booket Top Shimmer Progress Bar -->
+  <div class="fixed top-0 left-0 w-full h-1 bg-slate-200/80 z-50 overflow-hidden">
+    <div id="progressBar" class="relative h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-600 transition-all duration-300 ease-out overflow-hidden" style="width: 7.69%;">
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent animate-shimmer"></div>
+    </div>
   </div>
 
-  <!-- Ambient Light Backdrops -->
-  <div class="ambient-glow -top-32 -left-20"></div>
-  <div class="ambient-glow -bottom-32 -right-20"></div>
-
-  <!-- Header -->
-  <header class="border-b border-white/[0.06] bg-[#080B11]/90 backdrop-blur px-6 py-3.5 flex items-center justify-between sticky top-0 z-40">
-    <div class="flex items-center gap-3.5">
-      <div class="h-7 px-2.5 rounded bg-rose-600/90 flex items-center justify-center font-bold text-xs tracking-wider text-white shadow-sm">
-        PT DJS
-      </div>
-      <div class="h-4 w-[1px] bg-white/10 hidden sm:block"></div>
-      <div>
-        <div class="text-xs font-semibold text-slate-200 tracking-tight flex items-center gap-2">
-          <span>Booket.id — Technical Architecture & Live Demo</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 font-mono">TSEL Assessment</span>
+  <!-- Booket Signature Sticky White Navbar (mirrors DesktopNavbar.tsx) -->
+  <header class="sticky top-0 z-40 border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-sm">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 py-3">
+      <!-- Brand Lockup -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="flex items-center gap-2.5 shrink-0">
+          <img
+            src="./booket-logo.png"
+            alt="Booket Logo"
+            onerror="this.style.display='none'"
+            class="size-9 rounded-xl object-contain shadow-sm border border-slate-100 bg-white"
+          />
+          <div class="leading-tight whitespace-nowrap">
+            <div class="flex items-center gap-1.5">
+              <span class="font-black text-lg tracking-tight text-slate-950">booket</span>
+              <span class="size-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+            </div>
+            <p class="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase">
+              CONCERT &amp; QUEUE • PT DJS
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="flex items-center gap-3 text-xs">
-      <button id="toggleNotesBtn" class="px-2.5 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.08] transition flex items-center gap-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-        <span>Speaker Notes (<span id="notesStatusText" class="font-mono">ON</span>)</span>
-      </button>
-      <button id="fullscreenBtn" class="px-2.5 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.08] transition">
-        Fullscreen
-      </button>
-      <div class="px-2.5 py-1 rounded bg-white/[0.04] text-slate-400 font-mono border border-white/[0.08] text-[11px]">
-        <span id="slideIndexText" class="text-white font-bold">1</span> / <span id="totalSlideText">13</span>
+        <div class="h-5 w-px bg-slate-200 hidden lg:block"></div>
+
+        <!-- Chapter Quick Navigation Pills (mirrors DesktopNavbar active/inactive pills) -->
+        <nav id="chapterNav" class="hidden lg:flex items-center gap-1 text-xs font-bold whitespace-nowrap"></nav>
+      </div>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2 shrink-0 text-xs">
+        <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800">
+          <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Assessment Deck</span>
+        </span>
+
+        <button id="toggleNotesBtn" class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50/90 hover:bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-700 transition-colors">
+          <span class="size-1.5 rounded-full bg-rose-600" id="notesDot"></span>
+          <span>Notes (<span id="notesStatusText">ON</span>)</span>
+        </button>
+
+        <button id="fullscreenBtn" class="hidden sm:inline-flex items-center rounded-full border border-slate-200 bg-white hover:bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-700 transition-colors">
+          Fullscreen
+        </button>
+
+        <div class="rounded-full bg-slate-900 text-white px-3 py-1 font-mono text-[11px] font-bold tabular-nums shadow-xs">
+          <span id="slideIndexText">1</span>/<span id="totalSlideText">13</span>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Presentation Stage -->
-  <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto relative z-10">
-    <div class="w-full tech-card rounded-xl p-6 sm:p-10 shadow-2xl relative min-h-[560px] flex flex-col justify-between overflow-hidden bg-grid">
+  <!-- Main Presentation Stage -->
+  <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
+    <!-- Crisp White Card Shell matching ScreenCard / Booket App Cards -->
+    <div class="w-full rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-9 shadow-xl shadow-slate-900/5 relative min-h-[560px] flex flex-col justify-between overflow-hidden">
       
-      <!-- Slide Dynamic Body -->
+      <!-- Dynamic Slide Body -->
       <div id="slideContentArea" class="flex-1 flex flex-col"></div>
 
-      <!-- Speaker Notes Collapsible Drawer -->
-      <div id="notesDrawer" class="mt-6 pt-4 border-t border-white/[0.08] bg-[#0B0F17]/90 rounded-lg p-4 text-xs text-slate-300 transition-all duration-200">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-semibold mb-1 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-          <span>Naskah Presenter PT DJS:</span>
+      <!-- Speaker Notes Collapsible Drawer (Booket secondary soft rose card) -->
+      <div id="notesDrawer" class="mt-6 rounded-2xl border border-rose-200/80 bg-rose-50/60 p-4 text-xs text-slate-700 transition-all duration-200">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-rose-700 font-bold mb-1 flex items-center gap-1.5">
+          <span class="size-1.5 rounded-full bg-rose-600"></span>
+          <span>Naskah Presenter • PT DJS (Deploy Jumat Sore)</span>
         </div>
-        <p id="notesContentText" class="leading-relaxed text-slate-300 font-normal italic"></p>
+        <p id="notesContentText" class="leading-relaxed text-slate-700 font-medium"></p>
       </div>
     </div>
 
     <!-- Bottom Controls -->
-    <div class="w-full mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-      <div class="flex items-center gap-2 text-[11px]">
-        <span class="text-slate-500">Shortcut:</span>
-        <kbd class="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-mono text-slate-300">←</kbd>
-        <kbd class="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-mono text-slate-300">→</kbd>
-        <span class="text-slate-600">•</span>
-        <kbd class="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-mono text-slate-300">N</kbd>
+    <div class="w-full mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 px-1">
+      <div class="flex items-center gap-2 text-[11px] font-medium">
+        <span class="text-slate-400">Shortcut:</span>
+        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">←</kbd>
+        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">→</kbd>
+        <span class="text-slate-300">•</span>
+        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">N</kbd>
         <span>Notes</span>
-        <span class="text-slate-600">•</span>
-        <kbd class="px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-mono text-slate-300">F</kbd>
+        <span class="text-slate-300">•</span>
+        <kbd class="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-mono text-slate-700 shadow-2xs">F</kbd>
         <span>Fullscreen</span>
       </div>
 
       <!-- Dot Indicators -->
       <div id="slideDotsArea" class="flex items-center gap-1.5 flex-wrap justify-center"></div>
 
-      <!-- Prev / Next Buttons -->
+      <!-- Prev / Next Buttons matching Booket Pill Buttons -->
       <div class="flex items-center gap-2">
-        <button id="prevSlideBtn" class="px-3.5 py-1.5 rounded bg-white/[0.05] hover:bg-white/[0.1] active:scale-95 text-slate-200 border border-white/10 font-medium transition disabled:opacity-30 disabled:pointer-events-none">
-          Kembali
+        <button id="prevSlideBtn" class="px-4 py-2 rounded-full bg-white hover:bg-slate-100 active:scale-95 text-slate-700 border border-slate-200 font-bold transition shadow-xs disabled:opacity-40 disabled:pointer-events-none">
+          ← Kembali
         </button>
-        <button id="nextSlideBtn" class="px-4 py-1.5 rounded bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-medium shadow-md shadow-rose-600/20 transition disabled:opacity-30 disabled:pointer-events-none">
+        <button id="nextSlideBtn" class="px-5 py-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold shadow-md shadow-rose-600/25 transition disabled:opacity-40 disabled:pointer-events-none">
           Lanjut →
         </button>
       </div>
@@ -166,136 +208,158 @@
   <script>
     const deck = [
       {
+        chapter: "Overview",
         tag: "PENDAHULUAN • PROPOSAL TEKNIS",
-        title: "Booket.id — Solusi Sistem War Tiket Konser Skala Masif",
+        title: "Booket — Sistem War Tiket Konser & Virtual Queue",
         subtitle: "Presentasi Arsitektur & Demonstrasi Sistem — Tender Rusuh Booking Ticket Telkomsel",
         content: `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center my-auto">
-            <div class="stagger-1 space-y-4">
-              <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-white/[0.04] border border-white/10 text-xs font-mono text-slate-300">
-                <span class="h-2 w-2 rounded-full bg-rose-500"></span>
-                PT DJS (Deploy Jumat Sore)
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-auto">
+            <!-- Left Narrative Column -->
+            <div class="lg:col-span-6 stagger-1 space-y-4">
+              <div class="inline-flex items-center gap-2 rounded-full bg-rose-50 border border-rose-200 px-3 py-1 text-[11px] font-bold text-rose-700">
+                <span class="size-1.5 rounded-full bg-rose-600 animate-ping"></span>
+                <span>PT DJS (Deploy Jumat Sore)</span>
               </div>
-              <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Arsitektur Resilien Tanpa Kompromi Integritas
+              <h1 class="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight leading-tight">
+                Arsitektur Resilien Tanpa <span class="text-rose-600">Kompromi Integritas</span>
               </h1>
-              <p class="text-slate-400 text-sm leading-relaxed">
+              <p class="text-slate-600 text-sm leading-relaxed">
                 Platform reservasi tiket berdaya tampung tinggi dengan isolasi beban antrean di hulu, proteksi stok atomik, dan jaminan keadilan akses bagi konsumen Telkomsel.
               </p>
-              <div class="pt-2 flex flex-wrap gap-2 text-xs font-mono">
-                <span class="px-2 py-1 rounded bg-white/[0.03] border border-white/[0.08] text-slate-300">Redis FCFS O(log n)</span>
-                <span class="px-2 py-1 rounded bg-white/[0.03] border border-white/[0.08] text-slate-300">Postgres ACID Conditional</span>
-                <span class="px-2 py-1 rounded bg-white/[0.03] border border-white/[0.08] text-slate-300">666 Unit Tests Passed</span>
+              <div class="pt-1 flex flex-wrap gap-2 text-[11px] font-mono font-semibold">
+                <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">Redis FCFS O(log n)</span>
+                <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">Postgres ACID Conditional</span>
+                <span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">666 Unit Tests Passed</span>
               </div>
             </div>
 
-            <div class="stagger-2 bg-[#0B0F17] p-5 rounded-lg border border-white/[0.08] space-y-3">
-              <div class="text-[11px] font-mono uppercase text-slate-400 tracking-wider font-semibold border-b border-white/[0.06] pb-2">
-                Ringkasan Proposal Teknis
+            <!-- Right Signature Booket Dark Hero Card (Mirrors HomeHeroFlashWar.tsx) -->
+            <div class="lg:col-span-6 stagger-2 relative overflow-hidden rounded-3xl bg-[#18191e] text-white p-6 shadow-2xl border border-slate-800 space-y-5">
+              <div class="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-rose-600/20 blur-3xl"></div>
+              <div class="pointer-events-none absolute -left-16 bottom-0 size-56 rounded-full bg-rose-950/30 blur-3xl"></div>
+
+              <div class="relative flex items-center justify-between border-b border-slate-800 pb-3">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-600/20 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-rose-400 border border-rose-500/30">
+                  <span class="size-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                  TECHNICAL ASSESSMENT DECK
+                </span>
+                <span class="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 font-mono border border-emerald-500/30">
+                  Production-Ready
+                </span>
               </div>
-              <div class="flex justify-between items-center text-xs py-1 border-b border-white/[0.04]">
-                <span class="text-slate-400">Tim Pengembang</span>
-                <span class="font-medium text-slate-200">PT DJS (Deploy Jumat Sore)</span>
+
+              <div class="relative space-y-2.5 text-xs">
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span class="text-slate-400">Tim Pengembang</span>
+                  <span class="font-bold text-white">PT DJS (Deploy Jumat Sore)</span>
+                </div>
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span class="text-slate-400">Klien / Assessor</span>
+                  <span class="font-bold text-rose-400">Telkomsel (Tender Evaluation)</span>
+                </div>
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/80">
+                  <span class="text-slate-400">Core Engine</span>
+                  <span class="font-mono text-slate-200">@booketid/core + Keycloak + Midtrans</span>
+                </div>
+                <div class="flex justify-between items-center py-1.5">
+                  <span class="text-slate-400">Cloud Target</span>
+                  <span class="font-mono text-emerald-400 font-semibold">GCP Cloud Run (asia-southeast2)</span>
+                </div>
               </div>
-              <div class="flex justify-between items-center text-xs py-1 border-b border-white/[0.04]">
-                <span class="text-slate-400">Klien / Assessor</span>
-                <span class="font-medium text-rose-400">Telkomsel (Tender Evaluation)</span>
-              </div>
-              <div class="flex justify-between items-center text-xs py-1 border-b border-white/[0.04]">
-                <span class="text-slate-400">Tantangan Inti</span>
-                <span class="font-medium text-slate-200">Flash Crowd 20k+ RPS & Zero Oversell</span>
-              </div>
-              <div class="flex justify-between items-center text-xs py-1">
-                <span class="text-slate-400">Kesiapan Rilis</span>
-                <span class="font-mono text-emerald-400 font-semibold text-[11px]">Production-Ready (CI/CD Clean)</span>
+
+              <div class="relative rounded-2xl bg-slate-900/90 border border-slate-800 p-3 flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-slate-300">Tantangan Inti Sistem</span>
+                <span class="font-mono text-[11px] font-bold text-amber-400">Flash Crowd 20k+ RPS &amp; Zero Oversell</span>
               </div>
             </div>
           </div>
         `,
-        notes: "Selamat pagi rekan-rekan dan bapak ibu tim penilai Telkomsel. Kami dari tim engineering PT DJS mempersembahkan Booket.id. Nama kami memang terdengar santai—Deploy Jumat Sore—tetapi filosofi rekayasa kami sangat jelas: sistem yang kami bangun harus sedemikian teruji, terisolasi, dan stabil, sehingga bahkan diuji di skenario puncak traffic hari Jumat pun, tim operasi tetap tenang. Mari kita bedah bagaimana arsitektur ini memecahkan masalah war tiket konser."
+        notes: "Selamat pagi rekan-rekan dan bapak ibu tim penilai Telkomsel. Kami dari tim engineering PT DJS mempersembahkan Booket. Nama kami memang terdengar santai—Deploy Jumat Sore—tetapi filosofi rekayasa kami sangat jelas: sistem yang kami bangun harus sedemikian teruji, terisolasi, dan stabil, sehingga bahkan diuji di skenario puncak traffic hari Jumat pun, tim operasi tetap tenang. Mari kita bedah bagaimana arsitektur ini memecahkan masalah war tiket konser."
       },
       {
+        chapter: "Overview",
         tag: "ANALISIS MASALAH • ROOT CAUSE",
         title: "Mengapa Platform Tiket Konvensional Selalu Rusuh?",
         subtitle: "Empat titik kerentanan arsitektural yang berulang kali menumbangkan sistem ticketing",
         content: `
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] stagger-1 space-y-2">
-              <div class="text-[10px] font-mono uppercase text-rose-400 font-semibold tracking-wider">[01] CONNECTION EXHAUSTION</div>
-              <h3 class="font-bold text-slate-100 text-sm">Spike 20k RPS Memukul Database Transaksional</h3>
-              <p class="text-slate-400 text-xs leading-relaxed">
+            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-1 space-y-2">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-[10px] font-mono uppercase text-rose-700 font-bold tracking-wider">[01] CONNECTION EXHAUSTION</div>
+              <h3 class="font-black text-slate-900 text-sm">Spike 20k RPS Memukul Database Transaksional</h3>
+              <p class="text-slate-600 text-xs leading-relaxed">
                 Di detik ke-0 pembukaan tiket, ribuan request langsung membuka koneksi ke pool database relasional, memicu connection saturation, lock contention, dan status HTTP 504 Gateway Timeout.
               </p>
             </div>
 
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] stagger-2 space-y-2">
-              <div class="text-[10px] font-mono uppercase text-amber-400 font-semibold tracking-wider">[02] DIRTY READS & OVERSELLING</div>
-              <h3 class="font-bold text-slate-100 text-sm">Race Condition pada Pengurangan Stok</h3>
-              <p class="text-slate-400 text-xs leading-relaxed">
+            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-2 space-y-2">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[10px] font-mono uppercase text-amber-800 font-bold tracking-wider">[02] DIRTY READS &amp; OVERSELLING</div>
+              <h3 class="font-black text-slate-900 text-sm">Race Condition pada Pengurangan Stok</h3>
+              <p class="text-slate-600 text-xs leading-relaxed">
                 Pola tradisional <em>read-then-update</em> di layer aplikasi gagal menjaga konsistensi data saat konkurensi tinggi. Dua thread membaca stok tersisa 1, keduanya lolos, dan stok akhir menjadi negatif.
               </p>
             </div>
 
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] stagger-3 space-y-2">
-              <div class="text-[10px] font-mono uppercase text-blue-400 font-semibold tracking-wider">[03] MULTI-TAB SCALPING</div>
-              <h3 class="font-bold text-slate-100 text-sm">Pembobolan Batas Kuota Identitas (NIK)</h3>
-              <p class="text-slate-400 text-xs leading-relaxed">
-                Calo membuka puluhan tab browser dengan satu nomor identitas. Tanpa validasi atomik di database, satu NIK berhasil mengamankan puluhan tiket melewati batas resmi 3 tiket.
+            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-3 space-y-2">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-slate-200/70 border border-slate-300 text-[10px] font-mono uppercase text-slate-800 font-bold tracking-wider">[03] MULTI-TAB SCALPING</div>
+              <h3 class="font-black text-slate-900 text-sm">Pembobolan Batas Kuota Identitas (NIK)</h3>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                Calo membuka puluhan tab browser dengan satu nomor identitas. Tanpa validasi atomik di database, satu NIK berhasil mengamankan puluhan tiket melewati batas resmi per event.
               </p>
             </div>
 
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] stagger-4 space-y-2">
-              <div class="text-[10px] font-mono uppercase text-purple-400 font-semibold tracking-wider">[04] FALSE TIMEOUT ("PHP")</div>
-              <h3 class="font-bold text-slate-100 text-sm">Sesi Hangus Akibat Latensi Webhook Pembayaran</h3>
-              <p class="text-slate-400 text-xs leading-relaxed">
+            <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card stagger-4 space-y-2">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-[10px] font-mono uppercase text-emerald-700 font-bold tracking-wider">[04] FALSE TIMEOUT ("PHP")</div>
+              <h3 class="font-black text-slate-900 text-sm">Sesi Hangus Akibat Latensi Webhook Pembayaran</h3>
+              <p class="text-slate-600 text-xs leading-relaxed">
                 Pembeli sudah melakukan transfer di detik-detik akhir, namun callback gateway terlambat beberapa detik. Sistem sepihak membatalkan pesanan, memicu komplain berat pelanggan.
               </p>
             </div>
           </div>
         `,
-        notes: "Di saat war tiket dibuka, kegagalan bukan terjadi karena aplikasi web-nya lambat, melainkan karena ketiadaan admission control. Puluhan ribu koneksi TCP secara brutal memperebutkan row lock di database. Bila sistem tidak memisahkan antrean di memori dengan transaksi ACID di storage, overselling dan server freeze adalah kepastian matematis. Booket.id dibangun untuk menghapus keempat titik kerentanan ini."
+        notes: "Di saat war tiket dibuka, kegagalan bukan terjadi karena aplikasi web-nya lambat, melainkan karena ketiadaan admission control. Puluhan ribu koneksi TCP secara brutal memperebutkan row lock di database. Bila sistem tidak memisahkan antrean di memori dengan transaksi ACID di storage, overselling dan server freeze adalah kepastian matematis. Booket dibangun untuk menghapus keempat titik kerentanan ini."
       },
       {
+        chapter: "Arsitektur",
         tag: "STRATEGI ARSITEKTUR • CORE DESIGN",
         title: "Tiga Prinsip Inti: Isolasi, Atomik, dan Otoritatif",
         subtitle: "Membatasi laju trafik di hulu sehingga sistem inti selalu beroperasi di zona aman",
         content: `
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-auto">
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] flex flex-col justify-between stagger-1 space-y-4">
+            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card flex flex-col justify-between stagger-1 space-y-4">
               <div>
-                <div class="text-xs font-mono text-rose-400 font-semibold">PRINSIP 01</div>
-                <h4 class="font-bold text-slate-100 text-sm mt-1 mb-2">Admission Control di Hulu</h4>
-                <p class="text-slate-400 text-xs leading-relaxed">
+                <div class="text-[11px] font-mono text-rose-600 font-bold">PRINSIP 01</div>
+                <h4 class="font-black text-slate-900 text-sm mt-1 mb-2">Admission Control di Hulu</h4>
+                <p class="text-slate-600 text-xs leading-relaxed">
                   Menahan gelombang trafik di Redis In-Memory FCFS Queue. Hanya sejumlah N user aktif yang diloloskan ke tahap pemesanan sesuai daya tampung database.
                 </p>
               </div>
-              <div class="pt-3 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
-                Pemisahan Read Path & Write Path
+              <div class="pt-3 border-t border-slate-100 text-[11px] font-mono font-semibold text-slate-500">
+                Pemisahan Read Path &amp; Write Path
               </div>
             </div>
 
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] flex flex-col justify-between stagger-2 space-y-4">
+            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card flex flex-col justify-between stagger-2 space-y-4">
               <div>
-                <div class="text-xs font-mono text-blue-400 font-semibold">PRINSIP 02</div>
-                <h4 class="font-bold text-slate-100 text-sm mt-1 mb-2">Two-Tier Server-Authoritative TTL</h4>
-                <p class="text-slate-400 text-xs leading-relaxed">
+                <div class="text-[11px] font-mono text-amber-600 font-bold">PRINSIP 02</div>
+                <h4 class="font-black text-slate-900 text-sm mt-1 mb-2">Two-Tier Server-Authoritative TTL</h4>
+                <p class="text-slate-600 text-xs leading-relaxed">
                   Batas waktu isi formulir (5 Menit) dan penyelesaian bayar (10 Menit) dihitung dari timestamp UTC server. Manipulasi jam lokal klien tidak memiliki efek.
                 </p>
               </div>
-              <div class="pt-3 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
+              <div class="pt-3 border-t border-slate-100 text-[11px] font-mono font-semibold text-slate-500">
                 Perlindungan Hak Sesi Tanpa PHP
               </div>
             </div>
 
-            <div class="p-5 rounded-lg bg-[#0B0F17] border border-white/[0.08] flex flex-col justify-between stagger-3 space-y-4">
+            <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card flex flex-col justify-between stagger-3 space-y-4">
               <div>
-                <div class="text-xs font-mono text-emerald-400 font-semibold">PRINSIP 03</div>
-                <h4 class="font-bold text-slate-100 text-sm mt-1 mb-2">Single-Transaction Conditional Update</h4>
-                <p class="text-slate-400 text-xs leading-relaxed">
+                <div class="text-[11px] font-mono text-emerald-600 font-bold">PRINSIP 03</div>
+                <h4 class="font-black text-slate-900 text-sm mt-1 mb-2">Single-Transaction Conditional Update</h4>
+                <p class="text-slate-600 text-xs leading-relaxed">
                   Stok dan kuota NIK dikurangi dalam satu transaksi PostgreSQL atomik dengan klausa WHERE guard. Meniadakan kemungkinan stok minus atau over-quota.
                 </p>
               </div>
-              <div class="pt-3 border-t border-white/[0.06] text-[11px] font-mono text-slate-400">
+              <div class="pt-3 border-t border-slate-100 text-[11px] font-mono font-semibold text-slate-500">
                 Jaminan Mutlak Zero-Overselling
               </div>
             </div>
@@ -304,92 +368,117 @@
         notes: "Tiga pilar ini adalah fondasi teknis kami: Pertama, kita tidak membiarkan jutaan request menyentuh PostgreSQL; antrean diselesaikan di memori berlatensi mikrodetik. Kedua, waktu sesi diatur otoritatif oleh server agar adil. Dan ketiga, pengurangan stok dilakukan dalam single SQL statement dengan conditional update, sehingga tidak ada celah dirty read sama sekali."
       },
       {
+        chapter: "Arsitektur",
         tag: "TOPOLOGI SISTEM • ENTERPRISE SCALE",
         title: "Arsitektur Sistem Terdistribusi Multi-Tier",
         subtitle: "Pipeline stateless dengan pemisahan tegas antara Ingress, Queue Engine, dan ACID Data Store",
         content: `
-          <div class="p-5 bg-[#0B0F17] rounded-lg border border-white/[0.08] text-xs space-y-4 stagger-1">
+          <div class="p-5 bg-slate-50/80 rounded-2xl border border-slate-200 text-xs space-y-4 stagger-1">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 text-center">
-              <div class="p-3 rounded bg-white/[0.02] border border-white/[0.06]">
-                <div class="font-mono text-[10px] text-slate-400 uppercase">Tier 1: Client</div>
-                <div class="font-semibold text-slate-200 mt-1">React 18 SPA</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Desktop & Mobile WebView (?embed=1)</div>
+              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Tier 1: Client</div>
+                <div class="font-black text-slate-900 mt-1">React 18 SPA</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Web App &amp; Keycloak Auth</div>
               </div>
-              <div class="p-3 rounded bg-white/[0.02] border border-white/[0.06]">
-                <div class="font-mono text-[10px] text-slate-400 uppercase">Tier 2: Ingress</div>
-                <div class="font-semibold text-slate-200 mt-1">Nginx & Token WAF</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Rate Limiting & Static CDN Cache</div>
+              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Tier 2: Ingress</div>
+                <div class="font-black text-slate-900 mt-1">Nginx &amp; Cloud Run</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Rate Limiting &amp; CDN Cache</div>
               </div>
-              <div class="p-3 rounded bg-white/[0.02] border border-white/[0.06]">
-                <div class="font-mono text-[10px] text-slate-400 uppercase">Tier 3: App Layer</div>
-                <div class="font-semibold text-slate-200 mt-1">Stateless Services</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Queue, Booking, & Payment APIs</div>
+              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Tier 3: App Layer</div>
+                <div class="font-black text-slate-900 mt-1">Stateless Services</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">Queue, Booking, &amp; Midtrans API</div>
               </div>
-              <div class="p-3 rounded bg-white/[0.02] border border-white/[0.06]">
-                <div class="font-mono text-[10px] text-slate-400 uppercase">Tier 4: Storage</div>
-                <div class="font-semibold text-slate-200 mt-1">Redis + PostgreSQL</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">ZSET Antrean & ACID Ledger</div>
+              <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <div class="font-mono text-[10px] text-slate-400 uppercase font-bold">Tier 4: Storage</div>
+                <div class="font-black text-slate-900 mt-1">Redis + PostgreSQL</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">ZSET Antrean &amp; ACID Ledger</div>
               </div>
             </div>
 
-            <div class="p-3.5 rounded bg-white/[0.015] border border-white/[0.05] space-y-2">
+            <!-- Dark Contrasting Flow Strip matching Booket Stage Banner -->
+            <div class="p-4 rounded-2xl bg-[#18191e] text-white border border-slate-800 space-y-2.5 shadow-lg">
               <div class="font-mono text-[11px] text-slate-300 flex justify-between items-center">
-                <span>Alur Eksekusi Terisolasi:</span>
-                <span class="text-rose-400">O(log n) In-Memory Latency</span>
+                <span class="font-bold">Alur Eksekusi Terisolasi (Hot-Path Protection):</span>
+                <span class="text-rose-400 font-bold">O(log n) In-Memory Latency</span>
               </div>
-              <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-mono">
-                <div class="p-2 rounded bg-black/40 border border-white/[0.04]">1. Public Trafik</div>
-                <div class="p-2 rounded bg-rose-950/20 border border-rose-800/40 text-rose-300">2. Redis Waiting Room</div>
-                <div class="p-2 rounded bg-blue-950/20 border border-blue-800/40 text-blue-300">3. Admission Slot (N)</div>
-                <div class="p-2 rounded bg-emerald-950/20 border border-emerald-800/40 text-emerald-300">4. PostgreSQL ACID Hold</div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px] font-mono">
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">1. Public Trafik</div>
+                <div class="p-2 rounded-xl bg-rose-950/60 border border-rose-700/50 text-rose-300 font-bold">2. Redis Waiting Room</div>
+                <div class="p-2 rounded-xl bg-amber-950/40 border border-amber-700/50 text-amber-300 font-bold">3. Admission Slot (N)</div>
+                <div class="p-2 rounded-xl bg-emerald-950/50 border border-emerald-700/50 text-emerald-300 font-bold">4. PostgreSQL ACID Hold</div>
               </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between text-[11px] text-slate-400 gap-2 font-mono">
-              <span>• Horizontal Auto-Scale: Pod backend stateless siap scale dalam detik saat event dibuka.</span>
+            <div class="flex flex-col sm:flex-row justify-between text-[11px] text-slate-600 gap-2 font-mono">
+              <span>• Horizontal Auto-Scale: Container stateless di Cloud Run siap scale otomatis saat event dibuka.</span>
               <span>• Outbox Pattern: Event asinkron (email tiket, audit) di-publish via broker pesan tanpa blocking.</span>
             </div>
           </div>
         `,
-        notes: "Secara topologi, aplikasi web klien menyentuh Nginx Ingress yang dilengkapi rate limiter. Request antrean dialirkan ke Queue Service yang hanya berkomunikasi dengan Redis Cluster. Booking Service baru disentuh ketika user sudah mendapatkan access token resmi. Ini adalah pemisahan arsitektural yang menjamin ketersediaan sistem 99.9%."
+        notes: "Secara topologi, aplikasi web klien berjalan di Nginx container di Cloud Run asia-southeast2 yang terhubung ke API Gateway. Request antrean dialirkan ke Queue Service yang hanya berkomunikasi dengan Redis Cluster. Booking Service baru disentuh ketika user sudah mendapatkan access token resmi. Ini adalah pemisahan arsitektural yang menjamin ketersediaan sistem 99.9%."
       },
       {
+        chapter: "Arsitektur",
         tag: "DEEP DIVE • WAITING ROOM INTERNALS",
-        title: "Algoritma Antrean FCFS & Redis Lua Scripting",
+        title: "Algoritma Antrean FCFS &amp; Redis Lua Scripting",
         subtitle: "Evaluasi slot atomik tanpa race condition dan alasan memilih Polling Adaptif dibanding WebSocket",
         content: `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-2 stagger-1 font-mono text-[11px]">
-              <div class="text-slate-400 font-sans font-bold text-xs pb-1 border-b border-white/[0.06] flex justify-between items-center">
-                <span>Atomic Admission (Lua Script)</span>
-                <span class="text-rose-400 text-[10px]">Redis Engine</span>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 my-auto text-xs">
+            <!-- Left: Signature WaitingRoomStatusCard Visual + Lua -->
+            <div class="space-y-3 stagger-1">
+              <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d221b] via-[#132921] to-[#1e151c] p-4 text-white shadow-xl border border-emerald-950/60 space-y-3">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-0.5 font-bold text-emerald-300 border border-emerald-500/30">
+                    <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    ANTREAN AKTIF • FAIRQUEUE™
+                  </span>
+                  <span class="font-mono text-slate-300">Polling Adaptif</span>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <div>
+                    <div class="text-[9px] uppercase tracking-widest text-slate-400 font-bold">NOMOR URUT</div>
+                    <div class="text-3xl font-black font-mono">#1.248</div>
+                  </div>
+                  <div class="text-right font-mono text-[11px] text-emerald-300">
+                    ETA = ZRANK / Rate<sub>5m</sub>
+                  </div>
+                </div>
+                <div class="relative h-2.5 w-full overflow-hidden rounded-full bg-black/60 p-0.5 border border-white/10">
+                  <div class="relative h-full w-3/4 rounded-full bg-gradient-to-r from-emerald-600 via-amber-500 to-rose-600 overflow-hidden">
+                    <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/35 to-transparent animate-shimmer"></div>
+                  </div>
+                </div>
               </div>
-              <div class="text-slate-500">-- 1. Bersihkan slot kedaluwarsa</div>
-              redis.call('ZREMRANGEBYSCORE', 'q:active', '-inf', now)<br/>
-              <div class="text-slate-500 mt-1">-- 2. Evaluasi kapasitas tersisa</div>
-              local free = maxSlots - redis.call('ZCARD', 'q:active')<br/>
-              <div class="text-slate-500 mt-1">-- 3. Promosikan K user terdepan (FCFS)</div>
-              local admitted = redis.call('ZPOPMIN', 'q:waiting', free)<br/>
-              redis.call('ZADD', 'q:active', now + ttl, admitted)
-              <div class="text-slate-400 font-sans text-[10px] mt-2 pt-2 border-t border-white/[0.06]">
-                🔒 <strong>Distributed Lock:</strong> Mencegah race condition antar-worker saat mempromosikan antrean.
+
+              <div class="p-3.5 rounded-2xl bg-[#18191e] border border-slate-800 font-mono text-[10.5px] text-slate-300 leading-relaxed">
+                <div class="text-slate-400 font-sans font-bold text-xs pb-1.5 mb-1.5 border-b border-slate-800 flex justify-between items-center">
+                  <span class="text-white">Atomic Admission (Lua Script)</span>
+                  <span class="text-rose-400 text-[10px]">Redis Engine</span>
+                </div>
+                <span class="text-slate-500">-- Pop K user terdepan secara atomik</span><br/>
+                redis.call('ZREMRANGEBYSCORE', 'q:active', '-inf', now)<br/>
+                local free = maxSlots - redis.call('ZCARD', 'q:active')<br/>
+                local admitted = redis.call('ZPOPMIN', 'q:waiting', free)<br/>
+                redis.call('ZADD', 'q:active', now + ttl, admitted)
               </div>
             </div>
 
-            <div class="space-y-3 stagger-2">
-              <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-1.5">
-                <div class="font-bold text-slate-200 text-xs">Trade-Off: Polling Adaptif vs WebSocket</div>
-                <p class="text-slate-400 text-[11px] leading-relaxed">
-                  Pada skala 50.000 user jaringan seluler, WebSocket menghabiskan socket descriptor memori dan rentan <em>reconnection storm</em> saat perangkat berpindah tower BTS. Polling adaptif (2–5 detik + random jitter) bersifat stateless, ramah caching, dan terbukti paling stabil di jaringan telekomunikasi.
+            <!-- Right: Engineering Trade-offs -->
+            <div class="space-y-3 stagger-2 flex flex-col justify-center">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5">
+                <div class="font-black text-slate-900 text-xs">Trade-Off: Polling Adaptif vs WebSocket</div>
+                <p class="text-slate-600 text-[11px] leading-relaxed">
+                  Pada skala 50.000 user jaringan seluler, WebSocket menghabiskan socket descriptor memori dan rentan <em>reconnection storm</em> saat perangkat berpindah tower BTS. Polling adaptif dengan header <code>pollAfterSeconds</code> + random jitter bersifat stateless, ramah caching, dan stabil di jaringan telekomunikasi.
                 </p>
               </div>
 
-              <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-1 font-mono">
-                <div class="font-sans font-bold text-slate-200 text-xs">Formula Moving Average ETA</div>
-                <div class="text-rose-400 text-[11px]">ETA = ZRANK(waiting, id) / AdmissionRate(5min)</div>
-                <div class="text-slate-500 text-[10px] font-sans">
-                  Memberikan estimasi waktu transparan yang dihitung ulang setiap putaran polling.
-                </div>
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 booket-card space-y-1">
+                <div class="font-black text-slate-900 text-xs">Sinkronisasi Countdown Real-Time</div>
+                <p class="text-slate-600 text-[11px] leading-relaxed">
+                  Server mengirim <code>etaSeconds</code> dan <code>queueNumber</code> (kontrak <code>@booketid/core</code> 0.11.1). UI menghitung countdown lokal per detik yang terus diselaraskan ulang tiap siklus sinkronisasi server.
+                </p>
               </div>
             </div>
           </div>
@@ -397,332 +486,402 @@
         notes: "Pertanyaan yang sering diajukan arsitek: Kenapa tidak WebSocket? Di atas kertas WebSocket terlihat modern, tetapi di lapangan dengan 50.000 user ponsel yang sinyalnya naik-turun, reconnection storm saat server restart bisa melumpuhkan load balancer. Polling adaptif dengan jitter acak mendistribusikan beban secara merata dan ramah resource gateway."
       },
       {
+        chapter: "Concurrency",
         tag: "DEEP DIVE • DATABASE INTEGRITY",
-        title: "Pencegahan Overselling & Kepatuhan UU PDP",
-        subtitle: "Eksekusi satu transaksi PostgreSQL atomik untuk mengunci kuota NIK dan inventaris tiket",
+        title: "Pencegahan Overselling &amp; Aturan NIK 1-Tiket",
+        subtitle: "Eksekusi satu transaksi PostgreSQL atomik untuk mengunci inventaris tiket dan kuota NIK",
         content: `
-          <div class="space-y-3 text-xs my-auto">
-            <div class="bg-[#0B0F17] p-4 rounded-lg border border-white/[0.08] font-mono text-[11px] text-slate-300 overflow-x-auto stagger-1">
-              <div class="text-slate-500 mb-1.5 font-sans text-xs">-- Transaksi Tunggal Atomik (PostgreSQL Read Committed):</div>
+          <div class="space-y-3.5 text-xs my-auto">
+            <div class="bg-[#18191e] p-4 rounded-2xl border border-slate-800 font-mono text-[11px] text-slate-200 overflow-x-auto stagger-1 shadow-lg">
+              <div class="text-slate-400 mb-1.5 font-sans text-xs font-bold flex justify-between">
+                <span>Transaksi Tunggal Atomik (PostgreSQL Read Committed)</span>
+                <span class="text-emerald-400 font-mono text-[10px]">Zero-Oversell Guard</span>
+              </div>
               <span class="text-purple-400">BEGIN TRANSACTION;</span><br/>
-              &nbsp;&nbsp;<span class="text-slate-500">-- 1. Kunci Kuota NIK (Maks 3 per Event)</span><br/>
-              &nbsp;&nbsp;<span class="text-blue-400">INSERT INTO</span> nik_quotas (event_id, nik_hash, reserved_qty)<br/>
-              &nbsp;&nbsp;<span class="text-blue-400">VALUES</span> (:event_id, :nik_hash, :qty)<br/>
-              &nbsp;&nbsp;<span class="text-blue-400">ON CONFLICT</span> (event_id, nik_hash)<br/>
-              &nbsp;&nbsp;<span class="text-blue-400">DO UPDATE SET</span> reserved_qty = nik_quotas.reserved_qty + EXCLUDED.reserved_qty<br/>
-              &nbsp;&nbsp;<span class="text-rose-400">WHERE</span> nik_quotas.reserved_qty + EXCLUDED.reserved_qty &lt;= 3;<br/>
+              &nbsp;&nbsp;<span class="text-slate-500">-- 1. Guard Kuota NIK per Event (Maks 3 tiket/order, 1 NIK = 1 Tiket Peserta)</span><br/>
+              &nbsp;&nbsp;<span class="text-sky-400">INSERT INTO</span> nik_quotas (event_id, nik_hash, reserved_qty)<br/>
+              &nbsp;&nbsp;<span class="text-sky-400">VALUES</span> (:event_id, :nik_hash, :qty)<br/>
+              &nbsp;&nbsp;<span class="text-sky-400">ON CONFLICT</span> (event_id, nik_hash) <span class="text-rose-400">DO NOTHING</span>;<br/>
               <br/>
               &nbsp;&nbsp;<span class="text-slate-500">-- 2. Pengurangan Stok Kategori (Conditional Decrement)</span><br/>
-              &nbsp;&nbsp;<span class="text-blue-400">UPDATE</span> ticket_categories <span class="text-blue-400">SET</span> available = available - :qty<br/>
+              &nbsp;&nbsp;<span class="text-sky-400">UPDATE</span> ticket_categories <span class="text-sky-400">SET</span> available = available - :qty<br/>
               &nbsp;&nbsp;<span class="text-rose-400">WHERE</span> id = :category_id <span class="text-rose-400">AND</span> available &gt;= :qty;<br/>
               <span class="text-purple-400">COMMIT;</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 stagger-2">
-              <div class="p-3 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="font-bold text-slate-200 text-xs mb-1">Anti-Deadlock Ordering</div>
-                <div class="text-slate-400 text-[11px]">Pesanan multi-tier selalu diurutkan ascending berdasarkan category_id sebelum query dieksekusi.</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card">
+                <div class="font-black text-slate-900 text-xs mb-1">1 Order Maks 3 • 1 NIK = 1 Tiket</div>
+                <div class="text-slate-600 text-[11px]">Tervalidasi murni di <code>src/domain/rules.ts</code> (<code>MAX_TICKETS_PER_ORDER = 3</code>) dan unik NIK per tiket peserta.</div>
               </div>
-              <div class="p-3 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="font-bold text-slate-200 text-xs mb-1">Kepatuhan UU PDP</div>
-                <div class="text-slate-400 text-[11px]">NIK di-hash via HMAC-SHA256 untuk kuota dan dimasking (3171********1234) di layar e-tiket.</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card">
+                <div class="font-black text-slate-900 text-xs mb-1">Kepatuhan UU PDP</div>
+                <div class="text-slate-600 text-[11px]">NIK 16 digit di-hash HMAC-SHA256 untuk lookup kuota tanpa mengekspos data mentah secara sembarangan.</div>
               </div>
-              <div class="p-3 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="font-bold text-slate-200 text-xs mb-1">Non-Blocking Sweeper</div>
-                <div class="text-slate-400 text-[11px]">Worker melepas hold kedaluwarsa dengan SELECT FOR UPDATE SKIP LOCKED tanpa freeze database.</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card">
+                <div class="font-black text-slate-900 text-xs mb-1">Anti-Deadlock &amp; SKIP LOCKED</div>
+                <div class="text-slate-600 text-[11px]">Order multi-tier diurutkan ascending by ID; sweeper memakai <code>FOR UPDATE SKIP LOCKED</code> non-blocking.</div>
               </div>
             </div>
           </div>
         `,
-        notes: "Ini adalah pembuktian teknis anti-overselling. Kami tidak memvalidasi stok di layer Node.js atau memori aplikasi; validasi dijalankan langsung di database engine melalui conditional decrement. Bila available kurang dari requested qty, UPDATE menghasilkan 0 row dan transaksi langsung rollback. Data NIK juga kami lindungi sesuai UU PDP No. 27/2022 dengan hashing HMAC."
+        notes: "Ini adalah pembuktian teknis anti-overselling. Kami tidak memvalidasi stok hanya di UI; validasi dijalankan di database engine melalui conditional decrement. Bila available kurang dari requested qty, UPDATE menghasilkan 0 row dan transaksi langsung rollback. Di aplikasi web sendiri, kami menerapkan aturan ketat maksimal 3 tiket per order dan 1 NIK unik untuk setiap tiket peserta."
       },
       {
-        tag: "DEEP DIVE • STATE MACHINE & REKONSILIASI",
-        title: "Two-Tier TTL & Kebijakan Rekonsiliasi Anti-PHP",
-        subtitle: "Sinkronisasi waktu absolut UTC dan perlindungan hak pembeli saat webhook bank mengalami latensi",
+        chapter: "Concurrency",
+        tag: "DEEP DIVE • STATE MACHINE &amp; REKONSILIASI",
+        title: "Two-Tier TTL &amp; Kebijakan Rekonsiliasi Anti-PHP",
+        subtitle: "Banner countdown server-authoritative dan perlindungan pembeli saat webhook bank mengalami latensi",
         content: `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-3 stagger-1">
-              <div class="font-bold text-slate-200 text-xs pb-1 border-b border-white/[0.06]">
-                Dua Tingkat Server-Authoritative TTL
+          <div class="space-y-4 my-auto text-xs">
+            <!-- Replica of CheckoutCountdownBanner.tsx -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-2xl bg-rose-600 px-5 py-3 text-white shadow-md stagger-1">
+              <div class="flex items-center gap-2.5">
+                <span class="size-2.5 rounded-full bg-white animate-pulse"></span>
+                <div>
+                  <p class="text-xs font-black">Sesi Checkout Aktif • Server-Authoritative UTC Expiry</p>
+                  <p class="text-[11px] text-rose-100">Timer klien disinkronkan dari <code>expiryEpochSeconds</code> server; manipulasi jam lokal tidak mempan.</p>
+                </div>
               </div>
-              <div>
-                <div class="text-rose-400 font-mono text-[11px] font-semibold">1. HOLD FORMULIR (5 MENIT)</div>
-                <p class="text-slate-400 text-[11px] mt-0.5 leading-relaxed">
-                  Tiket direservasi saat form dibuka. Klien menyinkronkan jam via header HTTP Date. Sesi hangus jika tidak di-submit dalam 5 menit.
-                </p>
-              </div>
-              <div>
-                <div class="text-blue-400 font-mono text-[11px] font-semibold">2. PAYMENT SETTLEMENT (10 MENIT)</div>
-                <p class="text-slate-400 text-[11px] mt-0.5 leading-relaxed">
-                  Batas waktu transfer VA / QRIS. Setiap request membawa <code>Idempotency-Key (UUID)</code> untuk mencegah tagihan ganda.
-                </p>
+              <div class="font-mono text-xs font-black bg-rose-700/80 px-3 py-1 rounded-xl border border-rose-500/50 self-start sm:self-auto">
+                HOLD: 05:00 | PAY: 10:00
               </div>
             </div>
 
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] flex flex-col justify-between stagger-2">
-              <div>
-                <div class="font-bold text-emerald-400 text-xs pb-1 border-b border-white/[0.06]">
-                  Mekanisme Rekonsiliasi Keterlambatan Bank
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-2">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-2.5">
+                <div class="font-black text-slate-900 text-xs pb-1.5 border-b border-slate-200">
+                  Dua Tingkat Server-Authoritative TTL
                 </div>
-                <p class="text-slate-400 text-[11px] mt-2 leading-relaxed">
-                  Skenario umum: Pengguna membayar di menit 09:55, namun notifikasi webhook bank baru sampai di menit 10:05 saat pesanan berstatus EXPIRED.
-                </p>
-                <div class="mt-2.5 p-2.5 rounded bg-black/40 border border-white/[0.06] text-[11px] font-mono text-slate-300 space-y-1">
-                  <div>✓ Sweeper memanggil inquiry status gateway sebelum membatalkan.</div>
-                  <div>✓ Bila dana settled di bank, status otomatis dipromosikan ke PAID.</div>
-                  <div>✓ Bila stok terlanjur lepas, outbox trigger otomatis memproses refund.</div>
+                <div>
+                  <div class="text-rose-600 font-mono text-[11px] font-bold">1. HOLD CHECKOUT (5 MENIT)</div>
+                  <p class="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
+                    Saat sesi habis sebelum submit (<code>HTTP_410</code> / <code>CHECKOUT_EXPIRED</code>), modal <code>BookingExpiredModal</code> muncul dan slot dilepas ke antrean.
+                  </p>
+                </div>
+                <div>
+                  <div class="text-emerald-700 font-mono text-[11px] font-bold">2. PAYMENT GATEWAY MIDTRANS (10 MENIT)</div>
+                  <p class="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
+                    Snapshot order disimpan di <code>orderSnapshot.ts</code> sebelum redirect ke Midtrans agar data peserta tetap utuh saat kembali ke callback.
+                  </p>
                 </div>
               </div>
-              <div class="text-[10px] text-slate-500 font-mono pt-2">
-                Menghapus risiko komplain viral pelanggan yang sudah bayar tapi tiket hilang.
+
+              <div class="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200 booket-card flex flex-col justify-between">
+                <div>
+                  <div class="font-black text-emerald-800 text-xs pb-1.5 border-b border-emerald-200">
+                    Mekanisme Rekonsiliasi Keterlambatan Bank
+                  </div>
+                  <p class="text-slate-600 text-[11px] mt-2 leading-relaxed">
+                    Skenario umum: Pembeli membayar di menit 09:55, namun webhook Midtrans/bank baru sampai di menit 10:05 saat status terancam EXPIRED.
+                  </p>
+                  <div class="mt-2.5 p-2.5 rounded-xl bg-white border border-emerald-200 text-[11px] font-mono text-slate-700 space-y-1">
+                    <div>✓ Sweeper melakukan inquiry ke gateway sebelum expire.</div>
+                    <div>✓ Bila dana settled di bank, status dipromosikan ke PAID.</div>
+                    <div>✓ Bila stok terlanjur lepas, auto-refund dipicu otomatis.</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         `,
-        notes: "Kami menyebut ini Kebijakan Anti-PHP. Expiry sweeper kami tidak membabi-buta membatalkan transaksi yang sudah jatuh tempo 10 menit tanpa inquiry ke payment gateway. Jika bank menyatakan uang sudah terpotong sah, kami prioritaskan penerbitan tiket. Konsumen Telkomsel tidak boleh dirugikan oleh latensi inter-bank."
+        notes: "Kami menyebut ini Kebijakan Anti-PHP. Timer 5 menit di halaman checkout menggunakan banner crimson otoritatif dari expiryEpochSeconds server. Dan saat redirect ke Midtrans, orderSnapshot menjaga state pesanan tetap persisten. Di backend, expiry sweeper tidak membabi-buta membatalkan transaksi tanpa inquiry ke gateway terlebih dahulu."
       },
       {
+        chapter: "Concurrency",
         tag: "DEEP DIVE • FRONTEND ENGINEERING",
-        title: "Clean Architecture & Self-Healing Fallback",
-        subtitle: "Isolasi domain rules murni dan kemampuan klien menangani anomali payload API secara anggun",
+        title: "Clean Architecture &amp; Self-Healing Fallback",
+        subtitle: "Isolasi domain rules murni dan ketahanan klien saat menerima payload API legacy",
         content: `
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-3 stagger-1">
+            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-3 stagger-1">
               <div>
-                <div class="font-bold text-slate-200 text-xs">Domain-Driven Pure Functions</div>
-                <p class="text-slate-400 text-[11px] mt-1 leading-relaxed">
-                  Modul <code>src/domain/rules.ts</code> bebas dependensi React dan I/O: <code>isValidNik()</code>, <code>maxSelectableQty()</code>, <code>hasDuplicateParticipantNiks()</code>. Logika bisnis diuji dengan determinisme 100%.
+                <div class="font-black text-slate-900 text-xs">Domain-Driven Pure Functions</div>
+                <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">
+                  Modul <code>src/domain/rules.ts</code> bebas dependensi React dan I/O: <code>isValidNik()</code>, <code>maxSelectableQty()</code>, <code>buildParticipantSlots()</code>, dan <code>hasDuplicateParticipantNiks()</code>. Logika bisnis teruji deterministik 100%.
                 </p>
               </div>
-              <div class="pt-2 border-t border-white/[0.06]">
-                <div class="font-bold text-slate-200 text-xs">Facade Pattern & Store Reaktif</div>
-                <p class="text-slate-400 text-[11px] mt-1 leading-relaxed">
-                  Abstraksi core SDK dibungkus dalam <code>WaitingRoomFacade</code> dan <code>CheckoutFacade</code> dengan reactive subscription via custom <code>useFacadeStore</code>.
+              <div class="pt-2.5 border-t border-slate-200">
+                <div class="font-black text-slate-900 text-xs">Facade Pattern &amp; Reactive Store</div>
+                <p class="text-slate-600 text-[11px] mt-1 leading-relaxed">
+                  Integrasi <code>@booketid/core</code> 0.11.1 dibungkus melalui <code>WaitingRoomFacade</code>, <code>CheckoutFacade</code>, dan <code>OrderFacade</code> via reactive subscription <code>useFacadeStore</code>.
                 </p>
               </div>
             </div>
 
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] stagger-2 space-y-2">
-              <div class="font-bold text-rose-400 text-xs pb-1 border-b border-white/[0.06]">
-                Self-Healing Fallback Engine
+            <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm booket-card stagger-2 space-y-2.5">
+              <div class="font-black text-rose-600 text-xs pb-1.5 border-b border-slate-100 flex items-center justify-between">
+                <span>Self-Healing Fallback Engine</span>
+                <span class="font-mono text-[10px] text-slate-400">waitingRoomFallback.ts</span>
               </div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Bila API core mengembalikan respons 200 OK dengan format payload legacy yang ditolak oleh DTO strict:
+              <p class="text-slate-600 text-[11px] leading-relaxed">
+                Diuji langsung dari kasus nyata HTTP 200 OK dengan payload format legacy yang ditolak DTO strict core (<code>INVALID_RESPONSE</code>):
               </p>
-              <div class="p-2.5 rounded bg-black/40 border border-white/[0.06] font-mono text-[10px] text-slate-300">
-                if (coreState.errorCode === "INVALID_RESPONSE") {<br/>
-                &nbsp;&nbsp;activateFallbackSession();<br/>
-                &nbsp;&nbsp;parseLegacyPayload(etaSeconds);<br/>
+              <div class="p-3 rounded-xl bg-[#18191e] text-slate-200 font-mono text-[10.5px] leading-relaxed">
+                <span class="text-slate-500">// Auto-recovery di useWaitingRoom.ts</span><br/>
+                <span class="text-rose-400">if</span> (coreState.errorCode === <span class="text-emerald-400">"INVALID_RESPONSE"</span>) {<br/>
+                &nbsp;&nbsp;facade.stop();<br/>
+                &nbsp;&nbsp;fetchWaitingRoomFallback(token); <span class="text-slate-500">// parse etaSeconds / legacy eta</span><br/>
                 }
               </div>
-              <p class="text-emerald-400 text-[11px]">
-                ✓ Layar pengguna tidak pernah menjadi blank/crash; nomor antrean dan ETA tetap tersaji mulus.
+              <p class="text-emerald-700 font-semibold text-[11px]">
+                ✓ Mengklasifikasikan error permanen (400/404/410) vs transient retry; UI antrean tetap berjalan mulus tanpa blank screen.
               </p>
             </div>
           </div>
         `,
-        notes: "Kualitas frontend kami tercermin dari Clean Architecture: domain rules terpisah mutlak dari komponen React. Selain itu, kami menyematkan Self-Healing Fallback: jika respons API memiliki sedikit ketidaksesuaian DTO, klien secara cerdas mengaktifkan engine fallback darurat tanpa merusak antarmuka pengguna menjadi layar putih."
+        notes: "Kualitas frontend kami teruji langsung di lapangan. Pernah ada insiden ketika endpoint waiting room mengembalikan status 200 OK dengan skema JSON legacy yang ditolak oleh DTO ketat package core. Kami membangun waitingRoomFallback yang mengambil alih parsing etaSeconds dan error classification secara otomatis, sehingga pengguna tetap melihat posisi antreannya tanpa terganggu."
       },
       {
-        tag: "PAYMENT & VENUE SECURITY",
-        title: "Reusable WebView & Dynamic Anti-Calo Pass",
-        subtitle: "Satu codebase pembayaran untuk Web/Mobile dan barcode dinamis berotasi 30 detik di venue",
+        chapter: "QA & Demo",
+        tag: "PAYMENT &amp; VENUE SECURITY",
+        title: "Midtrans Payment &amp; E-Ticket Notched Pass",
+        subtitle: "Integrasi Midtrans callback resmi dan tiket digital berlekuk dengan Dynamic Barcode 30 detik",
         content: `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-2.5 stagger-1">
-              <div class="font-bold text-slate-200 text-xs pb-1 border-b border-white/[0.06]">
-                Integrasi Pembayaran Reusable (?embed=1)
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center my-auto text-xs">
+            <!-- Left: Payment Flow Explanation -->
+            <div class="lg:col-span-5 space-y-3 stagger-1">
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-2">
+                <div class="font-black text-slate-900 text-xs">Alur Pembayaran Midtrans</div>
+                <p class="text-slate-600 text-[11px] leading-relaxed">
+                  Mendukung Virtual Account (BCA, Mandiri, BRI, BNI), QRIS, dan Kartu Kredit. Callback otomatis kembali ke route <code>/payment/success</code>, <code>/payment/status</code>, atau <code>/payment/failed</code>.
+                </p>
               </div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Route <code>/pay/:bookingId</code> otomatis menyembunyikan navigasi web saat disematkan di dalam WebView aplikasi MyTelkomsel. Membawa multi-kanal resmi: Virtual Account (Mandiri, BCA, BRI, BNI), QRIS Dinamis 0% Fee, dan Kartu Kredit.
-              </p>
-              <div class="p-2 rounded bg-white/[0.02] border border-white/[0.06] font-mono text-[10px] text-slate-300">
-                Idempotency Header: Idempotency-Key: &lt;UUID&gt;<br/>
-                Webhook Signature: HMAC-SHA512
+              <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5">
+                <div class="font-black text-slate-900 text-xs">Anti-Screenshot Dynamic QR (30s)</div>
+                <p class="text-slate-600 text-[11px] leading-relaxed">
+                  Untuk membendung calo yang menjual screenshot tiket yang sama ke banyak korban, pass menampilkan barcode dinamis yang diperbarui periodik dan dicocokkan di halaman <code>/tiket</code>.
+                </p>
               </div>
             </div>
 
-            <div class="p-4 rounded-lg bg-[#0B0F17] border border-white/[0.08] flex flex-col justify-between stagger-2">
-              <div class="space-y-2">
-                <div class="font-bold text-slate-200 text-xs pb-1 border-b border-white/[0.06]">
-                  E-Ticket Pass: Dynamic Rotating Barcode
+            <!-- Right: Exact Replica of PaymentSuccessView Notched Ticket -->
+            <div class="lg:col-span-7 stagger-2 relative overflow-hidden rounded-3xl bg-[#18191e] text-white shadow-2xl border border-slate-800 p-5 sm:p-6">
+              <div class="ticket-cutout-left hidden sm:block"></div>
+              <div class="ticket-cutout-right hidden sm:block"></div>
+              <div class="pointer-events-none absolute -right-12 -top-12 size-44 rounded-full bg-rose-600/20 blur-3xl"></div>
+
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-rose-600 text-[10px] font-black tracking-wider uppercase">BOOKET PASS</span>
+                  <span class="text-[10px] font-bold text-rose-400 font-mono">• TERVERIFIKASI MIDTRANS</span>
                 </div>
-                <p class="text-slate-400 text-[11px] leading-relaxed">
-                  Untuk memutus rantai calo tiket yang menjual tangkapan layar (screenshot) berulang kali di media sosial, QR code tiket berotasi secara kriptografis tiap 30 detik pada perangkat aktif.
-                </p>
-                <div class="p-2 rounded bg-rose-950/20 border border-rose-800/30 text-[10px] font-mono text-rose-300">
-                  Payload = HMAC(TicketID + Timestamp/30 + SecretKey)
-                </div>
+                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
+                  <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  ACTIVE &amp; VALID
+                </span>
               </div>
-              <div class="text-[10px] text-slate-500 font-mono pt-2">
-                Scanner pintu gerbang venue dapat memvalidasi tiket secara offline maupun online.
+
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                <div class="sm:col-span-7 space-y-2">
+                  <div class="text-[10px] font-bold uppercase tracking-wider text-rose-500">DEPLOY JUMAT SORE LIVE</div>
+                  <div class="text-base font-black text-white leading-tight">CONCERT &amp; QUEUE ARENA</div>
+                  <div class="border-t border-dashed border-slate-800 my-2"></div>
+                  <div class="grid grid-cols-2 gap-2 text-[11px]">
+                    <div>
+                      <span class="text-[9px] uppercase text-slate-400">Kategori</span>
+                      <p class="font-bold text-rose-400">VIP Sunset</p>
+                    </div>
+                    <div>
+                      <span class="text-[9px] uppercase text-slate-400">NIK Peserta</span>
+                      <p class="font-mono font-bold text-slate-200">3174********0004</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sm:col-span-5 rounded-2xl border border-slate-800 bg-slate-950/90 p-3 text-center space-y-1.5">
+                  <div class="mx-auto size-20 rounded-xl bg-white text-slate-900 flex items-center justify-center font-mono text-[10px] font-bold border border-slate-200">
+                    [QR PASS]
+                  </div>
+                  <div class="flex items-center justify-center gap-1 text-[9px] text-emerald-400 font-mono">
+                    <span class="size-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>Dynamic • 30s</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         `,
-        notes: "Halaman pembayaran kami langsung siap ditanam di dalam aplikasi MyTelkomsel lewat mode embed. Sementara di venue, kami menyelesaikan masalah klasik calo dengan Dynamic QR Code yang berotasi tiap 30 detik. Calo yang menjual screenshot di Twitter atau Telegram tidak akan bisa menipu penonton karena tiketnya kadaluwarsa dalam 30 detik."
+        notes: "Di sisi pembayaran dan pasca-bayar, kami terintegrasi dengan Midtrans berikut redirect callback status yang lengkap. Setelah pembayaran terkonfirmasi, pengguna langsung menerima Booket PASS berlekuk khas konser dengan barcode dinamis yang diperbarui periodik agar tangkapan layar tidak bisa disalahgunakan oleh calo."
       },
       {
-        tag: "SOFTWARE QUALITY ASSURANCE",
-        title: "Standar Rekayasa & Verifikasi Pengujian",
-        subtitle: "Pengujian menyeluruh dengan 666 skenario automated test dan gerbang GitLab CI/CD",
+        chapter: "QA & Demo",
+        tag: "SOFTWARE QUALITY ASSURANCE • GITLAB CI/CD",
+        title: "6-Stage Pipeline, SonarQube &amp; 666 Automated Tests",
+        subtitle: "Standar rekayasa perangkat lunak terverifikasi dari kode hingga deploy otomatis Cloud Run",
         content: `
           <div class="space-y-4 my-auto text-xs">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center stagger-1">
-              <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="text-2xl font-bold font-mono text-emerald-400">666</div>
-                <div class="text-[11px] text-slate-400 mt-1">Automated Unit Tests</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
+                <div class="text-2xl font-black font-mono text-emerald-600">666</div>
+                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">Vitest Unit Tests</div>
               </div>
-              <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="text-2xl font-bold font-mono text-blue-400">91</div>
-                <div class="text-[11px] text-slate-400 mt-1">Test Suites Passed</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
+                <div class="text-2xl font-black font-mono text-slate-900">91</div>
+                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">Test Files Passed</div>
               </div>
-              <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="text-2xl font-bold font-mono text-purple-400">&ge; 80%</div>
-                <div class="text-[11px] text-slate-400 mt-1">Coverage per File</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
+                <div class="text-2xl font-black font-mono text-rose-600">&ge; 80%</div>
+                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">Coverage Threshold</div>
               </div>
-              <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="text-2xl font-bold font-mono text-rose-400">0</div>
-                <div class="text-[11px] text-slate-400 mt-1">TypeScript Errors</div>
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 booket-card">
+                <div class="text-2xl font-black font-mono text-amber-600">0</div>
+                <div class="text-[11px] font-semibold text-slate-600 mt-0.5">TypeScript Errors</div>
               </div>
             </div>
 
-            <div class="p-4 rounded bg-[#0B0F17] border border-white/[0.08] stagger-2 space-y-2">
-              <div class="font-mono text-xs font-semibold text-slate-200 flex justify-between items-center">
-                <span>Tahapan Pipeline GitLab CI/CD:</span>
-                <span class="text-emerald-400 text-[11px]">Pipeline Success</span>
+            <!-- Actual 6 stages from .gitlab-ci.yml -->
+            <div class="p-4 rounded-2xl bg-[#18191e] text-white border border-slate-800 stagger-2 space-y-2.5 shadow-lg">
+              <div class="font-mono text-xs font-bold text-slate-200 flex justify-between items-center">
+                <span>6 Stages Pipeline (.gitlab-ci.yml → booket-id-web)</span>
+                <span class="text-emerald-400 text-[11px]">✓ Cloud Run Deployed</span>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono text-[10px]">
-                <div class="p-2 rounded bg-black/40 border border-white/[0.04]">
-                  <div class="text-slate-300 font-semibold">1. compile-file</div>
-                  <div class="text-slate-500">tsc -b --noEmit</div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-center font-mono text-[10px]">
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-rose-400 font-bold">1. code-quality</div>
+                  <div class="text-slate-400 mt-0.5">npm audit &amp; Gitleaks</div>
                 </div>
-                <div class="p-2 rounded bg-black/40 border border-white/[0.04]">
-                  <div class="text-slate-300 font-semibold">2. unit-tests</div>
-                  <div class="text-slate-500">Vitest 666 Tests</div>
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-emerald-400 font-bold">2. case-coverage</div>
+                  <div class="text-slate-400 mt-0.5">Vitest + JUnit + LCOV</div>
                 </div>
-                <div class="p-2 rounded bg-black/40 border border-white/[0.04]">
-                  <div class="text-slate-300 font-semibold">3. build-web</div>
-                  <div class="text-slate-500">Vite Build (13s)</div>
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-amber-400 font-bold">3. code-rank</div>
+                  <div class="text-slate-400 mt-0.5">SonarQube Gate</div>
                 </div>
-                <div class="p-2 rounded bg-black/40 border border-white/[0.04]">
-                  <div class="text-slate-300 font-semibold">4. containerize</div>
-                  <div class="text-slate-500">Docker Nginx Alpine</div>
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-sky-400 font-bold">4. build</div>
+                  <div class="text-slate-400 mt-0.5">tsc -b &amp; Vite build</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-purple-400 font-bold">5. package</div>
+                  <div class="text-slate-400 mt-0.5">Artifact Registry JKT</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-900 border border-slate-800">
+                  <div class="text-white font-bold">6. deploy</div>
+                  <div class="text-slate-400 mt-0.5">GCP Cloud Run</div>
                 </div>
               </div>
             </div>
             
-            <p class="text-slate-400 text-[11px] font-mono stagger-3">
-              Setiap baris kode terikat dengan threshold testing ketat. Kami memastikan tidak ada regresi sebelum kode mencapai branch produksi.
+            <p class="text-slate-500 text-[11px] font-mono stagger-3">
+              Setiap push ke branch <code>main</code> diaudit keamanannya (Gitleaks + npm audit), diuji dengan 666 unit tests, dipindai SonarQube, dan dibungkus ke Nginx Docker multi-stage.
             </p>
           </div>
         `,
-        notes: "Sebagai pengembang profesional, klaim stabilitas harus dibuktikan dengan angka testing riil. Seluruh kode yang Anda lihat didukung 666 skenario automated test dengan coverage di atas 80% per file. Tidak ada satupun commit yang lolos ke branch utama tanpa melewati verifikasi typecheck dan unit-test otomatis di pipeline GitLab."
+        notes: "Sebagai pengembang profesional, klaim reliabilitas harus dibuktikan dengan metrik pipeline nyata. Repository frontend kami memiliki 6 stage CI/CD lengkap di GitLab: mulai dari secret scanning Gitleaks dan npm audit, unit test Vitest dengan 666 test pass di 91 file, SonarQube quality gate, build Vite + TypeScript strict, containerisasi ke Artifact Registry Jakarta, hingga deploy otomatis ke Cloud Run."
       },
       {
+        chapter: "QA & Demo",
         tag: "DEMONSTRASI LANGSUNG • RUNBOOK",
         title: "Skenario Demonstrasi Sistem (Live Demo)",
-        subtitle: "Empat skenario pengujian langsung untuk memverifikasi keandalan Booket.id",
+        subtitle: "Empat skenario pengujian langsung untuk memverifikasi alur aplikasi Booket",
         content: `
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto text-xs">
-            <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08] stagger-1 space-y-1">
-              <div class="font-bold text-rose-400 text-xs">[SKENARIO 1] HAPPY PATH & WAITING ROOM</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Pilih konser &rarr; Masuk Waiting Room &rarr; Pantau nomor antrean dan ETA live &rarr; Sistem secara otomatis me-redirect ke halaman booking saat slot tiba.
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 my-auto text-xs">
+            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-1 space-y-1.5">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 font-mono font-bold text-rose-700 text-[10px]">[SKENARIO 1] HAPPY PATH &amp; WAITING ROOM</div>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                Login Keycloak &rarr; Pilih konser &rarr; Masuk Waiting Room (<code>/waiting-room</code>) &rarr; Pantau nomor urut &amp; countdown live &rarr; Auto-redirect ke <code>/checkout</code> saat slot tiba.
               </p>
             </div>
 
-            <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08] stagger-2 space-y-1">
-              <div class="font-bold text-blue-400 text-xs">[SKENARIO 2] ATOMIC NIK & QUOTA GUARD</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Pilih tiket &rarr; Coba tambah tiket ke-4 (tombol langsung terkunci) &rarr; Masukkan NIK duplikat pada form peserta (terdeteksi duplikasi seketika).
+            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-2 space-y-1.5">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 font-mono font-bold text-amber-800 text-[10px]">[SKENARIO 2] QUOTA MAX 3 &amp; NIK UNIK</div>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                Tambah hingga 3 tiket (batas maksimal order terkunci otomatis) &rarr; Isi NIK peserta yang sama pada 2 slot &rarr; Validasi menolak duplikasi (<code>1 NIK = 1 Tiket</code>).
               </p>
             </div>
 
-            <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08] stagger-3 space-y-1">
-              <div class="font-bold text-emerald-400 text-xs">[SKENARIO 3] SESSION RESTORE (ANTI-PHP)</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Tutup tab antrean atau kembali ke Beranda &rarr; Kartu 'Lanjutkan Antrean' muncul &rarr; Klik dan posisi antrean pulih seketika tanpa kehilangan nomor urut.
+            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-3 space-y-1.5">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 font-mono font-bold text-emerald-700 text-[10px]">[SKENARIO 3] SESSION RESTORE (ANTI-PHP)</div>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                Kembali ke Beranda saat masih berada di antrean &rarr; Kartu <strong>"Antrean Anda"</strong> muncul otomatis &rarr; Klik lanjutkan dan sesi pulih tanpa kehilangan antrean.
               </p>
             </div>
 
-            <div class="p-3.5 rounded bg-[#0B0F17] border border-white/[0.08] stagger-4 space-y-1">
-              <div class="font-bold text-purple-400 text-xs">[SKENARIO 4] PAYMENT & DYNAMIC PASS</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Pilih Mandiri VA &rarr; Tinjau batas bayar 10 menit & nomor VA &rarr; Selesaikan simulasi bayar &rarr; Terbitkan e-tiket resmi dengan QR code berotasi tiap 30 detik.
+            <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 booket-card stagger-4 space-y-1.5">
+              <div class="inline-block px-2 py-0.5 rounded-md bg-slate-200/80 border border-slate-300 font-mono font-bold text-slate-800 text-[10px]">[SKENARIO 4] MIDTRANS &amp; E-TICKET</div>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                Submit checkout &rarr; Selesaikan pembayaran Midtrans &rarr; Halaman sukses menampilkan Pass Konser Berlekuk &amp; tiket tersimpan rapi di menu <code>/tiket</code>.
               </p>
             </div>
           </div>
         `,
-        notes: "Bapak ibu sekalian, sekarang mari kita buktikan secara langsung di layar aplikasi. Kita akan menjalankan 4 skenario live demo ini bersama: mulai dari pengalaman antrean yang adil, validasi batas kuota 3 NIK, pemulihan sesi saat berpindah tab, hingga penerbitan tiket ber-QR dinamis."
+        notes: "Bapak ibu sekalian, sekarang mari kita buktikan secara langsung di layar aplikasi Booket. Kita akan menjalankan 4 skenario demo ini bersama: mulai dari mode Live API di Waiting Room, pembuktian guard NIK unik per tiket, pemulihan antrean lewat kartu Beranda, hingga penerbitan Pass Konser setelah pembayaran Midtrans."
       },
       {
+        chapter: "Integrasi",
         tag: "NILAI BISNIS TELKOMSEL",
         title: "Sinergi Strategis dengan Ekosistem Telkomsel",
-        subtitle: "Mendorong adopsi MyTelkomsel, utilisasi Telkomsel Poin, dan melindungi reputasi brand",
+        subtitle: "Kesiapan integrasi SSO/WebView ke MyTelkomsel, Telkomsel Poin, dan proteksi reputasi brand",
         content: `
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto text-xs">
-            <div class="p-4 rounded bg-[#0B0F17] border border-white/[0.08] space-y-1.5 stagger-1">
-              <div class="font-bold text-slate-200 text-xs">Akselerasi Monthly Active Users MyTelkomsel</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Arsitektur Reusable WebView memungkinkan fitur war tiket konser musik eksklusif disematkan ke dalam MyTelkomsel, memicu traffic dan transaksi in-app pelanggan Telkomsel.
+            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-1">
+              <div class="font-black text-slate-900 text-xs">Akselerasi Monthly Active Users MyTelkomsel</div>
+              <p class="text-slate-600 text-[11px] leading-relaxed">
+                Arsitektur modular serta dukungan mode WebView embedded memungkinkan fitur war tiket konser musik eksklusif disematkan ke dalam MyTelkomsel untuk meningkatkan transaksi in-app.
               </p>
             </div>
 
-            <div class="p-4 rounded bg-[#0B0F17] border border-white/[0.08] space-y-1.5 stagger-2">
-              <div class="font-bold text-slate-200 text-xs">Utilisasi Telkomsel Poin & Loyalty Fast-Track</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Integrasi penukaran Telkomsel Poin untuk mendapatkan diskon tiket konser atau jalur antrean prioritas (Fast Track Queue) khusus pelanggan setia Telkomsel Halo.
+            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-2">
+              <div class="font-black text-slate-900 text-xs">Utilisasi Telkomsel Poin &amp; Priority Access</div>
+              <p class="text-slate-600 text-[11px] leading-relaxed">
+                Integrasi mudah dengan sistem penukaran Telkomsel Poin untuk diskon harga tiket atau jalur antrean prioritas khusus pelanggan loyal Telkomsel.
               </p>
             </div>
 
-            <div class="p-4 rounded bg-[#0B0F17] border border-white/[0.08] space-y-1.5 stagger-3">
-              <div class="font-bold text-slate-200 text-xs">Proteksi Reputasi Brand Telkomsel</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Meniadakan komplain viral di media sosial akibat server crash, stok minus, atau tuduhan orang dalam. Memposisikan Telkomsel sebagai operator ticketing paling terpercaya.
+            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-3">
+              <div class="font-black text-slate-900 text-xs">Proteksi Reputasi Brand Telkomsel</div>
+              <p class="text-slate-600 text-[11px] leading-relaxed">
+                Meniadakan sentimen negatif di media sosial akibat server tumbang, stok minus, atau kecurigaan orang dalam—mengokohkan citra Telkomsel di lini digital lifestyle.
               </p>
             </div>
 
-            <div class="p-4 rounded bg-[#0B0F17] border border-white/[0.08] space-y-1.5 stagger-4">
-              <div class="font-bold text-slate-200 text-xs">Kedaulatan & Analitik Data Kependudukan</div>
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                Seluruh data identitas pemesan tersimpan aman di bawah infrastruktur cloud mandiri yang patuh UU PDP, siap dimanfaatkan untuk personalisasi paket data konser berikutnya.
+            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200 booket-card space-y-1.5 stagger-4">
+              <div class="font-black text-slate-900 text-xs">Kedaulatan Infrastruktur &amp; Keamanan SSO</div>
+              <p class="text-slate-600 text-[11px] leading-relaxed">
+                Autentikasi terintegrasi Keycloak OpenID Connect dan deploy container terisolasi di region Jakarta (<code>asia-southeast2</code>) dengan kepatuhan penuh UU PDP.
               </p>
             </div>
           </div>
         `,
-        notes: "Booket.id bukan sekadar aplikasi ticketing mandiri, melainkan pengungkit nilai strategis bagi ekosistem MyTelkomsel. Penukaran Telkomsel Poin dan proteksi dari isu server down di medsos akan memperkuat posisi Telkomsel sebagai pemimpin digital telco terdepan di Indonesia."
+        notes: "Booket bukan sekadar web aplikasi tiket yang berdiri sendiri, melainkan komponen yang siap bersinergi dengan ekosistem MyTelkomsel. Dengan region deployment di Jakarta, autentikasi Keycloak berbasis standar OIDC, serta proteksi terhadap server crash di hari-H, kami yakin solusi ini memberi nilai bisnis langsung bagi Telkomsel."
       },
       {
+        chapter: "Integrasi",
         tag: "PENUTUP • TECHNICAL DEFENSE",
-        title: "Kesimpulan & Sesi Tanya Jawab Teknis",
+        title: "Kesimpulan &amp; Sesi Tanya Jawab Teknis",
         subtitle: "PT DJS (Deploy Jumat Sore) siap mendampingi Telkomsel mengawal event konser akbar",
         content: `
-          <div class="space-y-6 my-auto text-xs text-center max-w-2xl mx-auto stagger-1">
-            <div class="p-6 rounded-lg bg-[#0B0F17] border border-white/[0.08] space-y-2">
-              <h3 class="text-lg font-bold text-slate-100">Kesiapan Produksi Tanpa Titik Buta</h3>
+          <div class="space-y-5 my-auto text-xs text-center max-w-2xl mx-auto stagger-1">
+            <div class="relative overflow-hidden p-6 rounded-3xl bg-[#18191e] text-white border border-slate-800 shadow-2xl space-y-2">
+              <div class="pointer-events-none absolute -right-12 -top-12 size-44 rounded-full bg-rose-600/20 blur-3xl"></div>
+              <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30 mb-1">
+                <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                SIAP UNTUK DISKUSI &amp; PENINJAUAN KODE
+              </div>
+              <h3 class="text-xl font-black text-white">Kesiapan Produksi Tanpa Titik Buta</h3>
               <p class="text-slate-300 text-xs leading-relaxed max-w-lg mx-auto">
-                Kombinasi isolasi antrean in-memory O(log n), integritas transaksi atomik PostgreSQL, dan 666 skenario pengujian otomatis menjadikan Booket.id solusi yang tangguh dan teruji.
+                Kombinasi isolasi antrean in-memory O(log n), integritas transaksi atomik PostgreSQL, self-healing fallback engine, dan 666 unit tests menjadikan Booket solusi yang tangguh dan teruji.
               </p>
             </div>
 
             <div class="grid grid-cols-3 gap-3 text-center stagger-2 font-mono text-[11px]">
-              <div class="p-3 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="font-bold text-emerald-400">Zero Oversell</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Postgres Conditional</div>
+              <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
+                <div class="font-black text-emerald-700">Zero Oversell</div>
+                <div class="text-[10px] text-emerald-600 mt-0.5">Postgres Conditional</div>
               </div>
-              <div class="p-3 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="font-bold text-rose-400">Anti-Calo</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">30s Dynamic Barcode</div>
+              <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200">
+                <div class="font-black text-rose-700">Anti-Calo</div>
+                <div class="text-[10px] text-rose-600 mt-0.5">Dynamic Pass + 1 NIK/Tiket</div>
               </div>
-              <div class="p-3 rounded bg-[#0B0F17] border border-white/[0.08]">
-                <div class="font-bold text-blue-400">Anti-PHP</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">Two-Tier Server TTL</div>
+              <div class="p-3.5 rounded-2xl bg-slate-100 border border-slate-200">
+                <div class="font-black text-slate-900">Anti-PHP</div>
+                <div class="text-[10px] text-slate-600 mt-0.5">Two-Tier Server TTL</div>
               </div>
             </div>
 
-            <div class="text-slate-400 pt-2 text-xs stagger-3">
+            <div class="text-slate-500 font-medium pt-1 text-xs stagger-3">
               Kami siap menjawab seluruh pertanyaan dan telaah teknis mendalam dari bapak/ibu tim penilai.
             </div>
           </div>
@@ -744,16 +903,44 @@
     const nextSlideBtn = document.getElementById('nextSlideBtn');
     const toggleNotesBtn = document.getElementById('toggleNotesBtn');
     const notesStatusText = document.getElementById('notesStatusText');
+    const notesDot = document.getElementById('notesDot');
     const progressBar = document.getElementById('progressBar');
     const slideDotsArea = document.getElementById('slideDotsArea');
+    const chapterNav = document.getElementById('chapterNav');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
 
     totalSlideText.innerText = deck.length;
 
+    // Group unique chapters in order and map to first slide index
+    const chapters = [];
+    deck.forEach((s, idx) => {
+      if (!chapters.some(c => c.name === s.chapter)) {
+        chapters.push({ name: s.chapter, startIndex: idx });
+      }
+    });
+
+    function renderChapterPills(activeChapter) {
+      chapterNav.innerHTML = '';
+      chapters.forEach((ch) => {
+        const btn = document.createElement('button');
+        const isActive = ch.name === activeChapter;
+        btn.className = isActive
+          ? 'rounded-full px-3 py-1 bg-rose-600 text-white shadow-sm shadow-rose-600/30 transition-all'
+          : 'rounded-full px-3 py-1 text-slate-600 hover:text-slate-950 hover:bg-slate-100 transition-all';
+        btn.innerText = ch.name;
+        btn.addEventListener('click', () => {
+          direction = ch.startIndex >= current ? 'next' : 'prev';
+          current = ch.startIndex;
+          renderSlide(current);
+        });
+        chapterNav.appendChild(btn);
+      });
+    }
+
     // Create minimal dot pills
     deck.forEach((_, idx) => {
       const dot = document.createElement('button');
-      dot.className = `h-1.5 rounded-full transition-all duration-200 ${idx === 0 ? 'bg-rose-500 w-5' : 'bg-white/10 hover:bg-white/25 w-2'}`;
+      dot.className = `h-1.5 rounded-full transition-all duration-200 ${idx === 0 ? 'bg-rose-600 w-5' : 'bg-slate-300 hover:bg-slate-400 w-2'}`;
       dot.title = `Slide ${idx + 1}`;
       dot.addEventListener('click', () => {
         direction = idx > current ? 'next' : 'prev';
@@ -767,9 +954,9 @@
       const dots = slideDotsArea.querySelectorAll('button');
       dots.forEach((dot, idx) => {
         if (idx === index) {
-          dot.className = 'h-1.5 rounded-full bg-rose-500 w-5 transition-all duration-200';
+          dot.className = 'h-1.5 rounded-full bg-rose-600 w-5 transition-all duration-200 shadow-xs';
         } else {
-          dot.className = 'h-1.5 rounded-full bg-white/10 hover:bg-white/25 w-2 transition-all duration-200';
+          dot.className = 'h-1.5 rounded-full bg-slate-300 hover:bg-slate-400 w-2 transition-all duration-200';
         }
       });
     }
@@ -777,23 +964,24 @@
     function renderSlide(index) {
       const s = deck[index];
       slideIndexText.innerText = index + 1;
-      
+
       const percent = ((index + 1) / deck.length) * 100;
       progressBar.style.width = `${percent}%`;
 
       updateDots(index);
+      renderChapterPills(s.chapter);
 
       const animClass = direction === 'next' ? 'slide-enter-next' : 'slide-enter-prev';
-      
+
       slideContentArea.innerHTML = `
         <div class="${animClass} flex-1 flex flex-col justify-between">
-          <div class="mb-4">
-            <div class="text-[10px] font-mono tracking-wider font-semibold text-rose-400 mb-1 flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <div class="mb-4 pb-3 border-b border-slate-100">
+            <div class="text-[10px] font-mono tracking-wider font-bold text-rose-600 mb-1 flex items-center gap-2">
+              <span class="size-1.5 rounded-full bg-rose-600"></span>
               <span>${s.tag}</span>
             </div>
-            <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">${s.title}</h2>
-            <p class="text-xs text-slate-400 mt-1">${s.subtitle}</p>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-950 tracking-tight">${s.title}</h2>
+            <p class="text-xs text-slate-500 mt-1 font-medium">${s.subtitle}</p>
           </div>
           <div class="min-h-[300px] flex flex-col justify-center my-auto">
             ${s.content}
@@ -802,7 +990,7 @@
       `;
 
       notesContentText.innerText = `"${s.notes}"`;
-      
+
       prevSlideBtn.disabled = index === 0;
       nextSlideBtn.disabled = index === deck.length - 1;
     }
@@ -848,11 +1036,11 @@
       if (showNotes) {
         notesDrawer.style.display = 'block';
         notesStatusText.innerText = 'ON';
-        notesStatusText.className = 'text-rose-400 font-bold';
+        notesDot.className = 'size-1.5 rounded-full bg-rose-600';
       } else {
         notesDrawer.style.display = 'none';
         notesStatusText.innerText = 'OFF';
-        notesStatusText.className = 'text-slate-500 font-bold';
+        notesDot.className = 'size-1.5 rounded-full bg-slate-400';
       }
     }
 
