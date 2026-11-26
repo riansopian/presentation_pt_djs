@@ -301,7 +301,7 @@
 </head>
 <body>
   <header class="site-header">
-    <progress id="progress" class="progress" value="1" max="27" aria-label="Progres presentasi"></progress>
+    <progress id="progress" class="progress" value="1" max="28" aria-label="Progres presentasi"></progress>
     <div class="shell header-inner">
       <a class="brand" href="#slide-1" aria-label="Booket, kembali ke sampul">
         <img src="./booket-logo.png" alt="" width="38" height="38">
@@ -555,12 +555,34 @@
           <div><dt>Database utama</dt><dd>PostgreSQL 18</dd></div>
         </dl>
         <ul class="list">
-          <li><strong>Akses dan identitas</strong><span>Cloudflare untuk dua situs, API Gateway, Keycloak, dan middleware Go serta Rust.</span></li>
+          <li><strong>Akses dan identitas</strong><span>Cloudflare mengelola DNS dan distribusi konten untuk dua situs. Kong dan middleware Go menangani akses API dengan token Keycloak.</span></li>
           <li><strong>Transaksi dan tiket</strong><span>Layanan antrean, order, produk dan tiket memakai Cloud SQL Enterprise Plus dengan SSD 100 GiB.</span></li>
-          <li><strong>Integrasi</strong><span>Brevo untuk email. Confluent Cloud Standard di Jakarta masuk dalam usulan PoC.</span></li>
+          <li><strong>Integrasi</strong><span>Brevo menangani pengiriman dan pelacakan email transaksi. Confluent Cloud Standard di Jakarta masuk dalam usulan PoC.</span></li>
         </ul>
       </div>
       <template class="speaker-note">Audit infrastruktur bertanggal 23 November 2026. Pada kode middleware Go, cache JWKS menggunakan Valkey bila dikonfigurasi. TTL default 600 detik. Nilai saat deployment perlu diperiksa. Setiap service HTTP membentuk transactionid sendiri.</template>
+    </section>
+
+    <section class="slide paper" id="cloudflare-brevo" aria-labelledby="title-cloudflare-brevo">
+      <h2 id="title-cloudflare-brevo" class="slide-title">Cloudflare dan Brevo</h2>
+      <p class="lead">Cloudflare mengantarkan konten web ke pembeli. Brevo menangani email selama proses pemesanan.</p>
+      <div class="slide-body split">
+        <div>
+          <h3>Cloudflare · Domain dan CDN</h3>
+          <ol class="step-list">
+            <li><strong>Kelola domain</strong><p>Tim mengelola record DNS booket.id dan subdomain di Cloudflare. Record mengarahkan browser ke tujuan yang sesuai.</p></li>
+            <li><strong>Sajikan konten</strong><p>Dua situs memakai Workers/Pages. CDN menyajikan aset statis seperti gambar, CSS, dan JavaScript dari cache saat tersedia.</p></li>
+          </ol>
+        </div>
+        <div>
+          <h3>Brevo · Pengiriman dan pengelolaan email</h3>
+          <ol class="step-list">
+            <li><strong>Kirim pesan transaksi</strong><p>service-notification membaca event Kafka, menyiapkan isi email, lalu memanggil API Brevo untuk mengirim tautan bayar atau konfirmasi.</p></li>
+            <li><strong>Pantau pengiriman</strong><p>Brevo mengembalikan messageId saat menerima pesan. Tim menggunakan log transaksi untuk memeriksa status pengiriman ke alamat pembeli.</p></li>
+          </ol>
+        </div>
+      </div>
+      <template class="speaker-note">Cloudflare berperan sebagai pengelola DNS dan CDN. Budget mengasumsikan paket Free untuk dua situs. Perpanjangan domain .id punya alokasi tersendiri dan identitas registrar belum dikonfirmasi. Layanan notifikasi Booket merender template sebelum memanggil API email transaksional Brevo. Respons 201 dengan messageId menunjukkan Brevo menerima permintaan. Status delivered diperiksa kemudian melalui log Brevo. Sumber: BOOKET_BUDGET_EXISTING.md, bagian Cloudflare domain dan Brevo, serta arsitektur-booket-backend.md, bagian service-notification.</template>
     </section>
 
     <section class="slide paper" id="backend-layanan" aria-labelledby="title-backend-layanan">
