@@ -301,7 +301,7 @@
 </head>
 <body>
   <header class="site-header">
-    <progress id="progress" class="progress" value="1" max="24" aria-label="Progres presentasi"></progress>
+    <progress id="progress" class="progress" value="1" max="27" aria-label="Progres presentasi"></progress>
     <div class="shell header-inner">
       <a class="brand" href="#slide-1" aria-label="Booket, kembali ke sampul">
         <img src="./booket-logo.png" alt="" width="38" height="38">
@@ -337,6 +337,13 @@
       <template class="speaker-note">Kami dari PT DJS. Kami mulai dari alur yang dilihat pembeli, lalu tunjukkan bagaimana web membaca state SDK, menyambung sesi, dan menangani checkout. Setelah itu kita masuk ke rancangan backend dan usulan PoC.</template>
     </section>
 
+    <section class="slide paper" id="fairqueue" aria-labelledby="title-fairqueue">
+      <h2 class="slide-title" id="title-fairqueue">FairQueue saat tiket diburu</h2>
+      <p class="lead">Pembeli dapat melihat posisinya sambil menunggu giliran memilih tiket.</p>
+      <div class="slide-body split"><ul class="list narrow"><li><strong>Saat penjualan dibuka</strong><p>Lonjakan permintaan, pemborongan, dan tiket duplikat membuat pembeli sulit mendapat kepastian.</p></li><li><strong>Giliran pembeli</strong><p>Rancangan mencatat urutan kedatangan di PostgreSQL. Valkey menyajikan posisi dan perkiraan waktu tunggu.</p></li><li><strong>Pembatasan checkout</strong><p>Rancangan memeriksa slot tiap 200 ms, dengan target 20 pembeli masuk per detik dan paling banyak 100 checkout aktif.</p></li></ul><figure class="app-view"><img style="max-height:340px;object-fit:contain" src="./assets/konser-fairqueue.jpg" alt="Suasana konser dalam materi produk Booket"><figcaption>Suasana konser dalam materi produk Booket</figcaption></figure></div>
+      <template class="speaker-note">Sumber: presentasi-booket.pdf, hlm. 1–5 dan 10. Alur pembeli: pilih konser di katalog, antre, checkout, bayar, lalu buka Tiket Saya. Konser BTS GBK merupakan contoh dalam materi produk. Angka admission adalah parameter rancangan. Durasi dan kapasitas aktual perlu diukur.</template>
+    </section>
+
     <section class="slide paper" id="slide-2" aria-labelledby="title-2">
       <h2 id="title-2" class="slide-title">Saat penjualan tiket dibuka</h2>
       <p class="lead">Banyak pembeli datang bersamaan. Ada empat hal yang perlu dijaga agar transaksi tetap berjalan.</p>
@@ -362,7 +369,7 @@
           <li><strong>Data dan integrasi</strong><span>Rancangan menempatkan PostgreSQL sebagai sumber data transaksi. Midtrans memproses pembayaran, sementara outbox meneruskan event ke Kafka.</span></li>
         </ul>
       </div>
-      <template class="speaker-note">Diagram memadukan kode frontend web dengan peta layanan dari Booket App Design. Referensi menggambarkan Event Core sebagai rancangan bersama Web, Android, dan iOS. Slide ini membahas pemakaian SDK di web. Mode demo dapat menjalankan alur dengan data contoh SDK.</template>
+      <template class="speaker-note">Peta menggabungkan rancangan platform pada presentasi-booket.pdf hlm. 6 dengan ulasan lima service backend pada 25 November 2026. Jalur antrean, order, dan outbox mengikuti desain Booket. Web memakai React dan SDK Kotlin/JS.</template>
     </section>
 
     <section class="slide paper" id="slide-3" aria-labelledby="title-3">
@@ -413,7 +420,7 @@
         <div><dt><code>/waiting-room</code> · Antrean</dt><dd><code>WaitingRoomFacade</code> membaca status memakai token sesi. UI menampilkan nomor dan perkiraan waktu.</dd></div>
         <div><dt><code>/checkout</code> · Pemesanan</dt><dd><code>CheckoutFacade</code> memuat tier, biaya, dan batas waktu. <code>OrderFacade</code> mengirim pesanan.</dd></div>
         <div><dt><code>/payment/status</code> · Pembayaran</dt><dd><code>usePaymentResult</code> membaca status order dan memilih tampilan menunggu, sukses, gagal, atau kedaluwarsa.</dd></div>
-        <div><dt><code>/tiket</code> · Tiket Saya</dt><dd><code>TicketFacade</code> memuat daftar booking dan detail tiket per peserta.</dd></div>
+        <div><dt><code>/tiket</code> · Tiket Saya</dt><dd><code>TicketFacade</code> memuat daftar booking dan rincian tiket per tier.</dd></div>
         <div><dt><code>/profil</code> · Profil</dt><dd><code>ProfileFacade</code> memuat akun. <code>ParticipantFacade</code> menangani data peserta untuk isi cepat saat checkout.</dd></div>
       </dl>
       <template class="speaker-note">Peta ini mengikuti src/app/AppRouter.tsx dan hook di src/features. /payment/success dan /payment/failed memakai halaman hasil yang sama. Hasil yang ditampilkan tetap mengikuti status order dari API.</template>
@@ -514,21 +521,28 @@
       <template class="speaker-note">Di web, duplikasi NIK dalam satu checkout memang diperiksa sebelum submit lewat hasDuplicateParticipantNiks. Ini melengkapi tabel pada Booket App Design yang membahas pemeriksaan di core bersama. Callback Midtrans membawa ID pesanan, lalu usePaymentResult meminta status dan total dari API. Parameter callback dapat ditampilkan sebagai konteks.</template>
     </section>
 
+    <section class="slide paper" id="midtrans-snap" aria-labelledby="title-midtrans-snap">
+      <h2 class="slide-title" id="title-midtrans-snap">Rincian pembayaran di checkout</h2>
+      <p class="lead">Pembeli memeriksa rincian harga sebelum melanjutkan ke Midtrans Snap.</p>
+      <div class="slide-body split"><ul class="list narrow"><li><strong>Pilihan pembayaran</strong><p>Materi produk menampilkan virtual account BCA, Mandiri, BRI dan BNI, serta QRIS, GoPay, dan kartu kredit.</p></li><li><strong>Rincian harga</strong><p>Contoh di PDF memakai biaya layanan 10% dan pajak hiburan 11%. Untuk transaksi, tampilkan nominal yang dikembalikan API order.</p></li><li><strong>Jika pembayaran diulang</strong><p>Rancangan memakai Idempotency-Key untuk pengiriman ulang. Setelah kembali dari Snap, web membaca status pesanan dari API.</p></li></ul><figure class="app-view"><img style="max-height:340px;object-fit:contain" src="./assets/checkout.jpg" alt="Pilihan tiket di checkout Booket · mode demo"><figcaption>Pilihan tiket di checkout Booket · mode demo</figcaption></figure></div>
+      <template class="speaker-note">Sumber: presentasi-booket.pdf, hlm. 4, 7–8. Metode tersedia bergantung pada konfigurasi merchant. Persentase di contoh produk bukan tarif universal. Bukti idempotensi end-to-end perlu diperiksa pada layanan order dan pengujian callback.</template>
+    </section>
+
     <section class="slide paper" id="slide-10" aria-labelledby="title-10">
       <h2 id="title-10" class="slide-title">Pembayaran dan e-tiket</h2>
       <p class="lead">Setelah pembayaran terkonfirmasi, pembeli bisa membuka e-tiket dari menu Tiket Saya.</p>
       <div class="slide-body split">
         <ul class="list narrow">
           <li><strong>Bayar di Midtrans Sandbox</strong><p>Pembeli dapat mencoba virtual account, QRIS, atau kartu. Booket menampilkan status sesuai hasil pembayaran.</p></li>
-          <li><strong>E-tiket di aplikasi</strong><p>Pembeli membuka daftar booking dan detail tiket per peserta dari menu Tiket Saya.</p></li>
-          <li><strong>Email e-tiket</strong><p>Pada rancangan PoC, event pembayaran diteruskan lewat outbox dan Kafka ke layanan notifikasi Brevo.</p></li>
+          <li><strong>E-tiket di aplikasi</strong><p>Daftar menampilkan satu entri per booking. Detail merangkum tiket per tier setelah tiket diterbitkan.</p></li>
+          <li><strong>Email pembayaran</strong><p>Brevo mengirim instruksi bayar dengan tautan Snap dan konfirmasi setelah pembayaran.</p></li>
         </ul>
         <figure class="app-view">
           <img src="./assets/tiket.jpg" width="798" height="329" alt="Halaman Tiket Saya berisi dua booking contoh dengan tombol Lihat tiket">
           <figcaption>Daftar booking di Tiket Saya · mode demo</figcaption>
         </figure>
       </div>
-      <template class="speaker-note">Untuk uji pembayaran, gunakan Midtrans Sandbox. Setelah statusnya sukses, Booket Pass menampilkan kategori, pintu masuk, dan barcode yang diperbarui setiap 30 detik. Gambar pada slide ini memakai data contoh di Tiket Saya. Integrasi email lewat Brevo masuk dalam rencana uji PoC.</template>
+      <template class="speaker-note">Sumber: presentasi-booket.pdf hlm. 3–4 dan 7 serta arsitektur-booket-backend.md bagian layanan tiket dan notifikasi. QR yang berubah tiap 30 detik adalah ilustrasi produk. Adapter tiket pada snapshot mengembalikan QRURL kosong. Email Brevo mencakup instruksi bayar, konfirmasi, dan kegagalan. Kanal WhatsApp memerlukan verifikasi tersendiri.</template>
     </section>
 
     <section class="slide paper" id="slide-4" aria-labelledby="title-4">
@@ -546,7 +560,7 @@
           <li><strong>Integrasi</strong><span>Brevo untuk email. Confluent Cloud Standard di Jakarta masuk dalam usulan PoC.</span></li>
         </ul>
       </div>
-      <template class="speaker-note">Dalam audit, kami juga mencatat lima repositori Artifact Registry, tiga bucket, dan Direct VPC egress pada layanan terbaru. Untuk PoC, kami memprioritaskan tiga worker inti dan meninjau ulang connector serta IP yang belum terpakai.</template>
+      <template class="speaker-note">Audit infrastruktur bertanggal 23 November 2026. Pada kode middleware Go, cache JWKS menggunakan Valkey bila dikonfigurasi. TTL default 600 detik. Nilai saat deployment perlu diperiksa. Setiap service HTTP membentuk transactionid sendiri.</template>
     </section>
 
     <section class="slide paper" id="backend-layanan" aria-labelledby="title-backend-layanan">
@@ -554,11 +568,13 @@
       <p class="lead">Dalam rancangan, Kong menjadi pintu masuk API dan meneruskan identitas terverifikasi ke layanan yang sesuai.</p>
       <div class="slide-body">
         <figure class="app-view diagram-figure">
-          <img src="./assets/architecture/layanan-backend.svg" width="1160" height="440" alt="Topologi backend dengan gateway, layanan pengguna, antrean, order, outbox, database, dan vendor eksternal">
-          <figcaption>Topologi layanan dalam rancangan backend <a href="./assets/architecture/layanan-backend.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
+          <img src="./assets/architecture/layanan-backend.svg" width="1160" height="440" alt="Relasi gateway, pengguna, produk, tiket, notifikasi, dan penyimpanan">
+          <figcaption>Interaksi lima layanan backend <a href="./assets/architecture/layanan-backend.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
         </figure>
         <dl class="route-map">
-          <div><dt><code>service-user</code></dt><dd>Menangani profil, data peserta, dan pemeriksaan NIK lewat integrasi Dukcapil.</dd></div>
+          <div><dt><code>service-user</code></dt><dd>Menangani profil, role, dan maksimal tiga peserta tersimpan per akun. Validasi NIK memakai adapter Dukcapil.</dd></div>
+          <div><dt><code>service-product</code></dt><dd>Melayani katalog dan membaca ringkasan tier dari service-ticket melalui gRPC.</dd></div>
+          <div><dt><code>service-ticket</code></dt><dd>Menerbitkan tiket, membaca tabel orders, dan mengambil data produk melalui gRPC.</dd></div>
           <div><dt><code>service-waiting-room</code></dt><dd>Mencatat sesi, membuka slot checkout, dan memakai Valkey untuk urutan antrean yang dapat dibangun ulang.</dd></div>
           <div><dt><code>service-order</code></dt><dd>Mencadangkan stok, membuat sesi Midtrans, dan memeriksa hasil pembayaran.</dd></div>
           <div><dt><code>service-outbox</code></dt><dd>Mengirim event order ke Kafka agar layanan tiket dan notifikasi dapat memprosesnya.</dd></div>
@@ -579,7 +595,7 @@
           </figure>
         </details>
       </div>
-      <template class="speaker-note">Peta ini mengikuti Booket App Design. Dalam rancangan gateway, middleware memverifikasi JWT Keycloak dan meneruskan konteks identitas ke layanan. Di tingkat layanan, handler menerima request, use case menjalankan aturan, dan adapter menghubungkan database atau vendor. Integrasi Kafka untuk PoC dan konfigurasi worker dibahas di bagian anggaran.</template>
+      <template class="speaker-note">Sumber: arsitektur-booket-backend.md, ringkasan lima service. Middleware Go memverifikasi token. Kong meneruskan konteks identitas. Pemetaan lengkap nama, IdP, dan role pada plugin Kong perlu verifikasi konfigurasi. Layanan produk dan tiket saling meminta data melalui gRPC pada operasi berbeda.</template>
     </section>
 
     <section class="slide paper" id="slide-7" aria-labelledby="title-7">
@@ -596,7 +612,7 @@
           <figcaption>Rancangan reservasi stok dan pembuatan sesi bayar <a href="./assets/architecture/checkout-reservasi.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
         </figure>
       </div>
-      <template class="speaker-note">Ambil contoh dua transaksi yang berebut satu tiket tersisa. PostgreSQL hanya mengurangi stok jika jumlahnya masih cukup. Jika syarat itu gagal, pesanan dan pencatatan kuotanya juga dibatalkan.</template>
+      <template class="speaker-note">Bedakan tiga tiket per checkout dari maksimal tiga profil peserta tersimpan per akun. Dokumen backend mencatat registrasi peserta masih terkendala ketidaksesuaian skema database pada snapshot. Untuk stok, service-ticket mengunci baris tier dalam transaksi dan mencatat reserve, release, atau issue. Penguncian lintas kategori dan waktu sesi di slide berikut mengikuti rancangan checkout.</template>
     </section>
 
     <section class="slide paper" id="slide-8" aria-labelledby="title-8">
@@ -628,14 +644,14 @@
         <ul class="list narrow">
           <li><strong>Simpan hasil</strong><p>Perubahan order dan baris outbox disimpan dalam satu transaksi.</p></li>
           <li><strong>Terbitkan event</strong><p>Worker menandai baris setelah Kafka mengonfirmasi. Jika pengiriman gagal, baris tetap menunggu.</p></li>
-          <li><strong>Proses event</strong><p>Layanan tiket dan notifikasi menangani kiriman ulang dengan deduplikasi berdasarkan <code>eventId</code>.</p></li>
+          <li><strong>Proses event</strong><p>Tiket memakai order-paid untuk menerbitkan tiket dan order-failed untuk melepas stok. Notifikasi juga memakai order-placed untuk mengirim tautan bayar.</p></li>
         </ul>
         <figure class="app-view diagram-figure">
           <img src="./assets/architecture/outbox-events.svg" width="740" height="440" alt="Urutan penyimpanan outbox, konfirmasi dari Kafka, pemrosesan consumer, dan percobaan ulang">
           <figcaption>Rancangan pengiriman event dari outbox ke consumer <a href="./assets/architecture/outbox-events.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
         </figure>
       </div>
-      <template class="speaker-note">Sumber desain: Booket App Design. Referensi memakai event order-placed, order-paid, dan order-failed. Settlement yang valid diperiksa terhadap pesanan dan jumlah sebelum status PAID dicatat. Status pembayaran pada web tetap dibaca dari API order, sedangkan pengiriman tiket dan email dapat berjalan setelah event diproses.</template>
+      <template class="speaker-note">Rancangan outbox berasal dari Booket App Design. Dokumen backend mencatat service-order sebagai penerbit logis. Worker pengirim perlu diverifikasi di repo outbox. Ticket mengolah paid dan failed per tier. Notification mengolah ketiga topik dan mencatat event setelah mengirim email. Pada uji terdokumentasi, order-failed tanpa userEmail masuk dead-letter queue.</template>
     </section>
 
     <section class="slide paper" id="slide-11" aria-labelledby="title-11">
@@ -654,6 +670,13 @@
         <p class="fine-print">Hasil build Vite disajikan oleh Nginx. Saat rute seperti <code>/checkout</code> dibuka langsung, Nginx mengembalikan <code>index.html</code> agar React Router memuat halaman.</p>
       </div>
       <template class="speaker-note">Kami sertakan hasil pengujian frontend dari snapshot assessment. Kalau panel ingin menelusuri satu contoh, aturan NIK dan fallback waiting room punya tes yang dapat ditunjukkan sebelum melihat pipeline rilis.</template>
+    </section>
+
+    <section class="slide paper" id="hasil-uji" aria-labelledby="title-hasil-uji">
+      <h2 class="slide-title" id="title-hasil-uji">Hasil uji yang dilaporkan</h2>
+      <p class="lead">Materi produk mencatat 1.579.499 request dalam skenario uji 30 menit.</p>
+      <div class="slide-body "><ul class="list narrow"><li><strong>Profil beban</strong><p>PDF mencantumkan 1.000 TPS selama 30 menit. Rincian endpoint, campuran transaksi, dan throughput per interval perlu dicocokkan dengan laporan uji.</p></li><li><strong>Tingkat kegagalan</strong><p>Sebanyak 0,0137% request dilaporkan gagal. Angka ini mencakup skenario yang diuji. Latensi p95 API inti masih menjadi target ukur PoC.</p></li><li><strong>Pengujian notifikasi</strong><p>Dokumen backend mencatat 120 tes service-notification lulus. Angka 666 pada slide sebelumnya berasal dari suite frontend.</p></li></ul></div>
+      <template class="speaker-note">Sumber: presentasi-booket.pdf, hlm. 9, dan arsitektur-booket-backend.md, bagian service-notification (25 November 2026). PDF menyebut 10 tahap pipeline dan tujuh lapis keamanan sebagai ringkasan produk. Tiap repositori memiliki lingkup pemeriksaan sendiri. Laporan mentah uji beban tidak disertakan.</template>
     </section>
 
     <section class="slide paper" id="slide-12" aria-labelledby="title-12">
