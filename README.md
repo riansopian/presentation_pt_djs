@@ -22,17 +22,14 @@ Akses slide presentasi interaktif langsung melalui browser:
 
 1. **[`index.html`](index.html)**:
    - Presentasi HTML interaktif berisi **29 slide** dengan tema Booket dan lima tangkapan layar aplikasi dalam mode demo.
-   - Bab Frontend membahas routing, state SDK, pemulihan sesi, dan validasi checkout. Bab Backend membahas layanan, stok, pembayaran, dan outbox. Presentasi juga memuat demo, biaya bulanan infrastruktur, anggaran PoC tiga bulan, proyeksi anggaran satu tahun, dan rencana PoC 12 minggu.
+   - Bab Frontend membahas routing, state SDK, pemulihan sesi, dan validasi checkout. Bab Backend membahas layanan, stok, pembayaran, dan outbox. Bagian budget memuat estimasi November 2026, forecast operasi 12 bulan terbaru, perbandingan scope dengan budget lama, serta hal yang perlu ditetapkan untuk PoC.
    - Sebelas diagram merangkum rancangan Booket dan ulasan lima layanan backend. Bab infrastruktur memuat inventaris 17 deployment Cloud Run dan membahas DNS dan CDN Cloudflare serta email transaksional Brevo. Materi produk mencakup FairQueue, pembayaran Snap, dan hasil uji yang dilaporkan. Ikon menggunakan [Phosphor](assets/architecture/PHOSPHOR-LICENSE.txt) dan [Simple Icons](https://github.com/simple-icons/simple-icons).
 2. **[`presentation_deck_pt_djs.md`](presentation_deck_pt_djs.md)**:
-   - Naskah presentasi slide-by-slide, speaker notes, dan panduan demo.
+   - Naskah versi 23 November yang disimpan sebagai arsip; untuk deck dan budget terbaru, gunakan `index.html` dan ringkasan budget di atas.
 3. **[`technical_assessment_deep_dive_pt_djs.md`](technical_assessment_deep_dive_pt_djs.md)**:
    - Whitepaper arsitektur teknis untuk panel assessor.
-4. **Paket Anggaran &amp; Proposal PoC Backend ([`budget/`](budget/))**:
-   - [`budget/BOOKET_PROPOSAL_POC.md`](budget/BOOKET_PROPOSAL_POC.md) — Proposal PoC 3 Bulan (1 Des 2026 – 28 Feb 2027), tahapan 12 minggu, &amp; kriteria uji.
-   - [`budget/BOOKET_BUDGET_EXISTING.md`](budget/BOOKET_BUDGET_EXISTING.md) — Audit konfigurasi live `booket-512519` (17 Cloud Run, PG 18, VM, Cloudflare, Brevo, &amp; usulan Confluent Kafka).
-   - [`budget/BOOKET_BUDGET_3_BULAN.md`](budget/BOOKET_BUDGET_3_BULAN.md) — Proyeksi 3 bulan: PoC **US$7.140,74 (~US$7.200)** vs Fallback **US$8.364,11 (~US$8.400)** vs Uji Beban **US$9.766,19 (~US$9.800)**.
-   - [`budget/BOOKET_BUDGET_1_TAHUN.md`](budget/BOOKET_BUDGET_1_TAHUN.md) — Proyeksi 12 bulan (**US$28.108,88 / ~US$28.200**, estimasi hemat ~16,7% vs existing + Kafka).
+4. **Ringkasan budget terbaru ([`budget/BOOKET_BUDGET_RINGKAS.md`](budget/BOOKET_BUDGET_RINGKAS.md))** — November US$2.024,62 termasuk cadangan; forecast 12 bulan US$15.346,78. Cloud SQL dihapus dan tidak masuk forecast. Perbandingan dengan budget 23 November tidak setara scope.
+5. **Dokumen budget 23 November** di [`budget/`](budget/) disimpan sebagai arsip dan tidak lagi menjadi pagu terkini.
 
 ---
 

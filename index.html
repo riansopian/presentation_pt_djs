@@ -738,106 +738,107 @@
     </section>
 
     <section class="slide paper" id="slide-13" aria-labelledby="title-13">
-      <h2 id="title-13" class="slide-title">Biaya bulanan infrastruktur</h2>
-      <p class="lead">PoC menguji Cloud SQL yang lebih kecil dan mengalokasikan CPU kontinu untuk tiga worker inti.</p>
+      <h2 id="title-13" class="slide-title">Estimasi biaya November 2026</h2>
+      <p class="lead">Total November diperkirakan US$2.014,62; angka 26–30 November masih forecast.</p>
       <div class="slide-body">
         <dl class="comparison">
-          <div class="price"><dt>Konfigurasi saat ini + usulan Kafka</dt><dd class="number">US$2.343,11 <small>/ bulan</small></dd></div>
-          <div class="price target"><dt>Target setelah transisi PoC</dt><dd class="number">US$1.936,46 <small>/ bulan</small></dd></div>
+          <div class="price"><dt>Biaya dasar November</dt><dd class="number">US$2.014,62 <small>1–30 Nov</small></dd></div>
+          <div class="price target"><dt>Termasuk cadangan GCP</dt><dd class="number">US$2.024,62 <small>+ US$10</small></dd></div>
         </dl>
         <ul class="list">
-          <li><strong>Cloud SQL</strong><span>Target 4 vCPU / 32 GiB, SSD tetap 100 GiB, dan backup terjadwal. Estimasi turun dari US$1.059,03 ke US$503,64 per bulan.</span></li>
-          <li><strong>Cloud Run</strong><span>Satu instance dengan CPU kontinu untuk masing-masing worker antrean, order, dan outbox. Estimasi Cloud Run US$239,02 per bulan.</span></li>
-          <li><strong>Kafka dan email</strong><span>Confluent Standard 1 eCKU sekitar US$554,90 dan Brevo US$499 per bulan. Egress GCP dihitung terpisah.</span></li>
+          <li><strong>GCP</strong><span>US$968,82 gross dari resource yang dimodelkan; belum dikurangi free tier atau kredit.</span></li>
+          <li><strong>Brevo</strong><span>US$499,00 berdasarkan paket yang diberikan; invoice belum diverifikasi.</span></li>
+          <li><strong>Confluent Standard</strong><span>US$546,80 berdasarkan asumsi 1 eCKU aktif 24/7 dan pemakaian storage/transfer.</span></li>
         </ul>
-        <p class="fine-print">Estimasi 730 jam, sebelum pajak dan cadangan. Sampel tujuh hari menunjukkan rata-rata CPU database 0,94% dan RAM 38,39%. Kapasitas saat puncak penjualan masih perlu diuji.</p>
+        <p class="fine-print">GCP adalah estimasi gross, bukan invoice. Cadangan US$10 bukan biaya aktual atau batas maksimum tagihan.</p>
       </div>
-      <template class="speaker-note">Konfigurasi saat ini sebelum tambahan Kafka diperkirakan US$1.786,31 per bulan. Dengan cadangan 20%, estimasi existing + Kafka adalah US$2.811,73 dan target stabil US$2.323,75 per bulan. Cloud SQL saat ini memakai 8 vCPU / 64 GiB. Uji cache off, backup terjadwal dengan alokasi 20 GiB, dan restore sebelum menetapkan ukuran SQL. Confluent adalah usulan. Tarif regional dan kuota Brevo perlu dikonfirmasi. Sumber: BOOKET_BUDGET_EXISTING.md dan BOOKET_PROPOSAL_POC.md, 23 November 2026.</template>
+      <template class="speaker-note">Historis 1–25 November adalah US$1.804,88; 26–30 November diproyeksikan US$209,74. Cloud SQL telah dihapus 23 November 2026 pukul 22:37 WIB, sehingga histori SQL tetap dihitung, tetapi biaya SQL untuk sisa November dan forecast berikutnya nol. Billing export GCP tidak tersedia; kredit, diskon dan pajak belum diverifikasi. Sumber: budget-projection-and-forcasting.md, 26 November 2026.</template>
     </section>
 
     <section class="slide paper" id="slide-14" aria-labelledby="title-14">
-      <h2 id="title-14" class="slide-title">Anggaran PoC tiga bulan</h2>
-      <p class="lead">Usulan pagu US$7.200 untuk 1 Desember 2026–28 Februari 2027.</p>
+      <h2 id="title-14" class="slide-title">Proyeksi operasi 12 bulan</h2>
+      <p class="lead">US$15.346,78 dari 1 Desember 2026 sampai 30 November 2027, termasuk cadangan US$10 per bulan.</p>
       <div class="slide-body">
-        <p class="fine-print table-hint">Geser tabel untuk melihat semua kolom.</p>
-        <div class="table-wrap" tabindex="0" role="region" aria-label="Perbandingan tiga skenario anggaran">
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Proyeksi anggaran operasi satu tahun">
           <table class="budget">
-            <thead><tr><th scope="col">Skenario</th><th scope="col">Sebelum cadangan</th><th scope="col">Kas + cadangan 20%</th><th scope="col">Pagu usulan</th></tr></thead>
+            <thead><tr><th scope="col">Komponen</th><th scope="col">Proyeksi tahunan</th><th scope="col">Rata-rata bulanan</th></tr></thead>
             <tbody>
-              <tr class="featured"><th scope="row">PoC dengan transisi</th><td class="number">US$5.939,25</td><td class="number">US$7.140,74</td><td class="number"><strong>US$7.200</strong></td></tr>
-              <tr><th scope="row">Existing + Kafka</th><td class="number">US$6.958,73</td><td class="number">US$8.364,11</td><td class="number">US$8.400</td></tr>
-              <tr><th scope="row">Uji beban (100× sampel)</th><td class="number">US$8.127,12</td><td class="number">US$9.766,19</td><td class="number">US$9.800</td></tr>
+              <tr class="featured"><th scope="row">GCP gross</th><td class="number">US$2.587,18</td><td class="number">US$215,60</td></tr>
+              <tr><th scope="row">Brevo</th><td class="number">US$5.988,00</td><td class="number">US$499,00</td></tr>
+              <tr><th scope="row">Confluent Standard</th><td class="number">US$6.651,60</td><td class="number">US$554,30</td></tr>
+              <tr><th scope="row">Cadangan biaya GCP</th><td class="number">US$120,00</td><td class="number">US$10,00</td></tr>
+              <tr class="featured"><th scope="row">Total dengan cadangan</th><td class="number"><strong>US$15.346,78</strong></td><td class="number"><strong>US$1.278,90</strong></td></tr>
             </tbody>
           </table>
         </div>
         <ul class="list">
-          <li><strong>Estimasi PoC per bulan</strong><span>Desember US$2.149,49, Januari US$1.962,92, Februari US$1.826,84. Transisi 1–14 Desember menambah kebutuhan kas US$223,89.</span></li>
-          <li><strong>Dasar perhitungan kas</strong><span>Alokasi domain 3/12 tahun diganti dengan satu perpanjangan penuh US$15,15, lalu ditambah cadangan 20%. Semua angka sebelum pajak.</span></li>
+          <li><strong>Asumsi utama</strong><span>Dua VM dan minimum layanan yang ada berjalan terus; trafik mengikuti pola 19–25 November.</span></li>
+          <li><strong>Batas proyeksi</strong><span>Cloud SQL tetap dihapus. Database baru, trafik yang tumbuh, lingkungan kedua, pajak dan biaya yang belum terukur belum masuk.</span></li>
         </ul>
         <div class="source-links">
-          <a href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_3_BULAN.md">Rincian 3 bulan</a>
+          <a href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_RINGKAS.md">Rincian forecast terbaru</a>
         </div>
       </div>
-      <template class="speaker-note">Periode usulan mencakup 90 hari atau 2.160 jam. Estimasi bulanan pada slide disajikan sebelum cadangan. Skenario PoC memakai biaya existing + Kafka selama 1–14 Desember dan target PoC mulai 15 Desember. Tanpa transisi, kebutuhan kas diperkirakan US$6.916,85. Jika SQL 32 GiB belum lolos uji, pilih skenario existing + Kafka. Skenario uji beban memakai Kafka 2 eCKU dan aktivitas Cloud Run 100× sampel, sekitar 2,74 juta panggilan container per bulan standar. Pilih satu skenario untuk lingkungan yang sama. Sumber: BOOKET_BUDGET_3_BULAN.md dan BOOKET_PROPOSAL_POC.md, 23 November 2026.</template>
+      <template class="speaker-note">Ini proyeksi operasi, bukan anggaran PoC tiga bulan. Tiga bulan belum dapat dihitung setara dengan proposal lama karena sumber baru tidak memuat biaya penyediaan kembali database atau kebutuhan lingkungan PoC. Brevo dan Confluent memakai asumsi; invoice dan telemetry akun tidak tersedia. Sumber: budget-projection-and-forcasting.md, 26 November 2026.</template>
     </section>
 
     <section class="slide paper" id="anggaran-tahunan" aria-labelledby="title-anggaran-tahunan">
-      <h2 id="title-anggaran-tahunan" class="slide-title">Anggaran satu tahun</h2>
-      <p class="lead">Usulan anggaran US$28.200 untuk 1 Desember 2026–30 November 2027 jika konfigurasi PoC lolos uji.</p>
+      <h2 id="title-anggaran-tahunan" class="slide-title">Perbandingan dengan anggaran lama</h2>
+      <p class="lead">Angka baru lebih rendah karena Cloud SQL tidak lagi ada dalam scope proyeksi, bukan karena perbandingan konfigurasi yang setara.</p>
       <div class="slide-body">
-        <p class="fine-print table-hint">Geser tabel untuk melihat semua kolom.</p>
-        <div class="table-wrap" tabindex="0" role="region" aria-label="Perbandingan tiga skenario anggaran tahunan">
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Perbandingan budget tahunan lama dan baru">
           <table class="budget">
-            <thead><tr><th scope="col">Skenario</th><th scope="col">Sebelum cadangan</th><th scope="col">Dengan cadangan 20%</th></tr></thead>
+            <thead><tr><th scope="col">Angka tahunan</th><th scope="col">Budget 23 Nov</th><th scope="col">Forecast 26 Nov</th></tr></thead>
             <tbody>
-              <tr class="featured"><th scope="row">Target PoC dengan transisi</th><td class="number">US$23.424,06</td><td class="number"><strong>US$28.108,88</strong></td></tr>
-              <tr><th scope="row">Existing + Kafka</th><td class="number">US$28.117,27</td><td class="number">US$33.740,73</td></tr>
-              <tr><th scope="row">Uji beban sepanjang tahun</th><td class="number">US$32.843,06</td><td class="number">US$39.411,67</td></tr>
+              <tr class="featured"><th scope="row">Total dengan cadangan</th><td class="number">US$28.108,88</td><td class="number"><strong>US$15.346,78</strong></td></tr>
+              <tr><th scope="row">Cloud SQL</th><td class="number">Termasuk 32 GiB</td><td class="number">US$0, SQL dihapus</td></tr>
+              <tr><th scope="row">Cadangan</th><td class="number">20% + transisi</td><td class="number">US$10/bulan</td></tr>
+              <tr><th scope="row">Selisih nominal</th><td class="number" colspan="2">US$12.762,10 lebih rendah (45,4%)</td></tr>
             </tbody>
           </table>
         </div>
         <ul class="list">
-          <li><strong>Selisih biaya</strong><span>Target PoC menghemat sekitar US$5.631,85 (16,7%) dibanding existing + Kafka. Pagu cadangan dibulatkan ke US$33.800.</span></li>
-          <li><strong>Komponen terbesar</strong><span>Pada target stabil, Confluent US$6.658,80, Cloud SQL US$6.043,73, dan Brevo US$5.988 per tahun sebelum cadangan.</span></li>
+          <li><strong>Budget sebelumnya</strong><span>Memasukkan Cloud SQL 32 GiB, cadangan 20%, dan masa transisi 14 hari.</span></li>
+          <li><strong>Forecast terbaru</strong><span>SQL dan biaya pemulihannya tidak dimasukkan; cadangan hanya US$10 per bulan. Karena itu selisih bukan penghematan like-for-like.</span></li>
         </ul>
-        <p class="fine-print">Proyeksi mencakup tiga bulan PoC. Angka sebelum pajak. Skenario uji beban memakai 100× sampel dan Kafka 2 eCKU tiap bulan.</p>
+        <p class="fine-print">Pagu PoC tiga bulan perlu dihitung ulang setelah kebutuhan database dan konfigurasi lingkungan PoC ditentukan.</p>
         <div class="source-links">
-          <a href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_1_TAHUN.md">Rincian proyeksi tahunan</a>
+          <a href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_RINGKAS.md">Metode dan batas forecast</a>
         </div>
       </div>
-      <template class="speaker-note">Proyeksi 12 bulan mencakup 8.760 jam, transisi dua minggu, dan satu perpanjangan domain. Target memakai tarif pada snapshot 23 November 2026, tanpa asumsi inflasi, diskon komitmen, atau kenaikan harga vendor. Untuk kampanye singkat, pakai biaya uji beban hanya pada bulan terkait. Pantau biaya GCP per SKU setiap bulan, biaya akun Confluent dan pemakaian Brevo. Usulkan alert GCP di 50%, 80%, dan 100% biaya aktual, serta 100% biaya prakiraan. Proyeksi ini untuk perencanaan operasi. Sumber: BOOKET_BUDGET_1_TAHUN.md, 23 November 2026.</template>
+      <template class="speaker-note">Selisih nominal 45,4% dihitung dari (28.108,88 - 15.346,78) / 28.108,88. Budget lama dan baru berbeda scope dan metode cadangan. Budget lama memasukkan SQL 32 GiB, 20% contingency, dan transisi. Forecast baru mengasumsikan Cloud SQL tidak dipulihkan dan hanya menambahkan US$10/bulan. Sumber: BOOKET_BUDGET_1_TAHUN.md (23 November 2026) dan budget-projection-and-forcasting.md (26 November 2026).</template>
     </section>
 
     <section class="slide paper" id="slide-15" aria-labelledby="title-15">
-      <h2 id="title-15" class="slide-title">Rencana PoC 12 minggu</h2>
-      <p class="lead">PoC menguji alur pemesanan dan worker di lingkungan yang sudah tersedia.</p>
+      <h2 id="title-15" class="slide-title">Yang perlu ditetapkan untuk budget PoC</h2>
+      <p class="lead">Forecast operasi belum menetapkan biaya untuk mengadakan database dan lingkungan uji.</p>
       <ol class="list timeline slide-body">
-        <li><strong>Minggu 1–2</strong><span>Cocokkan tagihan GCP dan renewal domain. Cek penawaran Confluent Jakarta dan kuota Brevo. Catat metrik awal dan uji restore.</span></li>
-        <li><strong>Minggu 3–4</strong><span>Siapkan CPU kontinu untuk tiga worker. Integrasikan event order ke Kafka dan email uji via Brevo.</span></li>
-        <li><strong>Minggu 5–8</strong><span>Uji login, antrean, NIK, pembayaran sandbox, email, dan worker selama 30 menit tanpa traffic pengguna.</span></li>
-        <li><strong>Minggu 9–10</strong><span>Naikkan beban bertahap. Uji apakah SQL 32 GiB cukup dan ulangi simulasi pemulihan.</span></li>
-        <li><strong>Minggu 11–12</strong><span>Bandingkan biaya aktual dengan estimasi dan putuskan konfigurasi yang dibawa ke produksi.</span></li>
+        <li><strong>Database</strong><span>Cloud SQL dihapus pada 23 November. Pilihan database PoC dan biaya provision/restore belum masuk forecast.</span></li>
+        <li><strong>Lingkungan</strong><span>Tentukan apakah PoC memakai resource existing atau memerlukan staging terpisah, HA, atau kapasitas tambahan.</span></li>
+        <li><strong>Vendor</strong><span>Konfirmasi invoice dan region Confluent, paket Brevo, serta kredit, diskon dan pajak GCP.</span></li>
+        <li><strong>Rekonsiliasi</strong><span>Forecast GCP berbasis metrik dan tarif publik; billing export dan invoice vendor belum tersedia.</span></li>
+        <li><strong>Pagu 3 bulan</strong><span>Hitung ulang setelah lingkup database dan lingkungan PoC disepakati; jangan gunakan angka 23 November sebagai budget terkini.</span></li>
       </ol>
-      <p class="callout">Targetnya nol oversell, callback duplikat diproses idempoten, dan outbox tetap berjalan. Untuk API inti, target error &lt;1% dan latensi p95 &lt;2 detik.</p>
-      <p class="fine-print">Di luar pagu: pajak, pengerjaan dan migrasi, tenaga operasional, fee transaksi, overage Brevo, serta lingkungan kedua yang terisolasi.</p>
-      <template class="speaker-note">Target uji berlaku pada profil beban yang disepakati. Ukur error dan p95 pada API inti. Catat waktu tunggu antrean dan latensi provider secara terpisah. Saat uji idle, periksa lag Kafka, retry, dan state akhir. Verifikasi email uji dan kontak CRM dengan log Brevo. Cocokkan penggunaan vendor setiap minggu. Keputusan produksi menunggu laporan uji, pemulihan, dan biaya aktual. Sumber: BOOKET_PROPOSAL_POC.md, 23 November 2026.</template>
+      <p class="callout">Angka US$15.346,78 adalah proyeksi operasi 12 bulan tanpa Cloud SQL. Angka ini bukan pagu PoC.</p>
+      <p class="fine-print">Belum termasuk biaya pemulihan database, pertumbuhan trafik, lingkungan kedua, pajak, dan gap biaya yang belum terukur.</p>
+      <template class="speaker-note">Dokumen 26 November memproyeksikan resource yang masih aktif dan menyatakan Cloud SQL tidak dibuat kembali. Ia tidak menyediakan skenario PoC tiga bulan dengan database. Sumber: budget-projection-and-forcasting.md, bagian periode, proyeksi satu tahun, dan biaya belum terukur.</template>
     </section>
 
     <section class="slide cover" id="slide-16" aria-labelledby="title-16">
       <div>
         <p class="eyebrow">PT DJS (Deploy Jumat Sore)</p>
-        <h2 id="title-16" class="slide-title">Keputusan PoC dan tanya jawab</h2>
-        <p class="lead">Kami mengusulkan PoC 12 minggu untuk menguji antrean saat ramai, pemulihan transaksi, dan biaya operasional sebelum menentukan konfigurasi produksi.</p>
+        <h2 id="title-16" class="slide-title">Ringkasan budget dan tanya jawab</h2>
+        <p class="lead">Forecast terbaru memisahkan biaya November dari operasi 12 bulan. Pagu PoC dihitung ulang setelah database dan lingkungan uji ditetapkan.</p>
         <a href="#slide-12" class="button primary">Kembali ke panduan demo <span aria-hidden="true">→</span></a>
       </div>
       <div class="pass cutout">
-        <div class="pass-header">Keputusan anggaran</div>
-        <strong class="pass-main number">US$7.200</strong>
-        <p>Usulan utama sebelum pajak. Pagu US$8.400 jika Cloud SQL perlu tetap di 64 GiB.</p>
+        <div class="pass-header">Proyeksi operasi 12 bulan</div>
+        <strong class="pass-main number">US$15.346,78</strong>
+        <p>Termasuk cadangan US$120. Cloud SQL tidak termasuk dan belum ada budget PoC 3 bulan.</p>
         <hr>
-        <a class="pass-link" href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_PROPOSAL_POC.md">Baca proposal PoC</a>
+        <a class="pass-link" href="https://github.com/riansopian/presentation_pt_djs/blob/main/budget/BOOKET_BUDGET_RINGKAS.md">Baca ringkasan budget</a>
       </div>
-      <template class="speaker-note">Keputusan yang diminta adalah pagu PoC US$7.200 untuk tiga bulan. Jika Cloud SQL perlu tetap pada 64 GiB, skenario cadangan memerlukan US$8.400. Proyeksi US$28.200 untuk satu tahun mencakup periode PoC dan berlaku jika target lolos uji. Sumber: BOOKET_PROPOSAL_POC.md dan BOOKET_BUDGET_1_TAHUN.md, 23 November 2026.</template>
+      <template class="speaker-note">Proyeksi 12 bulan 1 Desember 2026–30 November 2027 adalah US$15.226,78 sebelum cadangan dan US$15.346,78 sesudah cadangan US$120. November 2026 adalah US$2.014,62 sebelum cadangan, US$2.024,62 sesudah cadangan. Angka 12 bulan bukan pagu PoC. Sumber: budget-projection-and-forcasting.md, 26 November 2026.</template>
     </section>
 
     <aside id="speaker-notes" class="notes" hidden aria-label="Catatan presenter">

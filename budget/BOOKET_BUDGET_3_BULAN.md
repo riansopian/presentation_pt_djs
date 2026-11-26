@@ -1,3 +1,5 @@
+> **STATUS: ARSIP (23 November 2026).** Dokumen ini telah disupersede oleh [ringkasan budget terbaru](BOOKET_BUDGET_RINGKAS.md), yang memakai scope backend 26 November. Angka di bawah tidak berlaku sebagai pagu terkini; perbandingan dengan forecast baru tidak setara karena Cloud SQL dihapus dan metode cadangan berubah.
+
 # Proyeksi Budget Booket Tiga Bulan
 
 **Tanggal penyusunan:** 23 November 2026 (WIB).  

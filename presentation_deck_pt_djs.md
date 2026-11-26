@@ -2,6 +2,8 @@
 ### PT DJS (Deploy Jumat Sore) — Solusi Tender Rusuh Booking Ticket &amp; Proposal PoC
 **Karakter Dokumen:** Dual Pitch (Client Solution Showcase, Deep Technical Assessment Defense, &amp; PoC Cloud Budgeting)
 
+> **ARSIP:** Naskah ini mencerminkan deck dan asumsi budget 23 November 2026. Gunakan [presentasi HTML terbaru](index.html) untuk susunan slide yang berlaku dan [ringkasan budget terbaru](budget/BOOKET_BUDGET_RINGKAS.md) untuk angka terkini. Pagu PoC US$7.200 di bawah sudah disupersede.
+
 ---
 
 ```carousel
