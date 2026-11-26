@@ -301,7 +301,7 @@
 </head>
 <body>
   <header class="site-header">
-    <progress id="progress" class="progress" value="1" max="28" aria-label="Progres presentasi"></progress>
+    <progress id="progress" class="progress" value="1" max="29" aria-label="Progres presentasi"></progress>
     <div class="shell header-inner">
       <a class="brand" href="#slide-1" aria-label="Booket, kembali ke sampul">
         <img src="./booket-logo.png" alt="" width="38" height="38">
@@ -561,6 +561,23 @@
         </ul>
       </div>
       <template class="speaker-note">Audit infrastruktur bertanggal 23 November 2026. Pada kode middleware Go, cache JWKS menggunakan Valkey bila dikonfigurasi. TTL default 600 detik. Nilai saat deployment perlu diperiksa. Setiap service HTTP membentuk transactionid sendiri.</template>
+    </section>
+
+    <section class="slide paper" id="inventaris-layanan" aria-labelledby="title-inventaris-layanan">
+      <h2 id="title-inventaris-layanan" class="slide-title">Layanan di balik Booket</h2>
+      <p class="lead">Audit 23 November 2026 mencatat 17 deployment Cloud Run. Tujuh layanan menangani alur bisnis pembeli.</p>
+      <div class="slide-body">
+        <dl class="route-map">
+          <div><dt>Profil dan katalog · 2</dt><dd>service-user dan service-product mengelola profil, peserta, dan katalog konser.</dd></div>
+          <div><dt>Antrean dan transaksi · 3</dt><dd>service-waiting-room, service-order, dan service-ticket mengatur giliran, pesanan, stok, dan penerbitan tiket.</dd></div>
+          <div><dt>Event dan email · 2</dt><dd>service-outbox menerbitkan event order. service-notification memproses event dan mengirim email lewat Brevo.</dd></div>
+          <div><dt>Gateway dan identitas · 4</dt><dd>booket-api-gateway, keycloak, service-middleware-go, dan service-middleware-rust tercatat dalam inventaris akses.</dd></div>
+          <div><dt>Web dan API tambahan · 4</dt><dd>booket-id-web, web, simple-web, dan simple-api. Audit mencatat deployment masing-masing.</dd></div>
+          <div><dt>Pengujian · 2</dt><dd>dukcapil-mock menyediakan data uji identitas. Inventaris juga mencatat service-testing-cr.</dd></div>
+        </dl>
+        <p class="callout"><strong>Di luar Cloud Run.</strong> Cloudflare menangani DNS/CDN, Midtrans Snap menangani pembayaran, Kafka menyalurkan event, dan Brevo mengirim email. Cloud SQL menyimpan transaksi. Valkey mendukung antrean dan cache.</p>
+      </div>
+      <template class="speaker-note">Sumber: BOOKET_BUDGET_EXISTING.md, tabel Inventaris Cloud Run, audit 23 November 2026. Angka 17 mencakup deployment web, identitas, dan pengujian. Dokumen arsitektur 25 November meninjau kode lima service. Peran outbox dan antrean mengikuti rancangan Booket. Keberadaan deployment tidak membuktikan bahwa semua berada di jalur setiap transaksi. Audit juga mencatat dua VM, tiga bucket, dan lima repositori Artifact Registry. Paket Confluent Standard merupakan asumsi anggaran PoC.</template>
     </section>
 
     <section class="slide paper" id="cloudflare-brevo" aria-labelledby="title-cloudflare-brevo">

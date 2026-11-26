@@ -19,9 +19,9 @@ Akses slide presentasi interaktif langsung melalui browser:
 ## 📂 Struktur Dokumen
 
 1. **[`index.html`](index.html)**:
-   - Presentasi HTML interaktif berisi **28 slide** dengan tema Booket dan lima tangkapan layar aplikasi dalam mode demo.
+   - Presentasi HTML interaktif berisi **29 slide** dengan tema Booket dan lima tangkapan layar aplikasi dalam mode demo.
    - Bab Frontend membahas routing, state SDK, pemulihan sesi, dan validasi checkout. Bab Backend membahas layanan, stok, pembayaran, dan outbox. Presentasi juga memuat demo, biaya bulanan infrastruktur, anggaran PoC tiga bulan, proyeksi anggaran satu tahun, dan rencana PoC 12 minggu.
-   - Sebelas diagram merangkum rancangan Booket dan ulasan lima layanan backend. Bab infrastruktur membahas DNS dan CDN Cloudflare serta email transaksional Brevo. Materi produk mencakup FairQueue, pembayaran Snap, dan hasil uji yang dilaporkan. Ikon menggunakan [Phosphor](assets/architecture/PHOSPHOR-LICENSE.txt) dan [Simple Icons](https://github.com/simple-icons/simple-icons).
+   - Sebelas diagram merangkum rancangan Booket dan ulasan lima layanan backend. Bab infrastruktur memuat inventaris 17 deployment Cloud Run dan membahas DNS dan CDN Cloudflare serta email transaksional Brevo. Materi produk mencakup FairQueue, pembayaran Snap, dan hasil uji yang dilaporkan. Ikon menggunakan [Phosphor](assets/architecture/PHOSPHOR-LICENSE.txt) dan [Simple Icons](https://github.com/simple-icons/simple-icons).
 2. **[`presentation_deck_pt_djs.md`](presentation_deck_pt_djs.md)**:
    - Naskah presentasi slide-by-slide, speaker notes, dan panduan demo.
 3. **[`technical_assessment_deep_dive_pt_djs.md`](technical_assessment_deep_dive_pt_djs.md)**:
