@@ -325,35 +325,35 @@
     <section class="slide cover cover-product" id="slide-1" aria-labelledby="title-1">
       <div>
         <p class="eyebrow">Tender Rusuh Booking Ticket</p>
-        <h1 id="title-1" class="slide-title"><span>Booket</span><span>Antrean tiket konser</span></h1>
-        <p class="lead">Arsitektur aplikasi web, dari layar pembeli sampai layanan yang mengatur antrean, stok tiket, dan pembayaran.</p>
+        <h1 id="title-1" class="slide-title"><span>Booket</span><span>Saat tiket mulai dijual</span></h1>
+        <p class="lead">Penjualan konser dibuka pada jam yang sama untuk semua orang. Banyak penggemar datang sekaligus, sementara jumlah tiket terbatas.</p>
         <p class="credit">PT DJS (Deploy Jumat Sore)</p>
-        <a href="#slide-2" class="button primary">Mulai presentasi <span aria-hidden="true">→</span></a>
+        <a href="#fairqueue" class="button primary">Mulai presentasi <span aria-hidden="true">→</span></a>
       </div>
       <figure class="app-view">
         <img src="./assets/beranda.jpg" width="1202" height="428" fetchpriority="high" alt="Sorotan Booket Rock Fest, sisa kuota, harga, dan tombol Pesan Tiket">
         <figcaption>Beranda Booket · mode demo</figcaption>
       </figure>
-      <template class="speaker-note">Kami dari PT DJS. Kami mulai dari alur yang dilihat pembeli, lalu tunjukkan bagaimana web membaca state SDK, menyambung sesi, dan menangani checkout. Setelah itu kita masuk ke rancangan backend dan usulan PoC.</template>
+      <template class="speaker-note">Bayangkan konser yang sudah Anda tunggu. Begitu penjualan dibuka, Anda dan banyak penggemar lain menekan tombol Pesan Tiket pada saat yang sama. Apa yang perlu Anda ketahui setelah itu?</template>
     </section>
 
     <section class="slide paper" id="fairqueue" aria-labelledby="title-fairqueue">
-      <h2 class="slide-title" id="title-fairqueue">FairQueue saat tiket diburu</h2>
-      <p class="lead">Pembeli dapat melihat posisinya sambil menunggu giliran memilih tiket.</p>
-      <div class="slide-body split"><ul class="list narrow"><li><strong>Saat penjualan dibuka</strong><p>Lonjakan permintaan, pemborongan, dan tiket duplikat membuat pembeli sulit mendapat kepastian.</p></li><li><strong>Giliran pembeli</strong><p>Rancangan mencatat urutan kedatangan di PostgreSQL. Valkey menyajikan posisi dan perkiraan waktu tunggu.</p></li><li><strong>Pembatasan checkout</strong><p>Rancangan memeriksa slot tiap 200 ms, dengan target 20 pembeli masuk per detik dan paling banyak 100 checkout aktif.</p></li></ul><figure class="app-view"><img style="max-height:340px;object-fit:contain" src="./assets/konser-fairqueue.jpg" alt="Suasana konser dalam materi produk Booket"><figcaption>Suasana konser dalam materi produk Booket</figcaption></figure></div>
-      <template class="speaker-note">Sumber: presentasi-booket.pdf, hlm. 1–5 dan 10. Alur pembeli: pilih konser di katalog, antre, checkout, bayar, lalu buka Tiket Saya. Konser BTS GBK merupakan contoh dalam materi produk. Angka admission adalah parameter rancangan. Durasi dan kapasitas aktual perlu diukur.</template>
+      <h2 class="slide-title" id="title-fairqueue">Apa yang membingungkan pembeli?</h2>
+      <p class="lead">Bayangkan Anda sudah menekan tombol Pesan Tiket. Ada tiga hal yang ingin Anda pastikan.</p>
+      <div class="slide-body split"><ul class="list narrow"><li><strong>Kapan giliran saya?</strong><p>Tanpa nomor antrean dan perkiraan waktu, Anda sulit tahu berapa lama harus menunggu.</p></li><li><strong>Tiketnya masih ada?</strong><p>Anda melihat satu tiket tersisa. Pembeli lain juga bisa memilih tiket itu pada saat yang sama.</p></li><li><strong>Pembayaran saya berhasil?</strong><p>Anda sudah membayar, tetapi konfirmasi belum muncul. Apakah tiket sudah dipesan atau Anda masih harus menunggu?</p></li></ul><figure class="app-view"><img style="max-height:340px;object-fit:contain" src="./assets/konser-fairqueue.jpg" alt="Suasana konser dalam materi produk Booket"><figcaption>Suasana konser dalam materi produk Booket</figcaption></figure></div>
+      <template class="speaker-note">Ketiga pertanyaan ini mengikuti satu perjalanan pembeli, mulai dari masuk antrean sampai menunggu konfirmasi pembayaran. Materi produk Booket juga mengangkat risiko pemborongan dan tiket duplikat. Sumber: presentasi-booket.pdf, hlm. 1–5.</template>
     </section>
 
     <section class="slide paper" id="slide-2" aria-labelledby="title-2">
-      <h2 id="title-2" class="slide-title">Saat penjualan tiket dibuka</h2>
-      <p class="lead">Banyak pembeli datang bersamaan. Ada empat hal yang perlu dijaga agar transaksi tetap berjalan.</p>
+      <h2 id="title-2" class="slide-title">Cara Booket membantu pembeli</h2>
+      <p class="lead">Dari antrean sampai tiket terbit, pembeli bisa mengikuti perkembangan pesanannya.</p>
       <ul class="list slide-body">
-        <li><strong>Koneksi database</strong><span>Permintaan yang datang serentak bisa memenuhi koneksi database. Antrean membatasi berapa pembeli yang masuk ke checkout.</span></li>
-        <li><strong>Stok tiket</strong><span>Dua pembeli bisa melihat satu tiket terakhir. Stok perlu diperiksa dan dikurangi dalam transaksi database yang sama.</span></li>
-        <li><strong>Worker saat sepi</strong><span>Worker yang hanya mendapat CPU saat ada request HTTP bisa tertunda, padahal masih ada antrean atau transaksi yang perlu diproses.</span></li>
-        <li><strong>Pembayaran mendekati tenggat</strong><span>Transfer bisa berhasil sebelum tenggat, sementara callback datang belakangan. Status harus diperiksa sebelum stok dilepas.</span></li>
+        <li><strong>Lihat giliran</strong><span>FairQueue menampilkan nomor antrean dan perkiraan waktu tunggu. Saat giliran tiba, halaman pemesanan terbuka.</span></li>
+        <li><strong>Pilih tiket</strong><span>Booket memeriksa sisa stok saat Anda memesan dan mencadangkan tiket yang masih tersedia.</span></li>
+        <li><strong>Cek pembayaran</strong><span>Setelah Anda kembali dari halaman bayar, Booket memeriksa status pesanan dan menampilkan hasilnya.</span></li>
+        <li><strong>Buka tiket</strong><span>Setelah tiket terbit, Anda bisa melihat booking dan rincian tiket di menu Tiket Saya.</span></li>
       </ul>
-      <template class="speaker-note">Bayangkan dua orang memilih tiket terakhir pada saat yang sama. Database harus menentukan siapa yang mendapat tiket. Setelah itu, sistem masih perlu memastikan pembayarannya masuk, termasuk ketika notifikasi dari gateway datang terlambat.</template>
+      <template class="speaker-note">Jelaskan alur di layar terlebih dahulu. Slide berikutnya menunjukkan layanan yang menangani setiap langkah. Antrean membatasi beban database, stok diperbarui dalam transaksi, dan pembayaran diperiksa ketika konfirmasi terlambat. Worker tetap perlu berjalan saat traffic pengguna sepi.</template>
     </section>
 
     <section class="slide paper" id="arsitektur-sistem" aria-labelledby="title-arsitektur-sistem">
@@ -484,7 +484,7 @@
           <figcaption>Rancangan pembagian slot checkout <a href="./assets/architecture/antrean-admission.svg" target="_blank" rel="noopener">Buka ukuran penuh</a></figcaption>
         </figure>
       </details>
-      <template class="speaker-note">Sumber kode: useWaitingRoom.ts, WaitingRoomPage.tsx, dan WaitingRoomStatusCard.tsx. UI memperbarui hitung mundur di antara respons server. Saat perkiraan habis, UI meminta status terbaru. Perpindahan ke checkout menunggu tautan dari server.</template>
+      <template class="speaker-note">Sumber kode: useWaitingRoom.ts, WaitingRoomPage.tsx, dan WaitingRoomStatusCard.tsx. UI memperbarui hitung mundur di antara respons server. Saat perkiraan habis, UI meminta status terbaru. Perpindahan ke checkout menunggu tautan dari server. Dalam rancangan FairQueue, PostgreSQL menyimpan urutan dan Valkey menyajikan posisi. Parameter rancangan adalah pemeriksaan slot tiap 200 ms, target 20 pembeli masuk per detik, dan maksimal 100 checkout aktif. Sumber: presentasi-booket.pdf, hlm. 5.</template>
     </section>
 
     <section class="slide paper" id="slide-9" aria-labelledby="title-9">
