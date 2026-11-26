@@ -8,6 +8,8 @@ Repository ini berisi materi presentasi interaktif, arsitektur teknis end-to-end
 Akses slide presentasi interaktif langsung melalui browser:
 👉 **[https://riansopian.github.io/presentation_pt_djs/](https://riansopian.github.io/presentation_pt_djs/)**
 
+[Unduh PowerPoint Booket (30 slide)](Booket-PT-DJS-Pengalaman-Pembeli.pptx)
+
 ### Kontrol Navigasi Presentasi:
 - **Panah Kanan (`→`) / Spasi / PageDown**: Slide Berikutnya
 - **Panah Kiri (`←`) / PageUp**: Slide Sebelumnya
